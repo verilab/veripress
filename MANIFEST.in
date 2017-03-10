@@ -1,0 +1,2 @@
+include veripress/config.sample.py
+include veripress/site.sample.py
