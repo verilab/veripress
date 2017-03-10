@@ -12,7 +12,7 @@ install:
 
 script:
   export VERIPRESS_INSTANCE_PATH=$(pwd)/veripress_tests/instance && \
-    python3 -m coverage run --source veripress -m py.test veripress_tests
+    python -m coverage run --source veripress -m py.test veripress_tests
 
 after_success:
   coveralls
