@@ -11,8 +11,8 @@ install:
   - pip install coveralls
 
 script:
-  export VERIPRESS_INSTANCE_PATH=$(pwd)/veripress_tests/instance && \
-    python -m coverage run --source veripress -m py.test veripress_tests
+  - export VERIPRESS_INSTANCE_PATH=$(pwd)/veripress_tests/instance
+  - coverage run --source veripress -m py.test veripress_tests
 
 after_success:
   coveralls
