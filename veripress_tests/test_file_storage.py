@@ -44,6 +44,9 @@ def test_get_post():
         assert post.rel_url == '2017/03/09/my-post/index.html'
         assert post.unique_key == '/post/2017/03/09/my-post/'  # unique_key has no trailing 'index.html'
         assert post.format == 'txt'
+        assert (post.meta, post.raw_content) == FileStorage.read_file(
+            os.path.join(current_app.instance_path, 'posts', '2017-03-09-my-post.txt')
+        )
 
         post = storage.get_post('2017/03/09/my-post-no-yaml/')
         assert post.rel_url == '2017/03/09/my-post-no-yaml/'
@@ -57,6 +60,9 @@ def test_get_page():
         assert page.rel_url == 'my-page/'
         assert page.unique_key == '/my-page/'
         assert page.format == 'markdown'
+        assert (page.meta, page.raw_content) == FileStorage.read_file(
+            os.path.join(current_app.instance_path, 'pages', 'my-page', 'index.md')
+        )
 
         page = storage.get_page('my-page/index.html')
         assert page.rel_url == 'my-page/index.html'

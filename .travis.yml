@@ -5,10 +5,7 @@ python:
 
 install:
   - pip install .
-  - pip install coverage
-  - pip install pytest
-  - pip install pytest-cov
-  - pip install coveralls
+  - pip install coverage pytest pytest-cov coveralls
 
 script:
   - export VERIPRESS_INSTANCE_PATH=$(pwd)/veripress_tests/instance
