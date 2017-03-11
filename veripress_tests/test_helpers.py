@@ -15,6 +15,7 @@ def test_to_list():
 def test_to_datetime():
     d = date(year=2016, month=10, day=22)
     dt = datetime.strptime('2016/10/22', '%Y/%m/%d')
+    assert isinstance(to_datetime(d), datetime)
     assert to_datetime(d) == dt
     assert id(to_datetime(dt)) == id(dt)
     assert to_datetime('other things') == 'other things'

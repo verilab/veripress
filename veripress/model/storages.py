@@ -1,5 +1,6 @@
 import re
 import os
+import functools
 from datetime import date
 
 import yaml
@@ -7,19 +8,33 @@ from flask import current_app
 
 from veripress.model.models import Page, Post, Widget
 from veripress.model.parsers import get_standard_format_name
+from veripress.helpers import to_list
 
 
 class Storage(object):
     def __init__(self, config):
+        """
+        Save the configurations and initialize attributes.
+
+        :param config: configuration, typically the Flask app's config
+        """
         self.config = config
-        self.closed = False
+        self._closed = False
 
     def close(self):
         """
         Close the storage.
         Subclasses should override this to close any file descriptor or database connection if necessary.
         """
-        self.closed = True
+        self._closed = True
+
+    @property
+    def closed(self):
+        """
+        Read-only property.
+        This state should be changed only in 'close' method.
+        """
+        return self._closed
 
     @staticmethod
     def fix_relative_url(publish_type, rel_url):
@@ -55,7 +70,8 @@ class Storage(object):
         :return: fixed relative url, or None if cannot recognize
         """
         m = re.match(
-            '^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<post_name>[^/]+)/?(?P<index>index(?:\.html?)?)?$',
+            '^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<post_name>[^/]+?)'
+            '(?:(?:\.html)|(?:/(?P<index>index(?:\.html?)?)?))?$',
             rel_url
         )
         if not m:
@@ -107,24 +123,49 @@ class Storage(object):
                 sp[-1] += '.html'
             return '/'.join(sp), False
 
-    def get_posts(self):
+    def get_posts(self, include_draft=False):
         """Get all posts, returns an iterable object."""
         raise NotImplementedError
 
-    def get_post(self, rel_url):
+    def get_post(self, rel_url, include_draft=False):
         """Get post for given relative url, returns a post model object."""
         raise NotImplementedError
 
-    def get_page(self, rel_url):
+    def get_page(self, rel_url, include_draft=False):
         """Get custom page for given relative url, returns a custom page model object."""
         raise NotImplementedError
 
-    def get_widgets(self, position=None):
+    def get_widgets(self, position=None, include_draft=False):
         """Get all widgets, returns an iterable object."""
         raise NotImplementedError
 
 
 class FileStorage(Storage):
+    @staticmethod
+    def search_file(search_root, search_filename, instance_relative_root=False):
+        """
+        Search for a filename in a specific search root dir.
+
+        :param search_root: root dir to search
+        :param search_filename: filename to search (no extension)
+        :param instance_relative_root: search root is relative to instance path or not
+        :return: tuple(full_file_path, extension without heading dot)
+        """
+        if instance_relative_root:
+            search_root = os.path.join(current_app.instance_path, search_root)
+        file_path = None
+        file_ext = None
+        for file in os.listdir(search_root):
+            filename, ext = os.path.splitext(file)
+            if filename == search_filename and ext and ext != '.':
+                file_path = os.path.join(search_root, filename + ext)
+                file_ext = ext[1:]  # remove heading '.' (dot)
+                break
+        return file_path, file_ext
+
+    # noinspection PyUnresolvedReferences
+    search_instance_file = staticmethod(functools.partial(search_file.__func__, instance_relative_root=True))
+
     @staticmethod
     def read_file(file_path):
         """
@@ -144,29 +185,33 @@ class FileStorage(Storage):
                 return yaml.load(sp[0]), sp[1].lstrip()
         return {}, whole
 
-    @staticmethod
-    def search_file(search_root, search_filename):
+    def get_posts(self, include_draft=False):
         """
-        Search for a filename in a specific search root dir.
+        Get all posts from filesystem.
 
-        :param search_root: root dir to search
-        :param search_filename: filename to search (no extension)
-        :return: tuple(full_file_path, extension without heading dot)
+        :param include_draft: return draft posts or not
+        :return: a list of Post objects
         """
-        file_path = None
-        file_ext = None
-        for file in os.listdir(search_root):
-            filename, ext = os.path.splitext(file)
-            if filename == search_filename and ext and ext != '.':
-                file_path = os.path.join(search_root, filename + ext)
-                file_ext = ext[1:]  # remove heading '.' (dot)
-                break
-        return file_path, file_ext
+        def posts_generator(path):
+            """Loads valid posts one by one in the given path."""
+            if os.path.isdir(path):
+                for file in os.listdir(path):
+                    filename, ext = os.path.splitext(file)
+                    format_name = get_standard_format_name(ext[1:])
+                    if format_name is not None and re.match('\d{4}-\d{2}-\d{2}-.+', filename):
+                        # the format is supported and the filename is valid, so load this post
+                        post = Post()
+                        post.format = format_name
+                        post.meta, post.raw_content = FileStorage.read_file(os.path.join(path, file))
+                        post.rel_url = filename.replace('-', '/', 3) + '/'
+                        post.unique_key = '/' + post.rel_url
+                        yield post
 
-    def get_posts(self):
-        pass
+        posts_path = os.path.join(current_app.instance_path, 'posts')
+        result = filter(lambda p: include_draft or not p.is_draft, posts_generator(posts_path))
+        return sorted(result, key=lambda p: p.created)
 
-    def get_post(self, rel_url):
+    def get_post(self, rel_url, include_draft=False):
         """
         Get post for given relative url from filesystem.
 
@@ -175,15 +220,15 @@ class FileStorage(Storage):
         - 2017/01/01/my-post/index.html
 
         :param rel_url: relative url
+        :param include_draft: return draft post or not
         :return: a Post object
         """
         raw_rel_url = str(rel_url)
         if rel_url.endswith('/index.html'):
             rel_url = rel_url.rsplit('/', 1)[0] + '/'  # remove the trailing 'index.html'
         post_filename = rel_url[:-1].replace('/', '-')
-        posts_path = os.path.join(current_app.instance_path, 'posts')
 
-        post_file_path, post_file_ext = FileStorage.search_file(posts_path, post_filename)
+        post_file_path, post_file_ext = FileStorage.search_instance_file('posts', post_filename)
         if post_file_path is None or post_file_ext is None:
             # no such post
             return None
@@ -194,9 +239,9 @@ class FileStorage(Storage):
         post.unique_key = '/post/' + rel_url  # 'rel_url' contains no trailing 'index.html'
         post.format = get_standard_format_name(post_file_ext)
         post.meta, post.raw_content = FileStorage.read_file(post_file_path)
-        return post
+        return post if include_draft or not post.is_draft else None
 
-    def get_page(self, rel_url):
+    def get_page(self, rel_url, include_draft=False):
         """
         Get custom page for given relative url from filesystem.
 
@@ -208,6 +253,7 @@ class FileStorage(Storage):
         - a/b/c/d.html
 
         :param rel_url: relative url
+        :param include_draft: return draft page or not
         :return: a Page object
         """
         page_dir = os.path.dirname(rel_url.replace('/', os.path.sep))
@@ -232,7 +278,33 @@ class FileStorage(Storage):
         page.unique_key = '/' + (rel_url.rsplit('/', 1)[0] + '/' if rel_url.endswith('/index.html') else rel_url)
         page.format = get_standard_format_name(page_file_ext)
         page.meta, page.raw_content = FileStorage.read_file(page_file_path)
-        return page
+        return page if include_draft or not page.is_draft else None
 
-    def get_widgets(self, position=None):
-        pass
+    def get_widgets(self, position=None, include_draft=False):
+        """
+        Get widgets for given position from filesystem.
+
+        :param position: position or position list
+        :param include_draft: return draft widgets or not
+        :return: a list of Widget objects
+        """
+
+        def widgets_generator(path):
+            """Loads valid widgets one by one in the given path."""
+            if os.path.isdir(path):
+                for file in os.listdir(path):
+                    _, ext = os.path.splitext(file)
+                    format_name = get_standard_format_name(ext[1:])
+                    if format_name is not None:
+                        # the format is supported, so load it
+                        widget = Widget()
+                        widget.format = format_name
+                        widget.meta, widget.raw_content = FileStorage.read_file(os.path.join(path, file))
+                        yield widget
+
+        widgets_path = os.path.join(current_app.instance_path, 'widgets')
+        positions = to_list(position) if position is not None else position
+        result = filter(lambda w: (w.position in positions if positions is not None else True)
+                                  and (include_draft or not w.is_draft),
+                        widgets_generator(widgets_path))
+        return sorted(result, key=lambda w: (w.position, w.order))

@@ -1,0 +1,5 @@
+-----
+is_draft: true
+-----
+
+Lorem ipsum dolor sit amet

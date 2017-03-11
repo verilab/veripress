@@ -37,10 +37,17 @@ def test_search_file():
         assert path == os.path.join(search_root, '2017-03-09-my-post.txt')
         assert ext == 'txt'
 
+        search_root = 'posts'
+        path, ext = FileStorage.search_file(search_root, '2017-03-09-my-post', instance_relative_root=True)
+        assert (path, ext) == FileStorage.search_instance_file(search_root, '2017-03-09-my-post')
+        assert path == os.path.join(current_app.instance_path, search_root, '2017-03-09-my-post.txt')
+        assert ext == 'txt'
+
 
 def test_get_post():
     with app.app_context():
         post = storage.get_post('2017/03/09/my-post/index.html')
+        assert isinstance(post, Post)
         assert post.rel_url == '2017/03/09/my-post/index.html'
         assert post.unique_key == '/post/2017/03/09/my-post/'  # unique_key has no trailing 'index.html'
         assert post.format == 'txt'
@@ -53,10 +60,16 @@ def test_get_post():
         assert post.unique_key == '/post/2017/03/09/my-post-no-yaml/'
         assert post.format == 'txt'
 
+        post = storage.get_post('2016/03/03/hello-world/')
+        assert post is None
+        post = storage.get_post('2016/03/03/hello-world/', include_draft=True)
+        assert post is not None
+
 
 def test_get_page():
     with app.app_context():
         page = storage.get_page('my-page/')
+        assert isinstance(page, Page)
         assert page.rel_url == 'my-page/'
         assert page.unique_key == '/my-page/'
         assert page.format == 'markdown'
@@ -78,3 +91,36 @@ def test_get_page():
         assert page.rel_url == 'test-page.html'
         assert page.unique_key == '/test-page.html'
         assert page.format == 'txt'
+
+        page = storage.get_page('test-page-draft.html')
+        assert page is None
+        page = storage.get_page('test-page-draft.html', include_draft=True)
+        assert page is not None
+
+
+def test_get_widgets():
+    with app.app_context():
+        widgets = storage.get_widgets()
+        assert isinstance(widgets, list)
+        assert len(widgets) == 2
+        assert isinstance(widgets[0], Widget)
+        assert widgets[0].position == widgets[1].position
+        assert widgets[0].order < widgets[1].order
+
+        widgets = storage.get_widgets(position='header', include_draft=True)
+        assert len(list(widgets)) == 1
+
+        widgets = storage.get_widgets(position='non-exists', include_draft=True)
+        assert len(list(widgets)) == 0
+
+
+def test_get_posts():
+    with app.app_context():
+        posts = storage.get_posts()
+        assert isinstance(posts, list)
+        assert len(posts) == 3
+
+        posts = storage.get_posts(include_draft=True)
+        assert len(posts) == 4
+        assert posts[0].title == 'Hello, world!'
+        assert posts[0].is_draft == True

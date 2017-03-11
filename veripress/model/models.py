@@ -118,7 +118,7 @@ class Post(Page, TagCategoryMixIn):
 
     @property
     def created(self):
-        result = self.meta.get('created')
+        result = super(Post, self).created
         if result is None:
             d, _, _ = self.rel_url.rsplit('/', 2)
             result = datetime.strptime(d, '%Y/%m/%d')

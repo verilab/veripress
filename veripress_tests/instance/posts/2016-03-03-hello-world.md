@@ -2,6 +2,7 @@
 title: Hello, world!
 created: 2016-03-03 20:48:00
 categories: Default
+is_draft: true
 tags: [BlogA, Hello World]
 ---
 
