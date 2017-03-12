@@ -182,4 +182,4 @@ class HtmlTocParser(HTMLParser):
         self._html += '&#{};'.format(name)
 
     def error(self, message):
-        pass
+        pass  # pragma: no cover
