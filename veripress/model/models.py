@@ -33,10 +33,7 @@ class Base(object):
 
         :return: a dict
         """
-        result = {}
-        for key in filter(lambda k: not k.startswith('_') and k != 'to_dict', dir(self)):
-            result[key] = getattr(self, key)
-        return result
+        return {k: getattr(self, k) for k in filter(lambda k: not k.startswith('_') and k != 'to_dict', dir(self))}
 
 
 class AuthorMixIn(object):
@@ -106,7 +103,7 @@ class Page(Base, AuthorMixIn, DateMixIn):
                 pos -= 1
 
             path_seg = sp[pos][:-len('.html')] if sp[pos].endswith('.html') else sp[pos]
-            result = ' '.join([word[0].upper() + word[1:] for word in filter(lambda x: x, path_seg.split('-'))])
+            result = ' '.join(word[0].upper() + word[1:] for word in filter(lambda x: x, path_seg.split('-')))
         return result
 
 
@@ -129,7 +126,7 @@ class Post(Page, TagCategoryMixIn):
         result = self.meta.get('title')
         if result is None:
             _, post_name, _ = self.rel_url.rsplit('/', 2)
-            result = ' '.join([word[0].upper() + word[1:] for word in filter(lambda x: x, post_name.split('-'))])
+            result = ' '.join(word[0].upper() + word[1:] for word in filter(lambda x: x, post_name.split('-')))
         return result
 
 

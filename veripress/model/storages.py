@@ -80,7 +80,7 @@ class Storage(object):
         year, month, day, post_name = m.groups()[:4]
         try:
             d = date(year=int(year), month=int(month), day=int(day))
-            return '/'.join([d.strftime('%Y/%m/%d'), post_name, 'index.html' if m.group('index') else ''])
+            return '/'.join((d.strftime('%Y/%m/%d'), post_name, 'index.html' if m.group('index') else ''))
         except (TypeError, ValueError):
             # the date is invalid
             return None
@@ -192,6 +192,7 @@ class FileStorage(Storage):
         :param include_draft: return draft posts or not
         :return: a list of Post objects
         """
+
         def posts_generator(path):
             """Loads valid posts one by one in the given path."""
             if os.path.isdir(path):
