@@ -64,6 +64,12 @@ def to_list(item_or_list):
 
 
 def to_datetime(date_or_datetime):
+    """
+    Convert a date object to a datetime object, or return as it is if it's not a date object.
+
+    :param date_or_datetime: date or datetime object
+    :return: a datetime object
+    """
     if isinstance(date_or_datetime, date) and not isinstance(date_or_datetime, datetime):
         d = date_or_datetime
         return datetime.strptime('-'.join([str(d.year), str(d.month), str(d.day)]), '%Y-%m-%d')

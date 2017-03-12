@@ -65,3 +65,6 @@ from flask_caching import Cache
 cache = Cache(app, config=app.config)  # create the cache object with the app's config
 
 import veripress.model
+
+import veripress.api
+app.register_blueprint(api.api, url_prefix='/api')
