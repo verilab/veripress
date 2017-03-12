@@ -3,7 +3,20 @@ import re
 import mistune
 from pytest import raises
 
-from veripress.model.parsers import get_standard_format_name, get_parser, Parser, TxtParser, MarkdownParser
+from veripress.model.parsers import get_standard_format_name, get_parser, Parser, TxtParser, MarkdownParser, parser
+
+
+def test_parser_decorator():
+    class FakeParser:
+        pass
+
+    parser('FoRMat1')(FakeParser)
+    assert get_standard_format_name('formAT1') == 'format1'
+    parser('format2', ext_names='fmt2')(FakeParser)
+    assert get_standard_format_name('fmt2') == 'format2'
+    parser('format3', ext_names=['fmt3', 'f3'])(FakeParser)
+    assert get_standard_format_name('fmt3') == 'format3'
+    assert get_standard_format_name('f3') == 'format3'
 
 
 def test_base_parser():

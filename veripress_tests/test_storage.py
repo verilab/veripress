@@ -37,6 +37,7 @@ def test_fix_rel_url():
         assert Storage.fix_post_relative_url('2017/1/1/my-post/index') == correct + 'index.html'
         assert Storage.fix_post_relative_url('2017/1/1/my-post/index.html') == correct + 'index.html'
         assert Storage.fix_post_relative_url('2017/1/1/my-post/test') is None
+        assert Storage.fix_post_relative_url('2017/13/32/my-post/') is None
 
         assert Storage.fix_page_relative_url('my-page') == ('my-page/', False)
         assert Storage.fix_page_relative_url('my-page/') == ('my-page/', False)

@@ -65,6 +65,9 @@ def test_get_post():
         post = storage.get_post('2016/03/03/hello-world/', include_draft=True)
         assert post is not None
 
+        post = storage.get_post('2016/03/03/non-exists/')
+        assert post is None
+
 
 def test_get_page():
     with app.app_context():
@@ -96,6 +99,11 @@ def test_get_page():
         assert page is None
         page = storage.get_page('test-page-draft.html', include_draft=True)
         assert page is not None
+
+        page = storage.get_page('test-non-exists.html')
+        assert page is None
+        page = storage.get_page('non-exists/non-exists.html')
+        assert page is None
 
 
 def test_get_widgets():

@@ -1,5 +1,7 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+
+from pytest import raises
 
 from veripress import app
 from veripress.model import CustomJSONEncoder
@@ -133,3 +135,10 @@ def test_json_encoder():
         'created': dt.timestamp(),
         'updated': dt.timestamp()
     }
+
+    class NotSupportedClass:
+        pass
+
+    not_supported = NotSupportedClass()
+    with raises(TypeError):
+        json.dumps(not_supported, cls=CustomJSONEncoder)
