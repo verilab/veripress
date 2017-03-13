@@ -31,7 +31,7 @@ class Parser(object):
         """Parse the whole part of the content. Should be overridden in subclasses."""
         raise NotImplementedError
 
-    def preprocess_whole_content(self, raw_content):
+    def remove_read_more_sep(self, raw_content):
         """
         Removes the first read_more_sep that occurs in raw_content.
         Subclasses should call this method to preprocess raw_content.
@@ -99,7 +99,7 @@ class TxtParser(Parser):
     _read_more_exp = re.compile('-{3,}[ \t]*more[ \t]*-{3,}', re.IGNORECASE)
 
     def parse_whole(self, raw_content):
-        raw_content = self.preprocess_whole_content(raw_content)
+        raw_content = self.remove_read_more_sep(raw_content)
         return '<pre>{}</pre>'.format(raw_content)
 
 
@@ -123,5 +123,5 @@ class MarkdownParser(Parser):
     _markdown = mistune.Markdown(renderer=_renderer)
 
     def parse_whole(self, raw_content):
-        raw_content = self.preprocess_whole_content(raw_content)
-        return self._markdown(raw_content)
+        raw_content = self.remove_read_more_sep(raw_content)
+        return self._markdown(raw_content).strip()

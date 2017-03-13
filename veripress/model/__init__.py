@@ -51,7 +51,7 @@ class CustomJSONEncoder(app.json_encoder):
         if isinstance(obj, Base):
             return obj.to_dict()
         elif isinstance(obj, datetime):
-            return obj.timestamp()
+            return obj.strftime('%Y-%m-%d %H:%M:%S')
         return super(CustomJSONEncoder, self).default(obj)
 
 

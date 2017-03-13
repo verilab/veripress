@@ -28,6 +28,15 @@ def test_base_model():
     base.meta['is_draft'] = True
     assert base.is_draft == True  # will change dynamically when meta changes
 
+    base1 = Base()
+    base1.format = 'txt'
+    base2 = Base()
+    base2.format = 'markdown'
+    assert base1 != base2
+    base2.format = 'txt'
+    assert base1 == base2
+    assert base1 != 'other object type'
+
 
 def test_page_model():
     page = Page()
@@ -122,7 +131,7 @@ def test_json_encoder():
     page.meta = {'title': 'My Page', 'author': 'Richard', 'created': dt}
     result = json.dumps(page, cls=CustomJSONEncoder)
     assert json.loads(result) == {
-        'meta': {'title': 'My Page', 'author': 'Richard', 'created': dt.timestamp()},
+        'meta': {'title': 'My Page', 'author': 'Richard', 'created': dt.strftime('%Y-%m-%d %H:%M:%S')},
         'raw_content': 'This is the raw content.',
         'format': 'txt',
         'is_draft': False,
@@ -132,8 +141,8 @@ def test_json_encoder():
         'title': 'My Page',
         'author': 'Richard',
         'email': 'my-email@example.com',
-        'created': dt.timestamp(),
-        'updated': dt.timestamp()
+        'created': dt.strftime('%Y-%m-%d %H:%M:%S'),
+        'updated': dt.strftime('%Y-%m-%d %H:%M:%S')
     }
 
     class NotSupportedClass:

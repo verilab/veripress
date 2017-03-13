@@ -130,5 +130,5 @@ def test_get_posts():
 
         posts = storage.get_posts(include_draft=True)
         assert len(posts) == 4
-        assert posts[0].title == 'Hello, world!'
-        assert posts[0].is_draft == True
+        assert posts[-1].title == 'Hello, world!'
+        assert posts[-1].is_draft == True

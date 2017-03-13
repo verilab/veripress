@@ -1,3 +1,5 @@
+from datetime import date, datetime
+
 from pytest import raises
 
 from veripress import app, create_app
@@ -64,3 +66,22 @@ def test_base_storage():
         s.get_page('')
     with raises(NotImplementedError):
         s.get_widgets()
+
+
+def test_get_posts_with_limits():
+    with app.app_context():
+        posts = storage.get_posts_with_limits(include_draft=True)
+        assert posts == storage.get_posts(include_draft=True)
+
+        posts = storage.get_posts_with_limits(include_draft=True, tags='Hello World', categories=['Default'])
+        assert len(posts) == 2
+
+        posts = storage.get_posts_with_limits(include_draft=True,
+                                              created=(datetime.strptime('2016-02-02', '%Y-%m-%d'),
+                                                       date(year=2016, month=3, day=3)))
+        assert len(posts) == 1
+
+        posts = storage.get_posts_with_limits(include_draft=True,
+                                              created=(date(year=2011, month=2, day=2),
+                                                       date(year=2014, month=2, day=2)))
+        assert len(posts) == 0

@@ -13,6 +13,7 @@ class Error(Enum):
     UNDEFINED = (100, 'Undefined error.', 400)
     NO_SUCH_API = (101, 'No such API.', 404)
     RESOURCE_NOT_EXISTS = (102, 'The requested resource does not exist.', 404)
+    INVALID_ARGUMENTS = (103, 'Invalid argument(s).', 400)
 
 
 class ApiException(Exception):
@@ -41,11 +42,19 @@ def json_api(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
-        if isinstance(result, Iterable):
-            result = list(result)
+        if result is None:
+            raise ApiException(error=Error.RESOURCE_NOT_EXISTS)
+
         if isinstance(result, Response):
             return result
-        return jsonify(result)
+
+        try:
+            return jsonify(result)
+        except TypeError as e:
+            if isinstance(result, Iterable):
+                return jsonify(list(result))
+            else:
+                raise e
 
     return wrapper
 

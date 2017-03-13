@@ -6,32 +6,6 @@ from datetime import date, datetime
 from flask import render_template, request
 
 
-def view(template=None):
-    """
-    Decorate a view function with a default template name.
-    This will try template in the custom folder first, the theme's original ones second.
-
-    :param template: template name
-    """
-
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            template_name = template
-            if template_name is None:
-                template_name = request.endpoint.replace('.', '/') + '.html'
-            context = func(*args, **kwargs)
-            if context is None:
-                context = {}
-            elif not isinstance(context, dict):
-                return context
-            return render_template([os.path.join('custom', template_name), template_name], **context)
-
-        return wrapper
-
-    return decorator
-
-
 def url_rule(blueprint_or_app, rules, endpoint=None, view_func=None, **options):
     """
     Add one or more url rules to the given Flask blueprint or app.
@@ -72,7 +46,7 @@ def to_datetime(date_or_datetime):
     """
     if isinstance(date_or_datetime, date) and not isinstance(date_or_datetime, datetime):
         d = date_or_datetime
-        return datetime.strptime('-'.join([str(d.year), str(d.month), str(d.day)]), '%Y-%m-%d')
+        return datetime.strptime('%04d-%02d-%02d' % (d.year, d.month, d.day), '%Y-%m-%d')
     return date_or_datetime
 
 

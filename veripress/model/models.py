@@ -5,9 +5,7 @@ from veripress.helpers import to_list, to_datetime
 
 
 class Base(object):
-    """
-    Base model class, contains basic/general information of a post/page/widget.
-    """
+    """Base model class, contains basic/general information of a post/page/widget."""
 
     def __init__(self):
         self.meta = {}
@@ -28,18 +26,17 @@ class Base(object):
         return self.meta.get('is_draft', False)
 
     def to_dict(self):
-        """
-        Convert attributes and properties to a dict (so that it can be serialized).
-
-        :return: a dict
-        """
+        """Convert attributes and properties to a dict (so that it can be serialized)."""
         return {k: getattr(self, k) for k in filter(lambda k: not k.startswith('_') and k != 'to_dict', dir(self))}
+
+    def __eq__(self, other):
+        if isinstance(other, Base):
+            return self.to_dict() == other.to_dict()
+        return super(Base, self).__eq__(other)
 
 
 class AuthorMixIn(object):
-    """
-    Mix in author's name and email.
-    """
+    """Mix in author's name and email."""
 
     @property
     def author(self):
@@ -51,9 +48,7 @@ class AuthorMixIn(object):
 
 
 class DateMixIn(object):
-    """
-    Mix in created data and updated date.
-    """
+    """Mix in created data and updated date."""
 
     @property
     def created(self):
@@ -65,9 +60,7 @@ class DateMixIn(object):
 
 
 class TagCategoryMixIn(object):
-    """
-    Mix in tags and categories.
-    """
+    """Mix in tags and categories."""
 
     @property
     def tags(self):
@@ -79,9 +72,7 @@ class TagCategoryMixIn(object):
 
 
 class Page(Base, AuthorMixIn, DateMixIn):
-    """
-    Model class of publish type 'custom page' or 'page', with default layout 'page'.
-    """
+    """Model class of publish type 'custom page' or 'page', with default layout 'page'."""
     _default_layout = 'page'
 
     def __init__(self):
@@ -108,9 +99,7 @@ class Page(Base, AuthorMixIn, DateMixIn):
 
 
 class Post(Page, TagCategoryMixIn):
-    """
-    Model class of publish type 'post', with default layout 'post'.
-    """
+    """Model class of publish type 'post', with default layout 'post'."""
     _default_layout = 'post'
 
     @property
@@ -131,9 +120,7 @@ class Post(Page, TagCategoryMixIn):
 
 
 class Widget(Base):
-    """
-    Model class of publish type 'widget'.
-    """
+    """Model class of publish type 'widget'."""
 
     @property
     def position(self):

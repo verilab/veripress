@@ -1,14 +1,14 @@
 import re
 import os
 import functools
-from datetime import date
+from datetime import date, datetime, timedelta
 
 import yaml
 from flask import current_app
 
 from veripress.model.models import Page, Post, Widget
 from veripress.model.parsers import get_standard_format_name
-from veripress.helpers import to_list
+from veripress.helpers import to_list, to_datetime
 
 
 class Storage(object):
@@ -123,7 +123,7 @@ class Storage(object):
                 sp[-1] += '.html'
             return '/'.join(sp), False
 
-    def get_posts(self, include_draft=False):
+    def get_posts(self, include_draft=False, filter_functions=None):
         """Get all posts, returns an iterable object."""
         raise NotImplementedError
 
@@ -138,6 +138,59 @@ class Storage(object):
     def get_widgets(self, position=None, include_draft=False):
         """Get all widgets, returns an iterable object."""
         raise NotImplementedError
+
+    @staticmethod
+    def _filter_result(result, filter_functions=None):
+        """
+        Filter result with given filter functions.
+
+        :param result: an iterable object
+        :param filter_functions: some filter functions
+        :return: a filter object (filtered result)
+        """
+        if filter_functions is not None:
+            for filter_func in filter_functions:
+                result = filter(filter_func, result)
+        return result
+
+    def get_posts_with_limits(self, include_draft, **limits):
+        """
+        Get all posts and filter them as needed.
+
+        :param include_draft: return draft posts or not
+        :param limits: other limits to the attrs of the result, should be a dict with string or list values
+        :return: a list of Post objects
+        """
+        filter_funcs = []
+
+        for attr in ('title', 'layout', 'author', 'email', 'tags', 'categories'):
+            if limits.get(attr):
+                filter_set = set(to_list(limits.get(attr)))
+
+                def get_filter_func(filter_set_, attr_):
+                    return lambda p: filter_set_.intersection(to_list(getattr(p, attr_)))
+
+                filter_funcs.append(get_filter_func(filter_set, attr))
+
+        for attr in ('created', 'updated'):
+            interval = limits.get(attr)
+            if isinstance(interval, (list, tuple)) and len(interval) == 2 \
+                    and isinstance(interval[0], date) and isinstance(interval[1], date):
+                # [start date(time), end date(time)]
+                start, end = interval
+                start = to_datetime(start)
+                if not isinstance(end, datetime):
+                    # 'end' is a date, we should convert it to 00:00:00 of the next day,
+                    # so that posts of that day will be included
+                    end = datetime.strptime('%04d-%02d-%02d' % (end.year, end.month, end.day), '%Y-%m-%d')
+                    end += timedelta(days=1)
+
+                def get_filter_func(attr_, start_dt, end_dt):
+                    return lambda p: start_dt < getattr(p, attr_) < end_dt
+
+                filter_funcs.append(get_filter_func(attr, start, end))
+
+        return self.get_posts(include_draft=include_draft, filter_functions=filter_funcs)
 
 
 class FileStorage(Storage):
@@ -185,12 +238,13 @@ class FileStorage(Storage):
                 return yaml.load(sp[0]), sp[1].lstrip()
         return {}, whole
 
-    def get_posts(self, include_draft=False):
+    def get_posts(self, include_draft=False, filter_functions=None):
         """
         Get all posts from filesystem.
 
         :param include_draft: return draft posts or not
-        :return: a list of Post objects
+        :param filter_functions: filter functions to apply BEFORE result being sorted
+        :return: a list of Post objects (the first is the latest post)
         """
 
         def posts_generator(path):
@@ -210,7 +264,9 @@ class FileStorage(Storage):
 
         posts_path = os.path.join(current_app.instance_path, 'posts')
         result = filter(lambda p: include_draft or not p.is_draft, posts_generator(posts_path))
-        return sorted(result, key=lambda p: p.created)
+        result = self._filter_result(result, filter_functions)
+
+        return sorted(result, key=lambda p: p.created, reverse=True)
 
     def get_post(self, rel_url, include_draft=False):
         """

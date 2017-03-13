@@ -26,7 +26,7 @@ def test_base_parser():
     with raises(NotImplementedError):
         assert p.parse_whole('abc')
 
-    assert p.preprocess_whole_content('abc') == 'abc'
+    assert p.remove_read_more_sep('abc') == 'abc'
 
 
 def test_get_standard_format_name():
