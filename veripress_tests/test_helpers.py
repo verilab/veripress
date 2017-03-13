@@ -38,3 +38,34 @@ def test_url_rule():
     url_rule(fake_bp, '/posts/')
     url_rule(fake_bp, ['/posts/<int:post_id>'])
     assert fake_bp.rules == ['/posts/', '/posts/<int:post_id>']
+
+
+def test_pair():
+    pair = Pair()
+    assert pair.first is None and pair.second is None
+    assert not pair
+
+    pair = Pair(1, 'a')
+    assert pair
+    assert pair == Pair(1, 'a')
+    assert pair != []
+    assert 1 in pair and 'a' in pair
+    assert 2 not in pair
+    a, b = pair
+    assert a == 1 and b == 'a'
+    assert '(1, \'a\')' in repr(pair)
+
+    pair += (2, 'b')
+    assert pair == Pair(3, 'ab')
+    with raises(ValueError):
+        pair += (1, 2, 3)
+    with raises(TypeError):
+        pair += ('a', 2)
+
+    assert Pair(100, 200) - Pair(100, 200) == Pair(0, 0)
+
+    pair = Pair(2, 'b')
+    assert pair[0] == 2
+    assert pair[1] == 'b'
+    with raises(IndexError):
+        a = pair[2]

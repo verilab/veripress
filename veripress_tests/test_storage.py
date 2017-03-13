@@ -63,6 +63,10 @@ def test_base_storage():
     with raises(NotImplementedError):
         s.get_post('')
     with raises(NotImplementedError):
+        s.get_tags()
+    with raises(NotImplementedError):
+        s.get_categories()
+    with raises(NotImplementedError):
         s.get_page('')
     with raises(NotImplementedError):
         s.get_widgets()

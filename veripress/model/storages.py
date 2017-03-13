@@ -8,7 +8,7 @@ from flask import current_app
 
 from veripress.model.models import Page, Post, Widget
 from veripress.model.parsers import get_standard_format_name
-from veripress.helpers import to_list, to_datetime
+from veripress.helpers import to_list, to_datetime, Pair
 
 
 class Storage(object):
@@ -129,6 +129,18 @@ class Storage(object):
 
     def get_post(self, rel_url, include_draft=False):
         """Get post for given relative url, returns a post model object."""
+        raise NotImplementedError
+
+    def get_tags(self):
+        """
+        Get all tags and post count as a dict (key: tag_name, value: Pair(count_all, count_published)).
+        """
+        raise NotImplementedError
+
+    def get_categories(self):
+        """
+        Get all categories and post count as a dict. (key: category_name, value: Pair(count_all, count_published)).
+        """
         raise NotImplementedError
 
     def get_page(self, rel_url, include_draft=False):
@@ -297,6 +309,33 @@ class FileStorage(Storage):
         post.format = get_standard_format_name(post_file_ext)
         post.meta, post.raw_content = FileStorage.read_file(post_file_path)
         return post if include_draft or not post.is_draft else None
+
+    def get_tags(self):
+        """
+        Get all tags and post count of each tag.
+
+        :return: dict_item(tag_name, Pair(count_all, count_published))
+        """
+        posts = self.get_posts(include_draft=True)
+        result = {}
+        for post in posts:
+            for tag_name in set(post.tags):
+                result[tag_name] = result.setdefault(tag_name, Pair(0, 0)) + Pair(1, 0 if post.is_draft else 1)
+        return result.items()
+
+    def get_categories(self):
+        """
+        Get all categories and post count of each category.
+
+        :return dict_item(category_name, Pair(count_all, count_published))
+        """
+        posts = self.get_posts(include_draft=True)
+        result = {}
+        for post in posts:
+            for category_name in set(post.categories):
+                result[category_name] = result.setdefault(category_name, Pair(0, 0)) \
+                                        + Pair(1, 0 if post.is_draft else 1)
+        return result.items()
 
     def get_page(self, rel_url, include_draft=False):
         """

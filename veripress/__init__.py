@@ -42,6 +42,7 @@ def create_app(config_filename, instance_path=None):
     theme_folder = os.path.join(app_.instance_path, 'themes', app_.config['THEME'])
     app_.template_folder = os.path.join(theme_folder, 'templates')  # use templates in the selected theme's folder
     app_.theme_static_folder = os.path.join(theme_folder, 'static')  # use static files in the selected theme's folder
+    app_.static_folder = os.path.join(app_.instance_path, 'static')  # global static folder
 
     return app_
 

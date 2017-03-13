@@ -1,12 +1,14 @@
 import re
+import os
 from datetime import date
 
-from flask import jsonify, url_for, current_app, request
+from flask import current_app, request, send_file
 
 from veripress import site
 from veripress.api import ApiException, Error, json_api
 from veripress.model import storage
 from veripress.model.parsers import get_parser
+from veripress.helpers import validate_custom_page_path
 
 
 @json_api
@@ -91,18 +93,39 @@ def posts(year: int = None, month: int = None, day: int = None, post_name: str =
         return result_posts_list if result_posts_list else None
 
 
+@json_api
 def tags():
-    pass
+    return [{'name': item[0], 'total': item[1].first, 'published': item[1].second}
+            for item in storage.get_tags()]
 
 
+@json_api
 def categories():
-    pass
+    return [{'name': item[0], 'total': item[1].first, 'published': item[1].second}
+            for item in storage.get_categories()]
 
 
+@json_api
 def custom_pages(page_path):
-    pass
+    if not validate_custom_page_path(page_path):
+        raise ApiException(error=Error.NOT_ALLOWED, message='The visit of path "{}" is not allowed.'.format(page_path))
+
+    rel_url, exists = storage.fix_relative_url('page', page_path)
+    if exists:
+        return send_file(os.path.join(current_app.instance_path, 'pages', rel_url))
+    elif rel_url is None:  # pragma: no cover, it seems impossible to make this happen, see code of 'fix_relative_url'
+        raise ApiException(error=Error.BAD_PATH, message='The path "{}" cannot be recognized.'.format(page_path))
+    else:
+        page = storage.get_page(rel_url, include_draft=True)
+        if page is None:
+            raise ApiException(error=Error.RESOURCE_NOT_EXISTS)
+        page_d = page.to_dict()
+        del page_d['raw_content']
+        page_d['content'] = get_parser(page.format).parse_whole(page.raw_content)
+        return page_d
 
 
+@json_api
 def search():
     pass
 

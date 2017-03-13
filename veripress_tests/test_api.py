@@ -93,3 +93,28 @@ def test_posts():
 
         data = get_json(c, '/posts/2017/03/09/non-exists')
         assert data['code'] == Error.RESOURCE_NOT_EXISTS.value[0]
+
+
+def test_tags_categories():
+    with app.test_client() as c:
+        data = get_json(c, '/tags')
+        assert {'name': 'Hello World', 'published': 1, 'total': 2} in data
+
+        data = get_json(c, '/categories')
+        assert {'name': 'Default', 'published': 1, 'total': 2} in data
+
+
+def test_custom_page():
+    with app.test_client() as c:
+        data = get_json(c, '/custom_pages/non-exists')
+        assert data['code'] == Error.RESOURCE_NOT_EXISTS.value[0]
+
+        data = get_json(c, '/custom_pages/../../../../etc/passwd')
+        assert data['code'] == Error.NOT_ALLOWED.value[0]
+
+        resp = c.get('/api/custom_pages/test-page.txt')
+        assert resp.status_code == 200
+        assert resp.content_type.startswith('text/plain')
+
+        data = get_json(c, '/custom_pages/my-page/')
+        assert 'Lorem ipsum dolor sit amet.' in data['content']

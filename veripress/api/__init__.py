@@ -12,8 +12,10 @@ class Error(Enum):
     # tuple(error code, default error message, default status code)
     UNDEFINED = (100, 'Undefined error.', 400)
     NO_SUCH_API = (101, 'No such API.', 404)
-    RESOURCE_NOT_EXISTS = (102, 'The requested resource does not exist.', 404)
+    RESOURCE_NOT_EXISTS = (102, 'The resource does not exist.', 404)
     INVALID_ARGUMENTS = (103, 'Invalid argument(s).', 400)
+    NOT_ALLOWED = (104, 'The resource path is not allowed.', 403)
+    BAD_PATH = (105, 'The resource path cannot be recognized.', 400)
 
 
 class ApiException(Exception):
@@ -72,7 +74,7 @@ rule(['/posts',
       '/posts/<int:year>/<int:month>/<int:day>/<string:post_name>'], view_func=handlers.posts, methods=['GET'])
 rule('/tags', view_func=handlers.tags, methods=['GET'])
 rule('/categories', view_func=handlers.categories, methods=['GET'])
-rule('/custom_pages/<path:page_path>', view_func=handlers.custom_pages, methods=['GET'])
+rule('/custom_pages/<path:page_path>', view_func=handlers.custom_pages, methods=['GET'], strict_slashes=True)
 rule('/search', view_func=handlers.search, methods=['GET'])
 rule('/_webhook', view_func=handlers.webhook, methods=['POST'])
 

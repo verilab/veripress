@@ -7,6 +7,7 @@ from veripress import app
 from veripress.model import storage
 from veripress.model.models import Page, Post, Widget
 from veripress.model.storages import FileStorage
+from veripress.helpers import Pair
 
 
 def test_read_file():
@@ -132,3 +133,14 @@ def test_get_posts():
         assert len(posts) == 4
         assert posts[-1].title == 'Hello, world!'
         assert posts[-1].is_draft == True
+
+
+def test_get_tags_categories():
+    with app.app_context():
+        tag_items = storage.get_tags()
+        assert len(tag_items) == 2
+        assert ('Hello World', Pair(2, 1)) in tag_items
+
+        category_items = storage.get_categories()
+        assert len(category_items) == 1
+        assert ('Default', Pair(2, 1)) in category_items

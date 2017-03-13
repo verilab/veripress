@@ -1,5 +1,8 @@
 import os
 
+from pytest import raises
+from werkzeug.exceptions import NotFound
+
 from veripress import app, site, cache, create_app, CustomFlask
 
 
@@ -20,6 +23,12 @@ def test_app():
     # app's config should be loaded from instance/config.py
     assert app.config['STORAGE_TYPE'] == 'file'
     assert app.config['THEME'] == 'test'
+
+    with app.test_request_context('/'):
+        app.send_static_file('no-use.css')
+        app.send_static_file('no-use-2.css')
+        with raises(NotFound):
+            app.send_static_file('non-exists.css')
 
 
 def test_site():
