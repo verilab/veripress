@@ -1,7 +1,7 @@
 import json
 import os
 
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, current_app
 from werkzeug.exceptions import NotFound
 
 
@@ -37,6 +37,10 @@ def create_app(config_filename, instance_path=None):
     app_ = CustomFlask(__name__,
                        instance_path=instance_path or os.environ.get('VERIPRESS_INSTANCE_PATH') or os.getcwd(),
                        instance_relative_config=True)
+    app_.config.update(dict(STORAGE_TYPE='file',
+                            THEME='default',
+                            CACHE_TYPE='simple',
+                            MODE='mixed'))
     app_.config.from_pyfile(config_filename)
 
     theme_folder = os.path.join(app_.instance_path, 'themes', app_.config['THEME'])
@@ -62,10 +66,30 @@ def inject_site():
     return dict(site=site)
 
 
+@app.route('/_webhook', methods=['POST'], strict_slashes=False)
+def webhook():
+    """
+    Run a custom python script when requested.
+    User can pull git repositories, log something to a file, or do anything else in there.
+
+    :return: always 204 NO CONTENT
+    """
+    try:
+        with current_app.open_instance_resource('webhook.py', 'r') as f:
+            exec(f.read())  # if there is the 'webhook.py' script, we execute it's content
+    except FileNotFoundError:
+        pass
+    return '', 204
+
+
 from flask_caching import Cache
 cache = Cache(app, config=app.config)  # create the cache object with the app's config
 
 import veripress.model
 
-import veripress.api
-app.register_blueprint(api.api, url_prefix='/api')
+if app.config['MODE'] in ('mixed', 'api-only'):
+    import veripress.api
+    app.register_blueprint(api.api, url_prefix='/api')
+
+if app.config['MODE'] in ('mixed', 'view-only'):
+    pass  # import view blueprint

@@ -38,9 +38,7 @@ def posts(year: int = None, month: int = None, day: int = None, post_name: str =
                                            'and it should be like "2017-02-13,2017-03-13".'.format(key),
                                    error=Error.INVALID_ARGUMENTS)
 
-    include_draft = request.args.get('include_draft', 'true').lower().strip()
-    include_draft = False if include_draft in ('false', 'no', '0') else True
-    result_posts = storage.get_posts_with_limits(include_draft=include_draft, **args)  # get the post list here
+    result_posts = storage.get_posts_with_limits(include_draft=False, **args)  # get the post list here
 
     return_single_item = False
     rel_url_prefix = ''
@@ -95,14 +93,12 @@ def posts(year: int = None, month: int = None, day: int = None, post_name: str =
 
 @json_api
 def tags():
-    return [{'name': item[0], 'total': item[1].first, 'published': item[1].second}
-            for item in storage.get_tags()]
+    return [{'name': item[0], 'published': item[1].second} for item in storage.get_tags()]
 
 
 @json_api
 def categories():
-    return [{'name': item[0], 'total': item[1].first, 'published': item[1].second}
-            for item in storage.get_categories()]
+    return [{'name': item[0], 'published': item[1].second} for item in storage.get_categories()]
 
 
 @json_api
@@ -116,7 +112,7 @@ def custom_pages(page_path):
     elif rel_url is None:  # pragma: no cover, it seems impossible to make this happen, see code of 'fix_relative_url'
         raise ApiException(error=Error.BAD_PATH, message='The path "{}" cannot be recognized.'.format(page_path))
     else:
-        page = storage.get_page(rel_url, include_draft=True)
+        page = storage.get_page(rel_url, include_draft=False)
         if page is None:
             raise ApiException(error=Error.RESOURCE_NOT_EXISTS)
         page_d = page.to_dict()
@@ -126,9 +122,17 @@ def custom_pages(page_path):
 
 
 @json_api
+def widgets():
+    result_widgets = storage.get_widgets(position=request.args.get('position'), include_draft=False)
+    result = []
+    for widget in result_widgets:
+        widget_d = widget.to_dict()
+        del widget_d['raw_content']
+        widget_d['content'] = get_parser(widget.format).parse_whole(widget.raw_content)
+        result.append(widget_d)
+    return result if result else None
+
+
+@json_api
 def search():
-    pass
-
-
-def webhook():
     pass

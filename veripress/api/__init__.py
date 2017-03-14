@@ -74,9 +74,9 @@ rule(['/posts',
       '/posts/<int:year>/<int:month>/<int:day>/<string:post_name>'], view_func=handlers.posts, methods=['GET'])
 rule('/tags', view_func=handlers.tags, methods=['GET'])
 rule('/categories', view_func=handlers.categories, methods=['GET'])
+rule('/widgets', view_func=handlers.widgets, methods=['GET'])
 rule('/custom_pages/<path:page_path>', view_func=handlers.custom_pages, methods=['GET'], strict_slashes=True)
 rule('/search', view_func=handlers.search, methods=['GET'])
-rule('/_webhook', view_func=handlers.webhook, methods=['POST'])
 
 rule('/<path:_>', view_func=lambda _: abort(404), methods=['GET', 'POST'])  # direct unknown path to 404
 

@@ -39,3 +39,21 @@ def test_site():
 
 def test_cache():
     assert cache.config['CACHE_TYPE'] == 'null'
+
+
+def test_webhook():
+    with app.test_client() as c:
+        resp = c.post('/_webhook', data={'a': 'A'})
+        assert resp.status_code == 204
+
+        script_path = os.path.join(app.instance_path, 'webhook.py')
+        with open(script_path, 'rb') as f:
+            script = f.read()
+
+        os.remove(script_path)
+
+        resp = c.post('/_webhook', data={'a': 'A'})
+        assert resp.status_code == 204  # it should always return 204 although there is no 'webhook.py'
+
+        with open(script_path, 'wb') as f:
+            f.write(script)
