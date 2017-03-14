@@ -9,7 +9,12 @@ api = Blueprint('api', __name__)
 
 @unique
 class Error(Enum):
-    # tuple(error code, default error message, default status code)
+    """
+    Defines API error codes and error messages.
+
+    Tuple structure: (error code, default error message, default status code)
+    """
+
     UNDEFINED = (100, 'Undefined error.', 400)
     NO_SUCH_API = (101, 'No such API.', 404)
     RESOURCE_NOT_EXISTS = (102, 'The resource does not exist.', 404)
@@ -19,6 +24,8 @@ class Error(Enum):
 
 
 class ApiException(Exception):
+    """Raised by API functions when something goes wrong."""
+
     def __init__(self, message=None, error=Error.UNDEFINED, status_code=None, payload=None):
         super(ApiException, self).__init__()
         self.message = message
@@ -38,6 +45,11 @@ def handle_api_exception(e):
     response = jsonify(e.to_dict())
     response.status_code = e.status_code or e.error.value[2]
     return response
+
+
+@api.errorhandler(404)
+def handle_page_not_found(e):
+    return handle_api_exception(ApiException(error=Error.NO_SUCH_API))
 
 
 def json_api(func):
@@ -94,8 +106,3 @@ rule('/custom_pages/<path:page_path>', api_func=handlers.custom_pages, methods=[
 rule('/search', api_func=handlers.search, methods=['GET'])
 
 rule('/<path:_>', api_func=lambda _: abort(404), methods=['GET'])  # direct all unknown paths to 404
-
-
-@api.errorhandler(404)
-def handle_page_not_found(e):
-    return handle_api_exception(ApiException(error=Error.NO_SUCH_API))
