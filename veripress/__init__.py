@@ -53,9 +53,9 @@ def create_app(config_filename, instance_path=None):
 
 app = create_app('config.py')
 
-with app.open_instance_resource('site.json', mode='r') as f:
+with app.open_instance_resource('site.json', mode='r') as site_file:
     # load site meta info to the site object
-    site = json.load(f)
+    site = json.load(site_file)
 
 
 @app.context_processor
@@ -75,8 +75,8 @@ def webhook():
     :return: always 204 NO CONTENT
     """
     try:
-        with current_app.open_instance_resource('webhook.py', 'r') as f:
-            exec(f.read())  # if there is the 'webhook.py' script, we execute it's content
+        with current_app.open_instance_resource('webhook.py', 'r') as script_file:
+            exec(script_file.read())  # if there is the 'webhook.py' script, we execute it's content
     except FileNotFoundError:
         pass
     return '', 204

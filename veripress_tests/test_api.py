@@ -26,9 +26,9 @@ def test_json_api_decorator():
 
     @json_api
     def return_response():
-        resp = make_response()
-        resp.status_code = 204
-        return resp
+        resp_ = make_response()
+        resp_.status_code = 204
+        return resp_
 
     @json_api
     def return_serializable():
@@ -76,8 +76,8 @@ def test_posts():
 
         data = get_json(c, '/posts/2017/')
         assert len(data) == 3
-        data = get_json(c, '/posts?start=1&count=2')
-        assert len(data) == 2
+        data = get_json(c, '/posts?start=1&count=1')
+        assert len(data) == 1
         data = get_json(c, '/posts?created=2016-03-02,2016-03-03&updated=')
         assert data['code'] == Error.INVALID_ARGUMENTS.value[0]
         data = get_json(c, '/posts?created=2016-03-02,2017-03-09&updated=2016-03-02,2017-03-09')

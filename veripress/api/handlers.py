@@ -5,18 +5,16 @@ from datetime import date
 from flask import current_app, request, send_file
 
 from veripress import site
-from veripress.api import ApiException, Error, json_api
+from veripress.api import ApiException, Error
 from veripress.model import storage
 from veripress.model.parsers import get_parser
 from veripress.helpers import validate_custom_page_path
 
 
-@json_api
 def site_info():
     return site
 
 
-@json_api
 def posts(year: int = None, month: int = None, day: int = None, post_name: str = None):
     args = {k: [x.strip() for x in v.split(',')] for k, v in request.args.items()}
 
@@ -91,17 +89,14 @@ def posts(year: int = None, month: int = None, day: int = None, post_name: str =
         return result_posts_list if result_posts_list else None
 
 
-@json_api
 def tags():
     return [{'name': item[0], 'published': item[1].second} for item in storage.get_tags()]
 
 
-@json_api
 def categories():
     return [{'name': item[0], 'published': item[1].second} for item in storage.get_categories()]
 
 
-@json_api
 def custom_pages(page_path):
     if not validate_custom_page_path(page_path):
         raise ApiException(error=Error.NOT_ALLOWED, message='The visit of path "{}" is not allowed.'.format(page_path))
@@ -121,7 +116,6 @@ def custom_pages(page_path):
         return page_d
 
 
-@json_api
 def widgets():
     result_widgets = storage.get_widgets(position=request.args.get('position'), include_draft=False)
     result = []
@@ -133,6 +127,5 @@ def widgets():
     return result if result else None
 
 
-@json_api
 def search():
     pass
