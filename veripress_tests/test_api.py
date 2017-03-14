@@ -129,3 +129,21 @@ def test_widgets():
 
         data = get_json(c, '/widgets?position=header')
         assert data['code'] == Error.RESOURCE_NOT_EXISTS.value[0]
+
+
+def test_search():
+    with app.test_client() as c:
+        data = get_json(c, '/search?q=')
+        assert data['code'] == Error.INVALID_ARGUMENTS.value[0]
+
+        data = get_json(c, '/search?q=non-exist-non-exist-non-exist')
+        assert data['code'] == Error.RESOURCE_NOT_EXISTS.value[0]
+
+        data = get_json(c, '/search?q=hello')
+        assert len(data) == 1
+        assert data[0]['rel_url'] == 'a/b/hello.html'
+
+        data = get_json(c, '/search/?q=Lorem ipsum')
+        assert len(data) == 5
+        data = get_json(c, '/search/?q=Lorem ipsum&start=1&count=2')
+        assert len(data) == 2

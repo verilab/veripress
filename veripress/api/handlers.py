@@ -1,12 +1,14 @@
 import re
 import os
+from itertools import islice, chain
 from datetime import date
 
-from flask import current_app, request, send_file
+from flask import current_app, request, send_file, Markup
 
 from veripress import site
 from veripress.api import ApiException, Error
 from veripress.model import storage
+from veripress.model.models import Base
 from veripress.model.parsers import get_parser
 from veripress.helpers import validate_custom_page_path
 
@@ -57,31 +59,25 @@ def posts(year: int = None, month: int = None, day: int = None, post_name: str =
     count = int(count) if count.isdigit() else -1
 
     result_posts_list = []
-    for i, post in enumerate(result_posts):
-        if count == 0:
-            break
-        if i >= start:
-            parser = get_parser(post.format)
-            post_d = post.to_dict()
-            del post_d['raw_content']
-            if return_single_item:
-                # if a certain ONE post is needed, we parse all content instead of preview
-                post_d['content'] = parser.parse_whole(post.raw_content)
-            else:
-                # a list of posts is needed, we parse only previews
-                post_d['preview'] = parser.parse_preview(post.raw_content)
-
-            if fields is not None:
-                # select only needed fields to return
-                assert isinstance(fields, list)
-                full_post_d = post_d
-                post_d = {}
-                for key in fields:
-                    if key in full_post_d:
-                        post_d[key] = full_post_d[key]
-
-            result_posts_list.append(post_d)
-            count -= 1
+    for post in islice(result_posts, start, start + count if count >= 0 else None):
+        parser = get_parser(post.format)
+        post_d = post.to_dict()
+        del post_d['raw_content']
+        if return_single_item:
+            # if a certain ONE post is needed, we parse all content instead of preview
+            post_d['content'] = parser.parse_whole(post.raw_content)
+        else:
+            # a list of posts is needed, we parse only previews
+            post_d['preview'] = parser.parse_preview(post.raw_content)
+        if fields is not None:
+            # select only needed fields to return
+            assert isinstance(fields, list)
+            full_post_d = post_d
+            post_d = {}
+            for key in fields:
+                if key in full_post_d:
+                    post_d[key] = full_post_d[key]
+        result_posts_list.append(post_d)
 
     if result_posts_list and return_single_item:
         return result_posts_list[0]
@@ -128,10 +124,26 @@ def widgets():
 
 
 def search():
-    query = request.args.get('q', '').strip()
+    query = request.args.get('q', '').strip().lower()
     if not query:
         raise ApiException(error=Error.INVALID_ARGUMENTS, message='The "q" argument is missed or invalid.')
 
-    pass
-    # return storage.get_pages(include_draft=False)
-    # TODO
+    start = request.args.get('start', '')
+    start = int(start) if start.isdigit() else 0
+    count = request.args.get('count', '')
+    count = int(count) if count.isdigit() else -1
+
+    def filter_func(post_or_page_d):
+        allow = query in post_or_page_d['title'].lower() \
+                or query in Markup(
+            get_parser(post_or_page_d['format']).parse_whole(post_or_page_d['raw_content'])
+        ).striptags().lower()
+        del post_or_page_d['raw_content']
+        return allow
+
+    result = list(islice(filter(filter_func,
+                                map(Base.to_dict,
+                                    chain(storage.get_posts(include_draft=False),
+                                          storage.get_pages(include_draft=False)))),
+                         start, start + count if count >= 0 else None))
+    return result if result else None
