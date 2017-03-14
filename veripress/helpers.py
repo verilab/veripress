@@ -109,6 +109,13 @@ def validate_custom_page_path(path):
 
 
 def traverse_directory(dir_path, yield_dir=False):
+    """
+    Traverse through a directory recursively.
+
+    :param dir_path: directory path
+    :param yield_dir: yield subdirectory or not
+    :return: a generator
+    """
     if not os.path.isdir(dir_path):
         return
 
