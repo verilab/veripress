@@ -69,3 +69,16 @@ def test_pair():
     assert pair[1] == 'b'
     with raises(IndexError):
         a = pair[2]
+
+
+def test_traverse_dir():
+    paths = list(traverse_directory(os.getcwd()))
+    assert os.path.join(os.getcwd(), 'veripress_tests', 'test_helpers.py') in paths
+    assert os.path.join(os.getcwd(), 'veripress_tests') not in paths
+
+    paths = list(traverse_directory(os.getcwd(), yield_dir=True))
+    assert os.path.join(os.getcwd(), 'veripress_tests', 'test_helpers.py') in paths
+    assert os.path.join(os.getcwd(), 'veripress_tests') + os.path.sep in paths
+
+    paths = list(traverse_directory('/non-exists'))
+    assert len(paths) == 0

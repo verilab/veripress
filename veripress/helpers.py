@@ -1,3 +1,4 @@
+import os
 from collections import Iterable
 from datetime import date, datetime
 
@@ -105,3 +106,17 @@ def validate_custom_page_path(path):
     if '.' in sp or '..' in sp:
         return False
     return True
+
+
+def traverse_directory(dir_path, yield_dir=False):
+    if not os.path.isdir(dir_path):
+        return
+
+    for item in os.listdir(dir_path):
+        new_path = os.path.join(dir_path, item)
+        if os.path.isdir(new_path):
+            if yield_dir:
+                yield new_path + os.path.sep
+            yield from traverse_directory(new_path, yield_dir)
+        else:
+            yield new_path

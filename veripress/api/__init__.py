@@ -102,7 +102,7 @@ rule(['/posts',
 rule('/tags', api_func=handlers.tags, methods=['GET'])
 rule('/categories', api_func=handlers.categories, methods=['GET'])
 rule('/widgets', api_func=handlers.widgets, methods=['GET'])
-rule('/custom_pages/<path:page_path>', api_func=handlers.custom_pages, methods=['GET'], strict_slashes=True)
+rule('/pages/<path:page_path>', api_func=handlers.pages, methods=['GET'], strict_slashes=True)
 rule('/search', api_func=handlers.search, methods=['GET'])
 
 rule('/<path:_>', api_func=lambda _: abort(404), methods=['GET'])  # direct all unknown paths to 404

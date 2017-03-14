@@ -8,7 +8,7 @@ from flask import current_app
 
 from veripress.model.models import Page, Post, Widget
 from veripress.model.parsers import get_standard_format_name
-from veripress.helpers import to_list, to_datetime, Pair
+from veripress.helpers import to_list, to_datetime, Pair, traverse_directory
 
 
 class Storage(object):
@@ -124,31 +124,31 @@ class Storage(object):
             return '/'.join(sp), False
 
     def get_posts(self, include_draft=False, filter_functions=None):
-        """Get all posts, returns an iterable object."""
+        """Get all posts, returns an iterable of Post object."""
         raise NotImplementedError
 
     def get_post(self, rel_url, include_draft=False):
-        """Get post for given relative url, returns a post model object."""
+        """Get post for given relative url, returns a Post object."""
         raise NotImplementedError
 
     def get_tags(self):
-        """
-        Get all tags and post count as a dict (key: tag_name, value: Pair(count_all, count_published)).
-        """
+        """Get all tags as a dict (key: tag_name, value: Pair(count_all, count_published))."""
         raise NotImplementedError
 
     def get_categories(self):
-        """
-        Get all categories and post count as a dict. (key: category_name, value: Pair(count_all, count_published)).
-        """
+        """Get all categories as a dict. (key: category_name, value: Pair(count_all, count_published))."""
+        raise NotImplementedError
+
+    def get_pages(self, include_draft=False):
+        """Get all custom pages, returns an iterable of Page object."""
         raise NotImplementedError
 
     def get_page(self, rel_url, include_draft=False):
-        """Get custom page for given relative url, returns a custom page model object."""
+        """Get custom page for given relative url, returns a Page object."""
         raise NotImplementedError
 
     def get_widgets(self, position=None, include_draft=False):
-        """Get all widgets, returns an iterable object."""
+        """Get all widgets, returns an iterable of Widget object."""
         raise NotImplementedError
 
     @staticmethod
@@ -165,13 +165,13 @@ class Storage(object):
                 result = filter(filter_func, result)
         return result
 
-    def get_posts_with_limits(self, include_draft, **limits):
+    def get_posts_with_limits(self, include_draft=False, **limits):
         """
         Get all posts and filter them as needed.
 
         :param include_draft: return draft posts or not
         :param limits: other limits to the attrs of the result, should be a dict with string or list values
-        :return: a list of Post objects
+        :return: an iterable of Post objects
         """
         filter_funcs = []
 
@@ -256,7 +256,7 @@ class FileStorage(Storage):
 
         :param include_draft: return draft posts or not
         :param filter_functions: filter functions to apply BEFORE result being sorted
-        :return: a list of Post objects (the first is the latest post)
+        :return: an iterable of Post objects (the first is the latest post)
         """
 
         def posts_generator(path):
@@ -337,6 +337,32 @@ class FileStorage(Storage):
                                         + Pair(1, 0 if post.is_draft else 1)
         return result.items()
 
+    def get_pages(self, include_draft=False):
+        """
+        Get all custom pages (supported formats, excluding other files like '.js', '.css', '.html').
+
+        :param include_draft: return draft page or not
+        :return: an iterable of Page objects
+        """
+
+        def pages_generator(pages_root_path):
+            for file_path in traverse_directory(pages_root_path, yield_dir=False):
+                rel_path = os.path.relpath(file_path, pages_root_path)
+                rel_path, ext = os.path.splitext(rel_path)
+                if not ext or ext == '.' or get_standard_format_name(ext[1:]) is None:
+                    continue  # pragma: no cover, it seems that coverage cannot recognize this line
+
+                if rel_path.endswith('/index'):
+                    rel_path = rel_path[:-len('index')]
+                else:
+                    rel_path += '.html'
+                page = self.get_page(rel_path.replace(os.path.sep, '/'), include_draft=include_draft)
+                if page is not None:
+                    yield page
+
+        pages_path = os.path.join(current_app.instance_path, 'pages')
+        return pages_generator(pages_path)
+
     def get_page(self, rel_url, include_draft=False):
         """
         Get custom page for given relative url from filesystem.
@@ -382,7 +408,7 @@ class FileStorage(Storage):
 
         :param position: position or position list
         :param include_draft: return draft widgets or not
-        :return: a list of Widget objects
+        :return: an iterable of Widget objects
         """
 
         def widgets_generator(path):

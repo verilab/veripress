@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, date
+from collections import Iterable
 
 from flask import current_app
 
@@ -107,29 +108,49 @@ def test_get_page():
         assert page is None
 
 
+def test_get_pages():
+    with app.app_context():
+        pages = storage.get_pages()
+        assert isinstance(pages, Iterable)
+        pages = list(pages)
+        assert len(pages) == 4
+
+        fail = False
+        for p in pages:
+            if p.rel_url == 'my-page/':
+                break
+        else:
+            fail = True
+        assert not fail
+
+        assert len(list(storage.get_pages(include_draft=True))) == 5
+
+
 def test_get_widgets():
     with app.app_context():
         widgets = storage.get_widgets()
-        assert isinstance(widgets, list)
+        assert isinstance(widgets, Iterable)
+        widgets = list(widgets)
         assert len(widgets) == 2
         assert isinstance(widgets[0], Widget)
         assert widgets[0].position == widgets[1].position
         assert widgets[0].order < widgets[1].order
 
-        widgets = storage.get_widgets(position='header', include_draft=True)
+        widgets = list(storage.get_widgets(position='header', include_draft=True))
         assert len(list(widgets)) == 1
 
-        widgets = storage.get_widgets(position='non-exists', include_draft=True)
+        widgets = list(storage.get_widgets(position='non-exists', include_draft=True))
         assert len(list(widgets)) == 0
 
 
 def test_get_posts():
     with app.app_context():
         posts = storage.get_posts()
-        assert isinstance(posts, list)
+        assert isinstance(posts, Iterable)
+        posts = list(posts)
         assert len(posts) == 3
 
-        posts = storage.get_posts(include_draft=True)
+        posts = list(storage.get_posts(include_draft=True))
         assert len(posts) == 4
         assert posts[-1].title == 'Hello, world!'
         assert posts[-1].is_draft == True

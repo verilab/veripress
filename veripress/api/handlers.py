@@ -97,7 +97,7 @@ def categories():
     return [{'name': item[0], 'published': item[1].second} for item in storage.get_categories()]
 
 
-def custom_pages(page_path):
+def pages(page_path):
     if not validate_custom_page_path(page_path):
         raise ApiException(error=Error.NOT_ALLOWED, message='The visit of path "{}" is not allowed.'.format(page_path))
 
@@ -128,4 +128,10 @@ def widgets():
 
 
 def search():
+    query = request.args.get('q', '').strip()
+    if not query:
+        raise ApiException(error=Error.INVALID_ARGUMENTS, message='The "q" argument is missed or invalid.')
+
     pass
+    # return storage.get_pages(include_draft=False)
+    # TODO

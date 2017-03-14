@@ -103,22 +103,22 @@ def test_tags_categories():
         assert {'name': 'Default', 'published': 1} in data
 
 
-def test_custom_page():
+def test_pages():
     with app.test_client() as c:
-        data = get_json(c, '/custom_pages/non-exists')
+        data = get_json(c, '/pages/non-exists')
         assert data['code'] == Error.RESOURCE_NOT_EXISTS.value[0]
 
-        data = get_json(c, '/custom_pages/../../../../etc/passwd')
+        data = get_json(c, '/pages/../../../../etc/passwd')
         assert data['code'] == Error.NOT_ALLOWED.value[0]
 
-        resp = c.get('/api/custom_pages/test-page.txt')
+        resp = c.get('/api/pages/test-page.txt')
         assert resp.status_code == 200
         assert resp.content_type.startswith('text/plain')
 
-        data = get_json(c, '/custom_pages/my-page/')
+        data = get_json(c, '/pages/my-page/')
         assert 'Lorem ipsum dolor sit amet.' in data['content']
 
-        data = get_json(c, '/custom_pages/test-page-draft')
+        data = get_json(c, '/pages/test-page-draft')
         assert data['code'] == Error.RESOURCE_NOT_EXISTS.value[0]
 
 
