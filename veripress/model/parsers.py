@@ -15,17 +15,28 @@ class Parser(object):
     _read_more_exp = None
 
     def parse_preview(self, raw_content):
-        """Simply returns the raw preview part of the content."""
+        """
+        Parse the preview part of the content,
+        and return the parsed string and whether there is more content or not.
+
+        If the preview part is equal to the whole part,
+        the second element of the returned tuple will be False, else True.
+
+        :param raw_content: raw content
+        :return: tuple(parsed string, whether there is more content or not)
+        """
         if self._read_more_exp is None:
-            return self.parse_whole(raw_content)
+            return self.parse_whole(raw_content), False
 
         sp = self._read_more_exp.split(raw_content, maxsplit=1)
         if len(sp) == 2 and sp[0]:
+            has_more_content = True
             result = sp[0].rstrip()
         else:
+            has_more_content = False
             result = raw_content
         # since the preview part contains no read_more_sep, we can safely use the parse_whole method
-        return self.parse_whole(result)
+        return self.parse_whole(result), has_more_content
 
     def parse_whole(self, raw_content):
         """Parse the whole part of the content. Should be overridden in subclasses."""

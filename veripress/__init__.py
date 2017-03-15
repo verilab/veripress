@@ -1,7 +1,7 @@
 import json
 import os
 
-from flask import Flask, send_from_directory, current_app
+from flask import Flask, send_from_directory, current_app, abort
 from werkzeug.exceptions import NotFound
 
 
@@ -17,6 +17,9 @@ class CustomFlask(Flask):
         :param filename: static filename
         :return: response object
         """
+        if self.config['MODE'] == 'api-only':
+            abort(404)  # if 'api-only' mode is set, we should not send static files
+
         theme_static_folder = getattr(self, 'theme_static_folder', None)
         if theme_static_folder:
             try:
@@ -40,7 +43,9 @@ def create_app(config_filename, instance_path=None):
     app_.config.update(dict(STORAGE_TYPE='file',
                             THEME='default',
                             CACHE_TYPE='simple',
-                            MODE='mixed'))
+                            MODE='mixed',
+                            ENTRIES_PER_PAGE=5,
+                            FEED_COUNT=10))
     app_.config.from_pyfile(config_filename)
 
     theme_folder = os.path.join(app_.instance_path, 'themes', app_.config['THEME'])
@@ -57,13 +62,7 @@ with app.open_instance_resource('site.json', mode='r') as site_file:
     # load site meta info to the site object
     site = json.load(site_file)
 
-
-@app.context_processor
-def inject_site():
-    """
-    Inject the site object into the context of templates.
-    """
-    return dict(site=site)
+import veripress.model
 
 
 @app.route('/_webhook', methods=['POST'], strict_slashes=False)
@@ -85,11 +84,10 @@ def webhook():
 from flask_caching import Cache
 cache = Cache(app, config=app.config)  # create the cache object with the app's config
 
-import veripress.model
-
 if app.config['MODE'] in ('mixed', 'api-only'):
     import veripress.api
-    app.register_blueprint(api.api, url_prefix='/api')
+    app.register_blueprint(api.api_blueprint, url_prefix='/api')
 
 if app.config['MODE'] in ('mixed', 'view-only'):
-    pass  # import view blueprint
+    import veripress.view
+    app.register_blueprint(view.view_blueprint)

@@ -1,0 +1,189 @@
+import os
+from itertools import islice
+
+from feedgen.feed import FeedGenerator
+from flask import url_for, request, redirect, current_app, send_file, abort, make_response
+
+from veripress import site
+from veripress.view import templated
+from veripress.model import storage
+from veripress.model.parsers import get_parser
+from veripress.helpers import timezone_from_str
+
+make_post_abs_url = lambda r: request.url_root + 'post/' + r  # 'r' means relative url (rel_url)
+
+
+@templated('index.html')
+def index(page_num=1):
+    if page_num <= 1 and request.path != '/':
+        return redirect(url_for('.index'))  # redirect '/page/1' to '/'
+
+    all_posts = storage.get_posts(include_draft=False)
+
+    count = current_app.config['ENTRIES_PER_PAGE']
+    start = (page_num - 1) * count
+
+    posts = []
+    for post_ in islice(all_posts, start, start + count + 1):  # slice an additional one to check if there is more
+        post_d = post_.to_dict()
+        del post_d['raw_content']
+        post_d['preview'], post_d['has_more_content'] = get_parser(post_.format).parse_preview(post_.raw_content)
+        post_d['url'] = make_post_abs_url(post_.rel_url)
+        posts.append(post_d)
+
+    if start > 0:
+        newer_url = url_for('.index', page_num=page_num - 1)
+    else:
+        newer_url = None
+    if len(posts) > count:
+        # the additional one is included
+        posts = posts[:count]
+        older_url = url_for('.index', page_num=page_num + 1)
+    else:
+        older_url = None
+
+    return dict(posts=posts, newer_url=newer_url, older_url=older_url)
+
+
+@templated('post.html')
+def post(year, month, day, post_name):
+    rel_url = request.path[len('/post/'):]
+    fixed_rel_url = storage.fix_post_relative_url(rel_url)
+    if rel_url != fixed_rel_url:
+        return redirect(make_post_abs_url(fixed_rel_url))  # it's not the correct relative url, so redirect
+
+    post_ = storage.get_post(rel_url, include_draft=False)
+    if post_ is None:
+        abort(404)
+
+    post_d = post_.to_dict()
+    del post_d['raw_content']
+    post_d['content'] = get_parser(post_.format).parse_whole(post_.raw_content)
+    post_d['url'] = make_post_abs_url(rel_url)
+    post_ = post_d
+
+    return dict(post=post_)
+
+
+@templated('page.html')
+def page(rel_url):
+    fixed_rel_url, exists = storage.fix_page_relative_url(rel_url)
+    if exists:
+        return send_file(os.path.join(current_app.instance_path, 'pages', fixed_rel_url))  # send direct file
+    elif fixed_rel_url is None:
+        abort(404)  # relative url is invalid
+    elif rel_url != fixed_rel_url:
+        return redirect(url_for('.page', rel_url=fixed_rel_url))  # it's not the correct relative url, so redirect
+    elif rel_url.endswith('/'):
+        # try <rel_url>index.html
+        rel_url_with_index = rel_url + 'index.html'
+        _, exists = storage.fix_page_relative_url(rel_url_with_index)
+        if exists:
+            # send direct index.html
+            return send_file(os.path.join(current_app.instance_path, 'pages', rel_url_with_index))
+
+    page_ = storage.get_page(rel_url, include_draft=False)
+    if page_ is None:
+        abort(404)
+
+    page_d = page_.to_dict()
+    del page_d['raw_content']
+    page_d['content'] = get_parser(page_.format).parse_whole(page_.raw_content)
+    page_d['url'] = request.base_url
+    page_ = page_d
+
+    return dict(page=page_)
+
+
+@templated('category.html', 'archive.html')
+def category(category_name):
+    posts = storage.get_posts_with_limits(include_draft=False, **{'categories': [category_name]})
+    if not posts:
+        abort(404)
+
+    def convert_to_dict(post_):
+        post_d = post_.to_dict()
+        del post_d['raw_content']
+        post_d['preview'], post_d['has_more_content'] = get_parser(post_.format).parse_preview(post_.raw_content)
+        post_d['url'] = make_post_abs_url(post_.rel_url)
+        return post_d
+
+    posts = list(map(convert_to_dict, posts))
+    return dict(posts=posts, archive_type='Category', archive_name=category_name)
+
+
+@templated('tag.html', 'archive.html')
+def tag(tag_name):
+    posts = storage.get_posts_with_limits(include_draft=False, **{'tags': [tag_name]})
+    if not posts:
+        abort(404)
+
+    def convert_to_dict(post_):
+        post_d = post_.to_dict()
+        del post_d['raw_content']
+        post_d['preview'], post_d['has_more_content'] = get_parser(post_.format).parse_preview(post_.raw_content)
+        post_d['url'] = make_post_abs_url(post_.rel_url)
+        return post_d
+
+    posts = list(map(convert_to_dict, posts))
+    return dict(posts=posts, archive_type='Tag', archive_name=tag_name)
+
+
+@templated('archive.html')
+def archive(year=None, month=None):
+    posts = storage.get_posts_with_limits(include_draft=False)
+
+    rel_url_prefix = ''
+    archive_name = ''
+    if year is not None:
+        rel_url_prefix += '%04d/' % year
+        archive_name += str(year)
+    if month is not None:
+        rel_url_prefix += '%02d/' % month
+        archive_name += '.' + str(month)
+
+    def convert_to_dict(post_):
+        post_d = post_.to_dict()
+        del post_d['raw_content']
+        post_d['preview'], post_d['has_more_content'] = get_parser(post_.format).parse_preview(post_.raw_content)
+        post_d['url'] = make_post_abs_url(post_.rel_url)
+        return post_d
+
+    posts = list(map(convert_to_dict, filter(lambda p: p.rel_url.startswith(rel_url_prefix), posts)))
+    return dict(posts=posts, archive_type='Archive', archive_name=archive_name if archive_name else 'All')
+
+
+def feed():
+    def convert_to_dict(p):
+        post_d = p.to_dict()
+        del post_d['raw_content']
+        post_d['content'] = get_parser(p.format).parse_whole(p.raw_content)
+        post_d['url'] = make_post_abs_url(p.rel_url)
+        return post_d
+
+    posts = map(convert_to_dict, islice(storage.get_posts(include_draft=False), 0, current_app.config['FEED_COUNT']))
+    fg = FeedGenerator()
+    fg.id(request.url_root)
+    if 'title' in site:
+        fg.title(site['title'])
+    if 'subtitle' in site:
+        fg.subtitle(site['subtitle'])
+    if 'language' in site:
+        fg.language(site['language'])
+    fg.author(dict(name=site.get('author', ''), email=site.get('email', '')))
+    fg.link(href=request.url_root, rel='alternate')
+    fg.link(href=url_for('.feed'), rel='self')
+    for post_ in posts:
+        fe = fg.add_entry()
+        fe.id(post_['url'])
+        fe.title(post_['title'])
+        fe.published(post_['created'].replace(tzinfo=timezone_from_str(site.get('timezone', 'UTC+08:00'))))
+        fe.updated(post_['updated'].replace(tzinfo=timezone_from_str(site.get('timezone', 'UTC+08:00'))))
+        fe.link(href=make_post_abs_url(post_['rel_url']), rel='alternate')
+        fe.author(dict(name=post_['author'], email=post_['email']))
+        fe.content(post_['content'])
+
+    atom_feed = fg.atom_str(pretty=True)
+    response = make_response(atom_feed)
+    response.content_type = 'application/atom+xml; charset=utf-8'
+    return response

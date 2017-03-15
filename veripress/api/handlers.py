@@ -68,7 +68,7 @@ def posts(year: int = None, month: int = None, day: int = None, post_name: str =
             post_d['content'] = parser.parse_whole(post.raw_content)
         else:
             # a list of posts is needed, we parse only previews
-            post_d['preview'] = parser.parse_preview(post.raw_content)
+            post_d['preview'], post_d['has_more_content'] = parser.parse_preview(post.raw_content)
         if fields is not None:
             # select only needed fields to return
             assert isinstance(fields, list)
@@ -133,15 +133,15 @@ def search():
     count = request.args.get('count', '')
     count = int(count) if count.isdigit() else -1
 
-    def filter_func(post_or_page_d):
-        allow = query in post_or_page_d['title'].lower() \
-                or query in Markup(
+    def contains_query_keyword(post_or_page_d):
+        contains = query in post_or_page_d['title'].lower() \
+                   or query in Markup(
             get_parser(post_or_page_d['format']).parse_whole(post_or_page_d['raw_content'])
         ).striptags().lower()
         del post_or_page_d['raw_content']
-        return allow
+        return contains
 
-    result = list(islice(filter(filter_func,
+    result = list(islice(filter(contains_query_keyword,
                                 map(Base.to_dict,
                                     chain(storage.get_posts(include_draft=False),
                                           storage.get_pages(include_draft=False)))),

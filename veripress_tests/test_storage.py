@@ -41,23 +41,26 @@ def test_fix_rel_url():
         assert Storage.fix_post_relative_url('2017/1/1/my-post/test') is None
         assert Storage.fix_post_relative_url('2017/13/32/my-post/') is None
 
-        assert Storage.fix_page_relative_url('my-page') == ('my-page/', False)
-        assert Storage.fix_page_relative_url('my-page/') == ('my-page/', False)
-        assert Storage.fix_page_relative_url('test-page.txt') == ('test-page.txt', True)
-        assert Storage.fix_page_relative_url('my-page/index.md') == ('my-page/index.md', True)
-        assert Storage.fix_page_relative_url('my-page/index') == ('my-page/index.html', False)
-        assert Storage.fix_page_relative_url('my-page/index.htm') == ('my-page/index.html', False)
-        assert Storage.fix_page_relative_url('my-page/index.html') == ('my-page/index.html', False)
-        assert Storage.fix_page_relative_url('//') == (None, False)
+        # assert Storage.fix_page_relative_url('my-page') == ('my-page/', False)
+        # assert Storage.fix_page_relative_url('my-page/') == ('my-page/', False)
+        # assert Storage.fix_page_relative_url('test-page.txt') == ('test-page.txt', True)
+        # assert Storage.fix_page_relative_url('my-page/index.md') == ('my-page/index.md', True)
+        # assert Storage.fix_page_relative_url('my-page/index') == ('my-page/index.html', False)
+        # assert Storage.fix_page_relative_url('my-page/index.htm') == ('my-page/index.html', False)
+        # assert Storage.fix_page_relative_url('my-page/index.html') == ('my-page/index.html', False)
+        # assert Storage.fix_page_relative_url('//') == (None, False)
 
-        assert Storage.fix_relative_url('post', '2017/1/1/my-post/index') == ('2017/01/01/my-post/index.html', False)
-        assert Storage.fix_relative_url('page', '/my-page/index.htm') == ('my-page/index.html', False)
+        storage_ = Storage({})
+        assert storage_.fix_relative_url('post', '2017/1/1/my-post/index') == ('2017/01/01/my-post/index.html', False)
+        # assert Storage.fix_relative_url('page', '/my-page/index.htm') == ('my-page/index.html', False)
         with raises(ValueError, message='Publish type "wrong" is not supported'):
-            Storage.fix_relative_url('wrong', 'wrong-publish-type/')
+            storage_.fix_relative_url('wrong', 'wrong-publish-type/')
 
 
 def test_base_storage():
     s = Storage(app.config)
+    with raises(NotImplementedError):
+        s.fix_page_relative_url('')
     with raises(NotImplementedError):
         s.get_posts()
     with raises(NotImplementedError):

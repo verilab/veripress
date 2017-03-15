@@ -2,5 +2,7 @@
     "title": "My Blog",
     "subtitle": "Yet another VeriPress blog.",
     "author": "My Name",
-    "email": "my-email@example.com"
+    "email": "my-email@example.com",
+    "language": "zh-CN",
+    "timezone": "UTC+08:00"
 }

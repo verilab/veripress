@@ -4,7 +4,9 @@ from collections import Iterable
 
 from flask import Blueprint, jsonify, Response, abort
 
-api = Blueprint('api', __name__)
+from veripress.helpers import url_rule
+
+api_blueprint = Blueprint('api', __name__)
 
 
 @unique
@@ -40,14 +42,14 @@ class ApiException(Exception):
         return result
 
 
-@api.errorhandler(ApiException)
+@api_blueprint.errorhandler(ApiException)
 def handle_api_exception(e):
     response = jsonify(e.to_dict())
     response.status_code = e.status_code or e.error.value[2]
     return response
 
 
-@api.errorhandler(404)
+@api_blueprint.errorhandler(404)
 def handle_page_not_found(e):
     return handle_api_exception(ApiException(error=Error.NO_SUCH_API))
 
@@ -75,8 +77,6 @@ def json_api(func):
 
 from veripress.api import handlers
 
-from veripress.helpers import url_rule
-
 
 def rule(rules, strict_slashes=False, api_func=None, *args, **kwargs):
     """
@@ -89,7 +89,7 @@ def rule(rules, strict_slashes=False, api_func=None, *args, **kwargs):
     :param kwargs: other kwargs that should be passed to Blueprint.route
     :return:
     """
-    return url_rule(api, rules, strict_slashes=strict_slashes,
+    return url_rule(api_blueprint, rules, strict_slashes=strict_slashes,
                     view_func=json_api(api_func) if api_func else None, *args, **kwargs)
 
 

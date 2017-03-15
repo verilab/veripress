@@ -36,8 +36,7 @@ class Storage(object):
         """
         return self._closed
 
-    @staticmethod
-    def fix_relative_url(publish_type, rel_url):
+    def fix_relative_url(self, publish_type, rel_url):
         """
         Fix post or page relative url to a standard, uniform format.
 
@@ -47,9 +46,9 @@ class Storage(object):
         :raise ValueError: unknown publish type
         """
         if publish_type == 'post':
-            return Storage.fix_post_relative_url(rel_url), False
+            return self.fix_post_relative_url(rel_url), False
         elif publish_type == 'page':
-            return Storage.fix_page_relative_url(rel_url)
+            return self.fix_page_relative_url(rel_url)
         else:
             raise ValueError('Publish type "{}" is not supported'.format(publish_type))
 
@@ -98,30 +97,14 @@ class Storage(object):
         - my-page/index.html
         - my-page/specific.file
 
+        NOTE!
+        Because custom page has a very strong connection with the storage type chosen,
+        this method should be implemented in subclasses.
+
         :param rel_url: relative url to fix
         :return: tuple(fixed relative url or None if cannot recognize, file exists or not)
         """
-        rel_url = rel_url.lstrip('/')  # trim all heading '/'
-        endswith_slash = rel_url.endswith('/')
-        rel_url = rel_url.rstrip('/') + ('/' if endswith_slash else '')  # preserve only one trailing '/'
-        if not rel_url or rel_url == '/':
-            return None, False
-
-        file_path = os.path.join(current_app.instance_path, 'pages', rel_url.replace('/', os.path.sep))
-        if rel_url.endswith('/'):
-            return rel_url, False
-        elif os.path.isfile(file_path):
-            return rel_url, True
-        elif os.path.isdir(file_path):
-            return rel_url + '/', False
-        else:
-            sp = rel_url.rsplit('/', 1)
-            m = re.match('(.+)\.html?', sp[-1])
-            if m:
-                sp[-1] = m.group(1) + '.html'
-            else:
-                sp[-1] += '.html'
-            return '/'.join(sp), False
+        raise NotImplementedError
 
     def get_posts(self, include_draft=False, filter_functions=None):
         """Get all posts, returns an iterable of Post object."""
@@ -206,6 +189,44 @@ class Storage(object):
 
 
 class FileStorage(Storage):
+    @staticmethod
+    def fix_page_relative_url(rel_url):
+        """
+        Fix page relative url to a standard, uniform format.
+
+        Possible input:
+        - my-page
+        - my-page/
+        - my-page/index
+        - my-page/index.htm
+        - my-page/index.html
+        - my-page/specific.file
+
+        :param rel_url: relative url to fix
+        :return: tuple(fixed relative url or None if cannot recognize, file exists or not)
+        """
+        rel_url = rel_url.lstrip('/')  # trim all heading '/'
+        endswith_slash = rel_url.endswith('/')
+        rel_url = rel_url.rstrip('/') + ('/' if endswith_slash else '')  # preserve only one trailing '/'
+        if not rel_url or rel_url == '/':
+            return None, False
+
+        file_path = os.path.join(current_app.instance_path, 'pages', rel_url.replace('/', os.path.sep))
+        if rel_url.endswith('/'):
+            return rel_url, False
+        elif os.path.isfile(file_path):
+            return rel_url, True
+        elif os.path.isdir(file_path):
+            return rel_url + '/', False
+        else:
+            sp = rel_url.rsplit('/', 1)
+            m = re.match('(.+)\.html?', sp[-1])
+            if m:
+                sp[-1] = m.group(1) + '.html'
+            else:
+                sp[-1] += '.html'
+            return '/'.join(sp), False
+
     @staticmethod
     def search_file(search_root, search_filename, instance_relative_root=False):
         """

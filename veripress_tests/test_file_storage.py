@@ -11,6 +11,21 @@ from veripress.model.storages import FileStorage
 from veripress.helpers import Pair
 
 
+def test_fix_page_relative_url():
+    with app.app_context():
+        assert FileStorage.fix_page_relative_url('my-page') == ('my-page/', False)
+        assert FileStorage.fix_page_relative_url('my-page/') == ('my-page/', False)
+        assert FileStorage.fix_page_relative_url('test-page.txt') == ('test-page.txt', True)
+        assert FileStorage.fix_page_relative_url('my-page/index.md') == ('my-page/index.md', True)
+        assert FileStorage.fix_page_relative_url('my-page/index') == ('my-page/index.html', False)
+        assert FileStorage.fix_page_relative_url('my-page/index.htm') == ('my-page/index.html', False)
+        assert FileStorage.fix_page_relative_url('my-page/index.html') == ('my-page/index.html', False)
+        assert FileStorage.fix_page_relative_url('//') == (None, False)
+
+        assert storage.fix_relative_url('post', '2017/1/1/my-post/index') == ('2017/01/01/my-post/index.html', False)
+        assert storage.fix_relative_url('page', '/my-page/index.htm') == ('my-page/index.html', False)
+
+
 def test_read_file():
     with app.app_context():
         file_path = os.path.join(current_app.instance_path, 'posts', '2017-03-09-my-post.txt')

@@ -21,6 +21,11 @@ def test_to_datetime():
     assert to_datetime('other things') == 'other things'
 
 
+def test_timezone_from_str():
+    tz = timezone_from_str('UTC+08:00')
+    assert tz == timezone(timedelta(hours=8, minutes=0))
+
+
 def test_configuration_error():
     with raises(Exception, message='Storage type "database" if not supported'):
         raise ConfigurationError('Storage type "database" if not supported')

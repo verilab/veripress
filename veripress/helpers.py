@@ -1,6 +1,7 @@
 import os
+import re
 from collections import Iterable
-from datetime import date, datetime
+from datetime import date, datetime, timedelta, timezone
 
 
 def url_rule(blueprint_or_app, rules, endpoint=None, view_func=None, **options):
@@ -45,6 +46,19 @@ def to_datetime(date_or_datetime):
         d = date_or_datetime
         return datetime.strptime('%04d-%02d-%02d' % (d.year, d.month, d.day), '%Y-%m-%d')
     return date_or_datetime
+
+
+def timezone_from_str(tz_str):
+    """
+    Convert a timezone string to a timezone object.
+
+    :param tz_str: string with format 'UTC±[hh]:[mm]'
+    :return: a timezone object
+    """
+    m = re.match('UTC([+|-]\d{1,2}):(\d{2})', tz_str)
+    delta_h = int(m.group(1))
+    delta_m = int(m.group(2)) if delta_h >= 0 else -int(m.group(2))
+    return timezone(timedelta(hours=delta_h, minutes=delta_m))
 
 
 class ConfigurationError(Exception):

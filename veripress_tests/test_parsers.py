@@ -46,9 +46,11 @@ def test_get_parser():
 def test_txt_parser():
     p = TxtParser()
     raw_content = 'abc'
-    assert p.parse_preview(raw_content) == p.parse_whole(raw_content) == '<pre>abc</pre>'
+    preview, has_more_content = p.parse_preview(raw_content)
+    assert preview == p.parse_whole(raw_content) == '<pre>abc</pre>'
+    assert has_more_content is False
     raw_content = 'abc\n---more---\n\ndef'
-    assert p.parse_preview(raw_content) == '<pre>abc</pre>'
+    assert p.parse_preview(raw_content) == ('<pre>abc</pre>', True)
     assert p.parse_whole(raw_content) == '<pre>abc\n\ndef</pre>'
     raw_content = 'abc\n------ MoRe     ---  \n\ndef---more ---'
     assert p.parse_whole(raw_content) == '<pre>abc\n\ndef---more ---</pre>'

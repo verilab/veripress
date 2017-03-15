@@ -30,6 +30,13 @@ def test_app():
         with raises(NotFound):
             app.send_static_file('non-exists.css')
 
+    origin_mode = app.config['MODE']
+    app.config['MODE'] = 'api-only'
+    with app.test_request_context('/'):
+        with raises(NotFound):
+            app.send_static_file('no-use.css')
+    app.config['MODE'] = origin_mode
+
 
 def test_site():
     # site meta info should be loaded from instance/site.json
