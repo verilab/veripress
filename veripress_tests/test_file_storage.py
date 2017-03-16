@@ -28,18 +28,19 @@ def test_fix_page_relative_url():
 
 def test_read_file():
     with app.app_context():
-        file_path = os.path.join(current_app.instance_path, 'posts', '2017-03-09-my-post.txt')
+        file_path = os.path.join(current_app.instance_path, 'posts', '2017-03-09-my-post.md')
         meta = {
             'created': date(year=2017, month=3, day=9),
             'updated': datetime.strptime('2017-03-10 10:24:00', '%Y-%m-%d %H:%M:%S'),
             'categories': ['Default'],
             'tags': 'Hello World'
         }
-        raw_content = 'Lorem ipsum dolor sit amet.'
+        raw_content = '## Title\n\nLorem ipsum dolor sit amet.'
         assert (meta, raw_content) == FileStorage.read_file(file_path)
 
         file_path = os.path.join(current_app.instance_path, 'posts', '2017-03-09-my-post-no-yaml.txt')
         meta = {}
+        raw_content = 'Lorem ipsum dolor sit amet.'
         assert (meta, raw_content) == FileStorage.read_file(file_path)
 
         file_path = os.path.join(current_app.instance_path, 'posts', '2017-03-09-my-post-no-yaml2.txt')
@@ -51,14 +52,14 @@ def test_search_file():
     with app.app_context():
         search_root = os.path.join(current_app.instance_path, 'posts')
         path, ext = FileStorage.search_file(search_root, '2017-03-09-my-post')
-        assert path == os.path.join(search_root, '2017-03-09-my-post.txt')
-        assert ext == 'txt'
+        assert path == os.path.join(search_root, '2017-03-09-my-post.md')
+        assert ext == 'md'
 
         search_root = 'posts'
         path, ext = FileStorage.search_file(search_root, '2017-03-09-my-post', instance_relative_root=True)
         assert (path, ext) == FileStorage.search_instance_file(search_root, '2017-03-09-my-post')
-        assert path == os.path.join(current_app.instance_path, search_root, '2017-03-09-my-post.txt')
-        assert ext == 'txt'
+        assert path == os.path.join(current_app.instance_path, search_root, '2017-03-09-my-post.md')
+        assert ext == 'md'
 
 
 def test_get_post():
@@ -67,9 +68,9 @@ def test_get_post():
         assert isinstance(post, Post)
         assert post.rel_url == '2017/03/09/my-post/index.html'
         assert post.unique_key == '/post/2017/03/09/my-post/'  # unique_key has no trailing 'index.html'
-        assert post.format == 'txt'
+        assert post.format == 'markdown'
         assert (post.meta, post.raw_content) == FileStorage.read_file(
-            os.path.join(current_app.instance_path, 'posts', '2017-03-09-my-post.txt')
+            os.path.join(current_app.instance_path, 'posts', '2017-03-09-my-post.md')
         )
 
         post = storage.get_post('2017/03/09/my-post-no-yaml/')

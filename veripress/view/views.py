@@ -86,9 +86,7 @@ def post(year, month, day, post_name):
     post_d['url'] = make_post_abs_url(rel_url)
     post_ = post_d
 
-    if post_['layout'] != 'post':
-        return custom_render_template(post_['layout'] + '.html', entry=post_)
-    return dict(entry=post_, toc=toc, toc_html=toc_html)
+    return custom_render_template(post_['layout'] + '.html', entry=post_, toc=toc, toc_html=toc_html)
 
 
 @templated('page.html')
@@ -120,9 +118,7 @@ def page(rel_url):
     page_d['url'] = request.base_url
     page_ = page_d
 
-    if page_['layout'] != 'page':
-        return custom_render_template(page_['layout'] + '.html', entry=page_)
-    return dict(entry=page_, toc=toc, toc_html=toc_html)
+    return custom_render_template(page_['layout'] + '.html', entry=page_, toc=toc, toc_html=toc_html)
 
 
 @templated('category.html', 'archive.html')

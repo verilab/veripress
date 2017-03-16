@@ -1,0 +1,24 @@
+<h1>{{ site.title }}</h1>
+
+{% if not entries %}
+  <p>There is nothing here.</p>
+{% else %}
+
+  <ul>
+    {% for entry in entries %}
+      <li>{{ entry.title }}</li>
+    {% endfor %}
+  </ul>
+
+  {% if prev_url %}
+    <a id="prev-url" href="{{ prev_url }}">← Older</a>
+  {% endif %}
+  {% if next_url %}
+    <a id="next-url" href="{{ next_url }}">Newer →</a>
+  {% endif %}
+
+{% endif %}
+
+{% for widget in storage.get_widgets(position='sidebar') %}
+  <div>{{ widget|content|safe }}</div>
+{% endfor %}
