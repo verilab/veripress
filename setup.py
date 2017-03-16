@@ -10,7 +10,7 @@ setup(
     author_email='richardchienthebest@gmail.com',
     description='A blog software for hackers.',
     install_requires=[
-        'flask', 'flask-caching', 'pyyaml', 'mistune', 'pygments', 'gevent', 'feedgen'
+        'flask', 'flask-caching', 'pyyaml', 'mistune', 'pygments', 'feedgen'
     ],
     tests_require=[
         'pytest'

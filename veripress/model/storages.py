@@ -323,7 +323,7 @@ class FileStorage(Storage):
                         post.format = format_name
                         post.meta, post.raw_content = FileStorage.read_file(os.path.join(path, file))
                         post.rel_url = filename.replace('-', '/', 3) + '/'
-                        post.unique_key = '/' + post.rel_url
+                        post.unique_key = '/post/' + post.rel_url
                         yield post
 
         posts_path = os.path.join(current_app.instance_path, 'posts')
@@ -417,7 +417,7 @@ class FileStorage(Storage):
                     yield page
 
         pages_path = os.path.join(current_app.instance_path, 'pages')
-        return pages_generator(pages_path)
+        return list(pages_generator(pages_path))
 
     @cache.memoize(timeout=2 * 60)
     def get_page(self, rel_url, include_draft=False):

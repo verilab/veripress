@@ -12,7 +12,7 @@ from veripress.model.parsers import get_parser
 from veripress.model.toc import HtmlTocParser
 from veripress.helpers import timezone_from_str
 
-make_post_abs_url = lambda r: request.url_root + 'post/' + r  # 'r' means relative url (rel_url)
+make_abs_url = lambda u: request.url_root + u.lstrip('/')  # 'r' means relative url (rel_url)
 
 
 def parse_toc(html_content):
@@ -50,7 +50,7 @@ def index(page_num=1):
         post_d = post_.to_dict()
         del post_d['raw_content']
         post_d['preview'], post_d['has_more_content'] = get_parser(post_.format).parse_preview(post_.raw_content)
-        post_d['url'] = make_post_abs_url(post_.rel_url)
+        post_d['url'] = make_abs_url(post_.unique_key)
         posts.append(post_d)
 
     if start > 0:
@@ -73,7 +73,7 @@ def post(year, month, day, post_name):
     rel_url = request.path[len('/post/'):]
     fixed_rel_url = storage.fix_post_relative_url(rel_url)
     if rel_url != fixed_rel_url:
-        return redirect(make_post_abs_url(fixed_rel_url))  # it's not the correct relative url, so redirect
+        return redirect(request.url_root + 'post/' + fixed_rel_url)  # it's not the correct relative url, so redirect
 
     post_ = storage.get_post(rel_url, include_draft=False)
     if post_ is None:
@@ -83,7 +83,7 @@ def post(year, month, day, post_name):
     del post_d['raw_content']
     post_d['content'] = get_parser(post_.format).parse_whole(post_.raw_content)
     post_d['content'], toc, toc_html = parse_toc(post_d['content'])
-    post_d['url'] = make_post_abs_url(rel_url)
+    post_d['url'] = make_abs_url(post_.unique_key)
     post_ = post_d
 
     return custom_render_template(post_['layout'] + '.html', entry=post_, toc=toc, toc_html=toc_html)
@@ -132,7 +132,7 @@ def category(category_name):
         post_d = post_.to_dict()
         del post_d['raw_content']
         post_d['preview'], post_d['has_more_content'] = get_parser(post_.format).parse_preview(post_.raw_content)
-        post_d['url'] = make_post_abs_url(post_.rel_url)
+        post_d['url'] = make_abs_url(post_.unique_key)
         return post_d
 
     posts = list(map(convert_to_dict, posts))
@@ -150,7 +150,7 @@ def tag(tag_name):
         post_d = post_.to_dict()
         del post_d['raw_content']
         post_d['preview'], post_d['has_more_content'] = get_parser(post_.format).parse_preview(post_.raw_content)
-        post_d['url'] = make_post_abs_url(post_.rel_url)
+        post_d['url'] = make_abs_url(post_.unique_key)
         return post_d
 
     posts = list(map(convert_to_dict, posts))
@@ -175,7 +175,7 @@ def archive(year=None, month=None):
         post_d = post_.to_dict()
         del post_d['raw_content']
         post_d['preview'], post_d['has_more_content'] = get_parser(post_.format).parse_preview(post_.raw_content)
-        post_d['url'] = make_post_abs_url(post_.rel_url)
+        post_d['url'] = make_abs_url(post_.unique_key)
         return post_d
 
     posts = list(map(convert_to_dict, filter(lambda p: p.rel_url.startswith(rel_url_prefix), posts)))
@@ -191,7 +191,7 @@ def search():
 
     def process(p):
         del p['raw_content']
-        p['url'] = make_post_abs_url(p['rel_url'])
+        p['url'] = request.url_root + p['unique_key'].lstrip('/')
         return p
 
     result = list(map(process, map(Base.to_dict, storage.search_for(query))))
@@ -204,7 +204,7 @@ def feed():
         post_d = p.to_dict()
         del post_d['raw_content']
         post_d['content'] = get_parser(p.format).parse_whole(p.raw_content)
-        post_d['url'] = make_post_abs_url(p.rel_url)
+        post_d['url'] = make_abs_url(p.unique_key)
         return post_d
 
     posts = map(convert_to_dict, islice(storage.get_posts(include_draft=False), 0, current_app.config['FEED_COUNT']))
@@ -225,7 +225,7 @@ def feed():
         fe.title(post_['title'])
         fe.published(post_['created'].replace(tzinfo=timezone_from_str(site.get('timezone', 'UTC+08:00'))))
         fe.updated(post_['updated'].replace(tzinfo=timezone_from_str(site.get('timezone', 'UTC+08:00'))))
-        fe.link(href=make_post_abs_url(post_['rel_url']), rel='alternate')
+        fe.link(href=make_abs_url(post_['unique_key']), rel='alternate')
         fe.author(dict(name=post_['author'], email=post_['email']))
         fe.content(post_['content'])
 

@@ -9,11 +9,15 @@ cli = click.Group()
 @click.option('--port', '-p', default=8080, help='Port to serve the app.')
 def serve_command(host, port):
     click.echo('Starting HTTP server...')
-    from gevent.wsgi import WSGIServer
-    from veripress import app
-    server = WSGIServer((host, port), app)
     click.echo('HTTP server started. Running on http://{}:{}/'.format(host, port))
-    server.serve_forever()
+
+    from veripress import app
+    try:
+        from gevent.wsgi import WSGIServer
+        server = WSGIServer((host, port), app)
+        server.serve_forever()
+    except ImportError:
+        app.run(host=host, port=port)
 
 
 @cli.command('preview', short_help='Preview the application.',
