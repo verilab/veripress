@@ -1,13 +1,14 @@
 import re
 import os
 import functools
+from itertools import chain
 from datetime import date, datetime, timedelta
 
 import yaml
-from flask import current_app
+from flask import current_app, Markup
 
 from veripress.model.models import Page, Post, Widget
-from veripress.model.parsers import get_standard_format_name
+from veripress.model.parsers import get_standard_format_name, get_parser
 from veripress.helpers import to_list, to_datetime, Pair, traverse_directory
 
 
@@ -186,6 +187,29 @@ class Storage(object):
                 filter_funcs.append(get_filter_func(attr, start, end))
 
         return self.get_posts(include_draft=include_draft, filter_functions=filter_funcs)
+
+    def search_for(self, query, include_draft=False):
+        """
+        Search for a query text.
+
+        :param query: keyword to query
+        :param include_draft: return draft posts/pages or not
+        :return: an iterable object of posts and pages (if allowed).
+        """
+        query = query.lower()
+        if not query:
+            return []
+
+        def contains_query_keyword(post_or_page):
+            contains = query in post_or_page.title.lower() \
+                       or query in Markup(
+                get_parser(post_or_page.format).parse_whole(post_or_page.raw_content)
+            ).striptags().lower()
+            return contains
+
+        return filter(contains_query_keyword, chain(self.get_posts(include_draft=include_draft),
+                                                    self.get_pages(include_draft=include_draft)
+                                                    if current_app.config['ALLOW_SEARCH_PAGES'] else []))
 
 
 class FileStorage(Storage):

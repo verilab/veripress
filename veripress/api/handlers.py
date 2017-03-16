@@ -1,9 +1,9 @@
 import re
 import os
-from itertools import islice, chain
+from itertools import islice
 from datetime import date
 
-from flask import current_app, request, send_file, Markup
+from flask import current_app, request, send_file
 
 from veripress import site
 from veripress.api import ApiException, Error
@@ -133,17 +133,10 @@ def search():
     count = request.args.get('count', '')
     count = int(count) if count.isdigit() else -1
 
-    def contains_query_keyword(post_or_page_d):
-        contains = query in post_or_page_d['title'].lower() \
-                   or query in Markup(
-            get_parser(post_or_page_d['format']).parse_whole(post_or_page_d['raw_content'])
-        ).striptags().lower()
-        del post_or_page_d['raw_content']
-        return contains
+    def remove_raw_content_field(p):
+        del p['raw_content']
+        return p
 
-    result = list(islice(filter(contains_query_keyword,
-                                map(Base.to_dict,
-                                    chain(storage.get_posts(include_draft=False),
-                                          storage.get_pages(include_draft=False)))),
+    result = list(islice(map(remove_raw_content_field, map(Base.to_dict, storage.search_for(query))),
                          start, start + count if count >= 0 else None))
     return result if result else None

@@ -25,6 +25,7 @@ def serve_command(host, port):
 def preview_command(host, port, debug):
     from veripress import app
     app.debug = debug
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.run(host=host, port=port, debug=debug)
 
 

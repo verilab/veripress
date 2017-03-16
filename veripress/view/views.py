@@ -5,8 +5,9 @@ from feedgen.feed import FeedGenerator
 from flask import url_for, request, redirect, current_app, send_file, abort, make_response
 
 from veripress import site
-from veripress.view import templated
+from veripress.view import templated, custom_render_template
 from veripress.model import storage
+from veripress.model.models import Base
 from veripress.model.parsers import get_parser
 from veripress.helpers import timezone_from_str
 
@@ -32,17 +33,17 @@ def index(page_num=1):
         posts.append(post_d)
 
     if start > 0:
-        newer_url = url_for('.index', page_num=page_num - 1)
+        next_url = url_for('.index', page_num=page_num - 1)
     else:
-        newer_url = None
+        next_url = None
     if len(posts) > count:
         # the additional one is included
         posts = posts[:count]
-        older_url = url_for('.index', page_num=page_num + 1)
+        prev_url = url_for('.index', page_num=page_num + 1)
     else:
-        older_url = None
+        prev_url = None
 
-    return dict(posts=posts, newer_url=newer_url, older_url=older_url)
+    return dict(entries=posts, next_url=next_url, prev_url=prev_url)
 
 
 @templated('post.html')
@@ -62,7 +63,9 @@ def post(year, month, day, post_name):
     post_d['url'] = make_post_abs_url(rel_url)
     post_ = post_d
 
-    return dict(post=post_)
+    if post_['layout'] != 'post':
+        return custom_render_template(post_['layout'] + '.html', entry=post_)
+    return dict(entry=post_)
 
 
 @templated('page.html')
@@ -92,7 +95,9 @@ def page(rel_url):
     page_d['url'] = request.base_url
     page_ = page_d
 
-    return dict(page=page_)
+    if page_['layout'] != 'page':
+        return custom_render_template(page_['layout'] + '.html', entry=page_)
+    return dict(entry=page_)
 
 
 @templated('category.html', 'archive.html')
@@ -109,7 +114,7 @@ def category(category_name):
         return post_d
 
     posts = list(map(convert_to_dict, posts))
-    return dict(posts=posts, archive_type='Category', archive_name=category_name)
+    return dict(entries=posts, archive_type='Category', archive_name=category_name)
 
 
 @templated('tag.html', 'archive.html')
@@ -126,7 +131,7 @@ def tag(tag_name):
         return post_d
 
     posts = list(map(convert_to_dict, posts))
-    return dict(posts=posts, archive_type='Tag', archive_name=tag_name)
+    return dict(entries=posts, archive_type='Tag', archive_name=tag_name)
 
 
 @templated('archive.html')
@@ -150,7 +155,22 @@ def archive(year=None, month=None):
         return post_d
 
     posts = list(map(convert_to_dict, filter(lambda p: p.rel_url.startswith(rel_url_prefix), posts)))
-    return dict(posts=posts, archive_type='Archive', archive_name=archive_name if archive_name else 'All')
+    return dict(entries=posts, archive_type='Archive', archive_name=archive_name if archive_name else 'All')
+
+
+@templated('search.html', 'archive.html')
+def search():
+    raw_query = request.args.get('q', '').strip()
+    query = raw_query.lower()
+    if not query:
+        abort(404)
+
+    def remove_raw_content_field(p):
+        del p['raw_content']
+        return p
+
+    result = list(map(remove_raw_content_field, map(Base.to_dict, storage.search_for(query))))
+    return dict(entries=result, archive_type='Search', archive_name='"{}"'.format(raw_query))
 
 
 def feed():

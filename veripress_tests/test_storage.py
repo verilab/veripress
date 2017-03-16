@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from collections import Iterable
 
 from pytest import raises
 
@@ -94,3 +95,16 @@ def test_get_posts_with_limits():
                                               created=(date(year=2011, month=2, day=2),
                                                        date(year=2014, month=2, day=2)))
         assert len(posts) == 0
+
+
+def test_search_for():
+    with app.app_context():
+        assert storage.search_for('') == []
+        assert isinstance(storage.search_for('Hello'), Iterable)
+        assert len(list(storage.search_for('Hello'))) == 1
+        assert len(list(storage.search_for('Hello', include_draft=True))) == 2
+
+    app.config['ALLOW_SEARCH_PAGES'] = False
+    with app.app_context():
+        assert len(list(storage.search_for('Hello'))) == 0
+    app.config['ALLOW_SEARCH_PAGES'] = True

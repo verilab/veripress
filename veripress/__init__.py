@@ -45,7 +45,8 @@ def create_app(config_filename, instance_path=None):
                             CACHE_TYPE='simple',
                             MODE='mixed',
                             ENTRIES_PER_PAGE=5,
-                            FEED_COUNT=10))
+                            FEED_COUNT=10,
+                            ALLOW_SEARCH_PAGES=True))
     app_.config.from_pyfile(config_filename)
 
     theme_folder = os.path.join(app_.instance_path, 'themes', app_.config['THEME'])

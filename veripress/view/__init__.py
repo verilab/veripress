@@ -31,6 +31,16 @@ def parse_content_of_models(obj):
     return get_parser(obj.format).parse_whole(obj.raw_content)
 
 
+def custom_render_template(template_name_or_list, **context):
+    """
+    Try to render templates in the custom folder first, if no custom templates, try the theme's default ones.
+    """
+    return render_template(
+        functools.reduce(lambda x, y: x + [os.path.join('custom', y), y], to_list(template_name_or_list), []),
+        **context
+    )
+
+
 def templated(template=None, *templates):
     """
     Decorate a view function with one or more default template name.
@@ -50,11 +60,7 @@ def templated(template=None, *templates):
                 context = {}
             elif not isinstance(context, dict):
                 return context
-            return render_template(
-                functools.reduce(lambda x, y: x + [os.path.join('custom', y), y],
-                                 chain(to_list(template_), templates), []),
-                **context
-            )
+            return custom_render_template(list(chain(to_list(template_), templates)), **context)
 
         return wrapper
 
@@ -80,4 +86,5 @@ rule('/tag/<string:tag_name>/', view_func=views.tag, strict_slashes=True)
 rule(['/archive/',
       '/archive/<int:year>/',
       '/archive/<int:year>/<int:month>/'], view_func=views.archive, strict_slashes=True)
+rule('/search', view_func=views.search, strict_slashes=False)
 rule('/<path:rel_url>', view_func=views.page, strict_slashes=True)
