@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {% block head %}
+    {% include 'head.html' ignore missing %}
+  {% endblock %}
+</head>
+<body>
+
+<div class="section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-12 site-header">
+            {% include 'header.html' ignore missing %}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 nav-container">
+            {% include 'navbar.html' ignore missing %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        {% block body %}{% endblock %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include 'footer.html' ignore missing %}
+
+{% block foot %}
+  {% include 'foot.html' ignore missing %}
+{% endblock %}
+
+</body>
+</html>

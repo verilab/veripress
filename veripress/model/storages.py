@@ -7,6 +7,7 @@ from datetime import date, datetime, timedelta
 import yaml
 from flask import current_app, Markup
 
+from veripress import cache
 from veripress.model.models import Page, Post, Widget
 from veripress.model.parsers import get_standard_format_name, get_parser
 from veripress.helpers import to_list, to_datetime, Pair, traverse_directory
@@ -37,6 +38,7 @@ class Storage(object):
         """
         return self._closed
 
+    @cache.memoize(timeout=1 * 60)
     def fix_relative_url(self, publish_type, rel_url):
         """
         Fix post or page relative url to a standard, uniform format.
@@ -54,6 +56,7 @@ class Storage(object):
             raise ValueError('Publish type "{}" is not supported'.format(publish_type))
 
     @staticmethod
+    @cache.memoize(timeout=2 * 60 * 60)  # actually, it will never change
     def fix_post_relative_url(rel_url):
         """
         Fix post relative url to a standard, uniform format.
@@ -214,6 +217,7 @@ class Storage(object):
 
 class FileStorage(Storage):
     @staticmethod
+    @cache.memoize(timeout=1 * 60)
     def fix_page_relative_url(rel_url):
         """
         Fix page relative url to a standard, uniform format.
@@ -252,6 +256,7 @@ class FileStorage(Storage):
             return '/'.join(sp), False
 
     @staticmethod
+    @cache.memoize(timeout=1 * 60)
     def search_file(search_root, search_filename, instance_relative_root=False):
         """
         Search for a filename in a specific search root dir.
@@ -277,6 +282,7 @@ class FileStorage(Storage):
     search_instance_file = staticmethod(functools.partial(search_file.__func__, instance_relative_root=True))
 
     @staticmethod
+    @cache.memoize(timeout=1 * 60)
     def read_file(file_path):
         """
         Read yaml head and raw body content from a file.
@@ -295,6 +301,7 @@ class FileStorage(Storage):
                 return yaml.load(sp[0]), sp[1].lstrip()
         return {}, whole
 
+    @cache.memoize(timeout=2 * 60)
     def get_posts(self, include_draft=False, filter_functions=None):
         """
         Get all posts from filesystem.
@@ -325,6 +332,7 @@ class FileStorage(Storage):
 
         return sorted(result, key=lambda p: p.created, reverse=True)
 
+    @cache.memoize(timeout=2 * 60)
     def get_post(self, rel_url, include_draft=False):
         """
         Get post for given relative url from filesystem.
@@ -355,6 +363,7 @@ class FileStorage(Storage):
         post.meta, post.raw_content = FileStorage.read_file(post_file_path)
         return post if include_draft or not post.is_draft else None
 
+    @cache.memoize(timeout=5 * 60)
     def get_tags(self):
         """
         Get all tags and post count of each tag.
@@ -368,6 +377,7 @@ class FileStorage(Storage):
                 result[tag_name] = result.setdefault(tag_name, Pair(0, 0)) + Pair(1, 0 if post.is_draft else 1)
         return result.items()
 
+    @cache.memoize(timeout=5 * 60)
     def get_categories(self):
         """
         Get all categories and post count of each category.
@@ -382,6 +392,7 @@ class FileStorage(Storage):
                                         + Pair(1, 0 if post.is_draft else 1)
         return result.items()
 
+    @cache.memoize(timeout=2 * 60)
     def get_pages(self, include_draft=False):
         """
         Get all custom pages (supported formats, excluding other files like '.js', '.css', '.html').
@@ -408,6 +419,7 @@ class FileStorage(Storage):
         pages_path = os.path.join(current_app.instance_path, 'pages')
         return pages_generator(pages_path)
 
+    @cache.memoize(timeout=2 * 60)
     def get_page(self, rel_url, include_draft=False):
         """
         Get custom page for given relative url from filesystem.
@@ -447,6 +459,7 @@ class FileStorage(Storage):
         page.meta, page.raw_content = FileStorage.read_file(page_file_path)
         return page if include_draft or not page.is_draft else None
 
+    @cache.memoize(timeout=2 * 60)
     def get_widgets(self, position=None, include_draft=False):
         """
         Get widgets for given position from filesystem.

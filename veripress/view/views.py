@@ -4,17 +4,38 @@ from itertools import islice
 from feedgen.feed import FeedGenerator
 from flask import url_for, request, redirect, current_app, send_file, abort, make_response
 
-from veripress import site
+from veripress import site, cache
 from veripress.view import templated, custom_render_template
 from veripress.model import storage
 from veripress.model.models import Base
 from veripress.model.parsers import get_parser
+from veripress.model.toc import HtmlTocParser
 from veripress.helpers import timezone_from_str
 
 make_post_abs_url = lambda r: request.url_root + 'post/' + r  # 'r' means relative url (rel_url)
 
 
+def parse_toc(html_content):
+    """
+    Parse TOC of HTML content if the SHOW_TOC config is true.
+
+    :param html_content: raw HTML content
+    :return: tuple(processed HTML, toc list, toc HTML unordered list)
+    """
+    if current_app.config['SHOW_TOC']:
+        toc_parser = HtmlTocParser()
+        toc_parser.feed(html_content)
+        toc_html = toc_parser.toc_html(depth=current_app.config['TOC_DEPTH'],
+                                       lowest_level=current_app.config['TOC_LOWEST_LEVEL'])
+        toc = toc_parser.toc(depth=current_app.config['TOC_DEPTH'],
+                             lowest_level=current_app.config['TOC_LOWEST_LEVEL'])
+        return toc_parser.html, toc, toc_html
+    else:
+        return html_content, None, None
+
+
 @templated('index.html')
+@cache.memoize(timeout=2 * 60)
 def index(page_num=1):
     if page_num <= 1 and request.path != '/':
         return redirect(url_for('.index'))  # redirect '/page/1' to '/'
@@ -47,6 +68,7 @@ def index(page_num=1):
 
 
 @templated('post.html')
+@cache.memoize(timeout=2 * 60)
 def post(year, month, day, post_name):
     rel_url = request.path[len('/post/'):]
     fixed_rel_url = storage.fix_post_relative_url(rel_url)
@@ -60,15 +82,17 @@ def post(year, month, day, post_name):
     post_d = post_.to_dict()
     del post_d['raw_content']
     post_d['content'] = get_parser(post_.format).parse_whole(post_.raw_content)
+    post_d['content'], toc, toc_html = parse_toc(post_d['content'])
     post_d['url'] = make_post_abs_url(rel_url)
     post_ = post_d
 
     if post_['layout'] != 'post':
         return custom_render_template(post_['layout'] + '.html', entry=post_)
-    return dict(entry=post_)
+    return dict(entry=post_, toc=toc, toc_html=toc_html)
 
 
 @templated('page.html')
+@cache.memoize(timeout=2 * 60)
 def page(rel_url):
     fixed_rel_url, exists = storage.fix_page_relative_url(rel_url)
     if exists:
@@ -92,15 +116,17 @@ def page(rel_url):
     page_d = page_.to_dict()
     del page_d['raw_content']
     page_d['content'] = get_parser(page_.format).parse_whole(page_.raw_content)
+    page_d['content'], toc, toc_html = parse_toc(page_d['content'])
     page_d['url'] = request.base_url
     page_ = page_d
 
     if page_['layout'] != 'page':
         return custom_render_template(page_['layout'] + '.html', entry=page_)
-    return dict(entry=page_)
+    return dict(entry=page_, toc=toc, toc_html=toc_html)
 
 
 @templated('category.html', 'archive.html')
+@cache.memoize(timeout=2 * 60)
 def category(category_name):
     posts = storage.get_posts_with_limits(include_draft=False, **{'categories': [category_name]})
     if not posts:
@@ -118,6 +144,7 @@ def category(category_name):
 
 
 @templated('tag.html', 'archive.html')
+@cache.memoize(timeout=2 * 60)
 def tag(tag_name):
     posts = storage.get_posts_with_limits(include_draft=False, **{'tags': [tag_name]})
     if not posts:
@@ -135,6 +162,7 @@ def tag(tag_name):
 
 
 @templated('archive.html')
+@cache.memoize(timeout=2 * 60)
 def archive(year=None, month=None):
     posts = storage.get_posts_with_limits(include_draft=False)
 
@@ -165,14 +193,16 @@ def search():
     if not query:
         abort(404)
 
-    def remove_raw_content_field(p):
+    def process(p):
         del p['raw_content']
+        p['url'] = make_post_abs_url(p['rel_url'])
         return p
 
-    result = list(map(remove_raw_content_field, map(Base.to_dict, storage.search_for(query))))
+    result = list(map(process, map(Base.to_dict, storage.search_for(query))))
     return dict(entries=result, archive_type='Search', archive_name='"{}"'.format(raw_query))
 
 
+@cache.memoize(timeout=2 * 60)
 def feed():
     def convert_to_dict(p):
         post_d = p.to_dict()

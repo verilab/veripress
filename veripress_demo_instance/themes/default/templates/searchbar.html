@@ -1,0 +1,25 @@
+<div class="input-group" style="margin-bottom: 20px">
+  <input type="text" class="form-control" id="search-text" title="Search">
+  <span class="input-group-btn">
+    <button class="btn btn-primary" type="submit" onclick="doSearch()">Search</button>
+  </span>
+  <script>
+      var query = location.search;
+      if (query != '') {
+          var params = query.substr(1).split("&");
+          for (var i = 0; i < params.length; i++) {
+              var pair = params[i].split("=");
+              if (pair[0] === "q") {
+                  document.getElementById("search-text").value = decodeURI(pair[1]);
+                  break;
+              }
+          }
+      }
+      function doSearch() {
+          const queryText = document.getElementById("search-text").value.trim();
+          if (queryText != "") {
+              location.href = "{{ url_for('.search') }}" + "?q=" + queryText;
+          }
+      }
+  </script>
+</div>

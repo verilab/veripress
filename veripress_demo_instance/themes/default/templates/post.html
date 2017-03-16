@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+  {{ super() }}
+  <title>{{ entry.title + ' - ' + site.title }}</title>
+{% endblock %}
+
+{% block body %}
+
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        {% for category in entry.categories %}
+          {% if loop.index > 1 %}
+            <span> & </span>
+          {% endif %}
+          <a href="/category/{{ category }}">{{ category }}</a>
+        {% endfor %}
+        <i class="fa fa-fw fa-angle-right"></i>
+      </h3>
+    </div>
+    <div class="panel-body markdown-body">
+      <article>
+        <h1>{{ entry.title }}</h1>
+        <hr>
+        {% if toc_html %}
+          {{ toc_html|safe }}
+          <hr>
+        {% endif %}
+        {{ entry.content|safe }}
+      </article>
+    </div>
+    <div class="panel-footer">
+      <span><i class="fa fa-fw fa-user"></i>{{ entry.author }}</span>
+      <span><i class="fa fa-fw fa-calendar"></i>{{ entry.created.strftime('%Y.%-m.%-d') }}</span>
+      {% if entry.updated != entry.created %}
+        <span><i class="fa fa-fw fa-refresh"></i>{{ entry.updated.strftime('%Y.%-m.%-d') }}</span>
+      {% endif %}
+      <span>
+      <i class="fa fa-fw fa-tags"></i>
+        {%- for tag in entry.tags -%}
+          {% if loop.index > 1 %}<span>, </span>{% endif %}<a
+                href="/tag/{{ tag }}">{{ tag }}</a>
+        {%- endfor -%}
+      </span>
+    </div>
+  </div>
+
+  {% include 'discuss_thread.html' ignore missing %}
+
+{% endblock %}

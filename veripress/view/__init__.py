@@ -4,7 +4,7 @@ from itertools import chain
 
 from flask import Blueprint, request, render_template
 
-from veripress import site
+from veripress import site, cache
 from veripress.model import storage
 from veripress.model.parsers import get_parser
 from veripress.helpers import url_rule, to_list
@@ -31,6 +31,7 @@ def parse_content_of_models(obj):
     return get_parser(obj.format).parse_whole(obj.raw_content)
 
 
+@cache.memoize(timeout=2 * 60)
 def custom_render_template(template_name_or_list, **context):
     """
     Try to render templates in the custom folder first, if no custom templates, try the theme's default ones.

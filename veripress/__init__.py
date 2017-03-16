@@ -46,6 +46,9 @@ def create_app(config_filename, instance_path=None):
                             MODE='mixed',
                             ENTRIES_PER_PAGE=5,
                             FEED_COUNT=10,
+                            SHOW_TOC=True,
+                            TOC_DEPTH=3,
+                            TOC_LOWEST_LEVEL=3,
                             ALLOW_SEARCH_PAGES=True))
     app_.config.from_pyfile(config_filename)
 
@@ -62,8 +65,6 @@ app = create_app('config.py')
 with app.open_instance_resource('site.json', mode='r') as site_file:
     # load site meta info to the site object
     site = json.load(site_file)
-
-import veripress.model
 
 
 @app.route('/_webhook', methods=['POST'], strict_slashes=False)
@@ -92,3 +93,5 @@ if app.config['MODE'] in ('mixed', 'api-only'):
 if app.config['MODE'] in ('mixed', 'view-only'):
     import veripress.view
     app.register_blueprint(view.view_blueprint)
+
+import veripress.model
