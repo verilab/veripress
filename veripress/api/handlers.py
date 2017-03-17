@@ -1,18 +1,18 @@
 import re
-import os
 from itertools import islice
 from datetime import date
 
-from flask import current_app, request, send_file
+from flask import request, send_file
 
-from veripress import site
+from veripress import site, cache
 from veripress.api import ApiException, Error
 from veripress.model import storage
 from veripress.model.models import Base
 from veripress.model.parsers import get_parser
-from veripress.helpers import validate_custom_page_path
+from veripress.helpers import validate_custom_page_path, parse_toc
 
 
+@cache.memoize(timeout=5 * 60)
 def site_info():
     return site
 
@@ -66,6 +66,7 @@ def posts(year: int = None, month: int = None, day: int = None, post_name: str =
         if return_single_item:
             # if a certain ONE post is needed, we parse all content instead of preview
             post_d['content'] = parser.parse_whole(post.raw_content)
+            post_d['content'], post_d['toc'], post_d['toc_html'] = parse_toc(post_d['content'])
         else:
             # a list of posts is needed, we parse only previews
             post_d['preview'], post_d['has_more_content'] = parser.parse_preview(post.raw_content)
@@ -104,15 +105,22 @@ def pages(page_path):
     elif rel_url is None:  # pragma: no cover, it seems impossible to make this happen, see code of 'fix_relative_url'
         raise ApiException(error=Error.BAD_PATH, message='The path "{}" cannot be recognized.'.format(page_path))
     else:
+        page_d = cache.get('api-handler.' + rel_url)
+        if page_d is not None:
+            return page_d  # pragma: no cover, here just get the cached dict
+
         page = storage.get_page(rel_url, include_draft=False)
         if page is None:
             raise ApiException(error=Error.RESOURCE_NOT_EXISTS)
         page_d = page.to_dict()
         del page_d['raw_content']
         page_d['content'] = get_parser(page.format).parse_whole(page.raw_content)
+
+        cache.set('api-handler.' + rel_url, page_d, timeout=2 * 60)
         return page_d
 
 
+@cache.cached(timeout=2 * 60)
 def widgets():
     result_widgets = storage.get_widgets(position=request.args.get('position'), include_draft=False)
     result = []

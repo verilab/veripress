@@ -1,4 +1,3 @@
-import os
 from itertools import islice
 
 from feedgen.feed import FeedGenerator
@@ -9,33 +8,13 @@ from veripress.view import templated, custom_render_template
 from veripress.model import storage
 from veripress.model.models import Base
 from veripress.model.parsers import get_parser
-from veripress.model.toc import HtmlTocParser
-from veripress.helpers import timezone_from_str
+from veripress.helpers import timezone_from_str, parse_toc
 
 make_abs_url = lambda u: request.url_root + u.lstrip('/')  # 'r' means relative url (rel_url)
 
 
-def parse_toc(html_content):
-    """
-    Parse TOC of HTML content if the SHOW_TOC config is true.
-
-    :param html_content: raw HTML content
-    :return: tuple(processed HTML, toc list, toc HTML unordered list)
-    """
-    if current_app.config['SHOW_TOC']:
-        toc_parser = HtmlTocParser()
-        toc_parser.feed(html_content)
-        toc_html = toc_parser.toc_html(depth=current_app.config['TOC_DEPTH'],
-                                       lowest_level=current_app.config['TOC_LOWEST_LEVEL'])
-        toc = toc_parser.toc(depth=current_app.config['TOC_DEPTH'],
-                             lowest_level=current_app.config['TOC_LOWEST_LEVEL'])
-        return toc_parser.html, toc, toc_html
-    else:
-        return html_content, None, None
-
-
-@templated()
 @cache.memoize(timeout=2 * 60)
+@templated()
 def index(page_num=1):
     if page_num <= 1 and request.path != '/':
         return redirect(url_for('.index'))  # redirect '/page/1' to '/'
@@ -67,8 +46,8 @@ def index(page_num=1):
     return dict(entries=posts, next_url=next_url, prev_url=prev_url)
 
 
-@templated()
 @cache.memoize(timeout=2 * 60)
+@templated()
 def post(year, month, day, post_name):
     rel_url = request.path[len('/post/'):]
     fixed_rel_url = storage.fix_post_relative_url(rel_url)
@@ -82,11 +61,11 @@ def post(year, month, day, post_name):
     post_d = post_.to_dict()
     del post_d['raw_content']
     post_d['content'] = get_parser(post_.format).parse_whole(post_.raw_content)
-    post_d['content'], toc, toc_html = parse_toc(post_d['content'])
+    post_d['content'], post_d['toc'], post_d['toc_html'] = parse_toc(post_d['content'])
     post_d['url'] = make_abs_url(post_.unique_key)
     post_ = post_d
 
-    return custom_render_template(post_['layout'] + '.html', entry=post_, toc=toc, toc_html=toc_html)
+    return custom_render_template(post_['layout'] + '.html', entry=post_)
 
 
 @templated()
@@ -100,6 +79,10 @@ def page(rel_url):
     elif rel_url != fixed_rel_url:
         return redirect(url_for('.page', rel_url=fixed_rel_url))  # it's not the correct relative url, so redirect
 
+    resp = cache.get('view-handler.' + rel_url)
+    if resp is not None:
+        return resp  # pragma: no cover, here just get the cached response
+
     page_ = storage.get_page(rel_url, include_draft=False)
     if page_ is None:
         abort(404)
@@ -107,15 +90,17 @@ def page(rel_url):
     page_d = page_.to_dict()
     del page_d['raw_content']
     page_d['content'] = get_parser(page_.format).parse_whole(page_.raw_content)
-    page_d['content'], toc, toc_html = parse_toc(page_d['content'])
+    page_d['content'], page_d['toc'], page_d['toc_html'] = parse_toc(page_d['content'])
     page_d['url'] = request.base_url
     page_ = page_d
 
-    return custom_render_template(page_['layout'] + '.html', entry=page_, toc=toc, toc_html=toc_html)
+    resp = custom_render_template(page_['layout'] + '.html', entry=page_)
+    cache.set('view-handler.' + rel_url, resp, timeout=2 * 60)
+    return resp
 
 
-@templated('category.html', 'archive.html')
 @cache.memoize(timeout=2 * 60)
+@templated('category.html', 'archive.html')
 def category(category_name):
     posts = storage.get_posts_with_limits(include_draft=False, **{'categories': [category_name]})
     if not posts:
@@ -132,8 +117,8 @@ def category(category_name):
     return dict(entries=posts, archive_type='Category', archive_name=category_name)
 
 
-@templated('tag.html', 'archive.html')
 @cache.memoize(timeout=2 * 60)
+@templated('tag.html', 'archive.html')
 def tag(tag_name):
     posts = storage.get_posts_with_limits(include_draft=False, **{'tags': [tag_name]})
     if not posts:
@@ -150,8 +135,8 @@ def tag(tag_name):
     return dict(entries=posts, archive_type='Tag', archive_name=tag_name)
 
 
-@templated()
 @cache.memoize(timeout=2 * 60)
+@templated()
 def archive(year=None, month=None):
     posts = storage.get_posts_with_limits(include_draft=False)
 

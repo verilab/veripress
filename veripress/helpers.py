@@ -141,3 +141,25 @@ def traverse_directory(dir_path, yield_dir=False):
             yield from traverse_directory(new_path, yield_dir)
         else:
             yield new_path
+
+
+def parse_toc(html_content):
+    """
+    Parse TOC of HTML content if the SHOW_TOC config is true.
+
+    :param html_content: raw HTML content
+    :return: tuple(processed HTML, toc list, toc HTML unordered list)
+    """
+    from flask import current_app
+    from veripress.model.toc import HtmlTocParser
+
+    if current_app.config['SHOW_TOC']:
+        toc_parser = HtmlTocParser()
+        toc_parser.feed(html_content)
+        toc_html = toc_parser.toc_html(depth=current_app.config['TOC_DEPTH'],
+                                       lowest_level=current_app.config['TOC_LOWEST_LEVEL'])
+        toc = toc_parser.toc(depth=current_app.config['TOC_DEPTH'],
+                             lowest_level=current_app.config['TOC_LOWEST_LEVEL'])
+        return toc_parser.html, toc, toc_html
+    else:
+        return html_content, None, None
