@@ -15,8 +15,10 @@ def test_fix_page_relative_url():
     with app.app_context():
         assert FileStorage.fix_page_relative_url('my-page') == ('my-page/', False)
         assert FileStorage.fix_page_relative_url('my-page/') == ('my-page/', False)
-        assert FileStorage.fix_page_relative_url('test-page.txt') == ('test-page.txt', True)
-        assert FileStorage.fix_page_relative_url('my-page/index.md') == ('my-page/index.md', True)
+        assert FileStorage.fix_page_relative_url('test-page.txt') \
+               == (os.path.join(current_app.instance_path, 'pages', 'test-page.txt'), True)
+        assert FileStorage.fix_page_relative_url('my-page/index.md') \
+               == (os.path.join(current_app.instance_path, 'pages', 'my-page/index.md'), True)
         assert FileStorage.fix_page_relative_url('my-page/index') == ('my-page/index.html', False)
         assert FileStorage.fix_page_relative_url('my-page/index.htm') == ('my-page/index.html', False)
         assert FileStorage.fix_page_relative_url('my-page/index.html') == ('my-page/index.html', False)

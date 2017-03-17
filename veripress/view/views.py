@@ -90,22 +90,15 @@ def post(year, month, day, post_name):
 
 
 @templated()
-@cache.memoize(timeout=2 * 60)
 def page(rel_url):
     fixed_rel_url, exists = storage.fix_page_relative_url(rel_url)
     if exists:
-        return send_file(os.path.join(current_app.instance_path, 'pages', fixed_rel_url))  # send direct file
+        file_path = fixed_rel_url
+        return send_file(file_path)  # send direct file
     elif fixed_rel_url is None:  # relative url is invalid
         abort(404)  # pragma: no cover, this is never possible when visiting this site in web browser
     elif rel_url != fixed_rel_url:
         return redirect(url_for('.page', rel_url=fixed_rel_url))  # it's not the correct relative url, so redirect
-    elif rel_url.endswith('/'):
-        # try <rel_url>index.html
-        rel_url_with_index = rel_url + 'index.html'
-        _, exists = storage.fix_page_relative_url(rel_url_with_index)
-        if exists:
-            # send direct index.html
-            return send_file(os.path.join(current_app.instance_path, 'pages', rel_url_with_index))
 
     page_ = storage.get_page(rel_url, include_draft=False)
     if page_ is None:

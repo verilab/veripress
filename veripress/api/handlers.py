@@ -99,7 +99,8 @@ def pages(page_path):
 
     rel_url, exists = storage.fix_relative_url('page', page_path)
     if exists:
-        return send_file(os.path.join(current_app.instance_path, 'pages', rel_url))
+        file_path = rel_url
+        return send_file(file_path)
     elif rel_url is None:  # pragma: no cover, it seems impossible to make this happen, see code of 'fix_relative_url'
         raise ApiException(error=Error.BAD_PATH, message='The path "{}" cannot be recognized.'.format(page_path))
     else:

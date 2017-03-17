@@ -45,7 +45,7 @@ class Storage(object):
 
         :param publish_type: publish type ('post' or 'page')
         :param rel_url: relative url to fix
-        :return: tuple(fixed relative url or None if cannot recognize, file exists or not)
+        :return: tuple(fixed relative url or file path if exists or None if cannot recognize, file exists or not)
         :raise ValueError: unknown publish type
         """
         if publish_type == 'post':
@@ -106,7 +106,7 @@ class Storage(object):
         this method should be implemented in subclasses.
 
         :param rel_url: relative url to fix
-        :return: tuple(fixed relative url or None if cannot recognize, file exists or not)
+        :return: tuple(fixed relative url or file path if exists or None if cannot recognize, file exists or not)
         """
         raise NotImplementedError
 
@@ -231,7 +231,7 @@ class FileStorage(Storage):
         - my-page/specific.file
 
         :param rel_url: relative url to fix
-        :return: tuple(fixed relative url or None if cannot recognize, file exists or not)
+        :return: tuple(fixed relative url or FILE PATH if exists or None if cannot recognize, file exists or not)
         """
         rel_url = rel_url.lstrip('/')  # trim all heading '/'
         endswith_slash = rel_url.endswith('/')
@@ -241,9 +241,13 @@ class FileStorage(Storage):
 
         file_path = os.path.join(current_app.instance_path, 'pages', rel_url.replace('/', os.path.sep))
         if rel_url.endswith('/'):
+            index_html_file_path = os.path.join(file_path, 'index.html')
+            if os.path.isfile(index_html_file_path):
+                # index.html exists
+                return index_html_file_path, True
             return rel_url, False
         elif os.path.isfile(file_path):
-            return rel_url, True
+            return file_path, True
         elif os.path.isdir(file_path):
             return rel_url + '/', False
         else:
@@ -351,7 +355,7 @@ class FileStorage(Storage):
         post_filename = rel_url[:-1].replace('/', '-')
 
         post_file_path, post_file_ext = FileStorage.search_instance_file('posts', post_filename)
-        if post_file_path is None or post_file_ext is None:
+        if post_file_path is None or post_file_ext is None or get_standard_format_name(post_file_ext) is None:
             # no such post
             return None
 
@@ -448,7 +452,7 @@ class FileStorage(Storage):
             page_filename = os.path.splitext(page_filename)[0]
 
         page_file_path, page_file_ext = FileStorage.search_file(page_path, page_filename)
-        if page_file_path is None or page_file_ext is None:
+        if page_file_path is None or page_file_ext is None or get_standard_format_name(page_file_ext) is None:
             # no such page
             return None
 
