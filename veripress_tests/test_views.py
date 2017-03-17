@@ -51,10 +51,6 @@ def test_post():
 
 
 def test_page():
-    with app.app_context():
-        with raises(NotFound):
-            views.page('/')
-
     with app.test_client() as c:
         resp = c.get('/abc')
         assert resp.status_code == 302

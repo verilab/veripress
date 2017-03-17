@@ -55,7 +55,7 @@ def templated(template=None, *templates):
         def wrapper(*args, **kwargs):
             template_ = template
             if template_ is None:
-                template_ = request.endpoint.replace('.', '/') + '.html'
+                template_ = request.endpoint.split('.', 1)[1].replace('.', '/') + '.html'
             context = func(*args, **kwargs)
             if context is None:
                 context = {}

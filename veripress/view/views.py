@@ -34,7 +34,7 @@ def parse_toc(html_content):
         return html_content, None, None
 
 
-@templated('index.html')
+@templated()
 @cache.memoize(timeout=2 * 60)
 def index(page_num=1):
     if page_num <= 1 and request.path != '/':
@@ -67,7 +67,7 @@ def index(page_num=1):
     return dict(entries=posts, next_url=next_url, prev_url=prev_url)
 
 
-@templated('post.html')
+@templated()
 @cache.memoize(timeout=2 * 60)
 def post(year, month, day, post_name):
     rel_url = request.path[len('/post/'):]
@@ -89,14 +89,14 @@ def post(year, month, day, post_name):
     return custom_render_template(post_['layout'] + '.html', entry=post_, toc=toc, toc_html=toc_html)
 
 
-@templated('page.html')
+@templated()
 @cache.memoize(timeout=2 * 60)
 def page(rel_url):
     fixed_rel_url, exists = storage.fix_page_relative_url(rel_url)
     if exists:
         return send_file(os.path.join(current_app.instance_path, 'pages', fixed_rel_url))  # send direct file
-    elif fixed_rel_url is None:
-        abort(404)  # relative url is invalid
+    elif fixed_rel_url is None:  # relative url is invalid
+        abort(404)  # pragma: no cover, this is never possible when visiting this site in web browser
     elif rel_url != fixed_rel_url:
         return redirect(url_for('.page', rel_url=fixed_rel_url))  # it's not the correct relative url, so redirect
     elif rel_url.endswith('/'):
@@ -157,7 +157,7 @@ def tag(tag_name):
     return dict(entries=posts, archive_type='Tag', archive_name=tag_name)
 
 
-@templated('archive.html')
+@templated()
 @cache.memoize(timeout=2 * 60)
 def archive(year=None, month=None):
     posts = storage.get_posts_with_limits(include_draft=False)
