@@ -1,6 +1,6 @@
 import click
 
-cli = click.Group()
+from veripress_cli import cli
 
 
 @cli.command('serve', short_help='Serve/Run the application.',
@@ -31,7 +31,3 @@ def preview_command(host, port, debug):
     app.debug = debug
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.run(host=host, port=port, debug=debug)
-
-
-def main():
-    cli.main()

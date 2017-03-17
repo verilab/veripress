@@ -1,2 +1,1 @@
-include veripress/config.sample.py
-include veripress/site.sample.py
+recursive-include veripress_cli/defaults *

@@ -1,0 +1,8 @@
+{
+    "title": "VeriPress Demo",
+    "subtitle": "Yet another VeriPress blog.",
+    "author": "My Name",
+    "email": "someone@example.com",
+    "language": "zh_CN",
+    "timezone": "UTC+08:00"
+}

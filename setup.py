@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='veripress',
     version='1.0.0',
-    packages=['veripress'],
+    packages=['veripress', 'veripress_cli'],
     url='',
     license='The MIT License',
     author='Richard Chien',
@@ -17,6 +17,6 @@ setup(
     ],
     include_package_data=True,
     entry_points=dict(
-        console_scripts=['veripress=veripress.cli:main']
+        console_scripts=['veripress=veripress_cli:main']
     )
 )

@@ -1,0 +1,10 @@
+STORAGE_TYPE = '{storage_mode}'
+THEME = 'default'
+CACHE_TYPE = 'simple'
+MODE = 'mixed'  # mixed|api-only|view-only
+ENTRIES_PER_PAGE = 5
+FEED_COUNT = 10
+SHOW_TOC = True
+TOC_DEPTH = 3  # 1~6
+TOC_LOWEST_LEVEL = 3  # 1~6
+ALLOW_SEARCH_PAGES = True
