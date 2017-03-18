@@ -5,7 +5,7 @@ setup(
     version='1.0.0',
     packages=['veripress', 'veripress.api', 'veripress.model', 'veripress.view', 'veripress_cli'],
     url='https://github.com/veripress/veripress',
-    license='The MIT License',
+    license='MIT License',
     author='Richard Chien',
     author_email='richardchienthebest@gmail.com',
     description='A blog engine for hackers.',
