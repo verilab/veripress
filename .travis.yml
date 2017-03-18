@@ -15,7 +15,7 @@ before_install:
 
 install:
   - pip install .
-  - pip install coverage pytest pytest-cov coveralls
+  - pip install -r test-requirements.txt
 
 script:
   - export VERIPRESS_INSTANCE_PATH=$(pwd)/veripress_tests/instance
