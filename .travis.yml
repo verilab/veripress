@@ -3,6 +3,16 @@ python:
   - '3.4'
   - "3.5"
 
+env:
+  global:
+    - GIT_NAME: VeriPress Demo
+    - GIT_EMAIL: richardchienthebest@gmail.com
+    - GITHUB_REPO: veripress/demo
+    - GIT_SOURCE: _deploy
+
+before_install:
+  - nvm install 4
+
 install:
   - pip install .
   - pip install coverage pytest pytest-cov coveralls
@@ -10,6 +20,9 @@ install:
 script:
   - export VERIPRESS_INSTANCE_PATH=$(pwd)/veripress_tests/instance
   - coverage run --source veripress -m py.test veripress_tests
+  - export VERIPRESS_INSTANCE_PATH=$(pwd)/veripress_demo_instance
+  - veripress generate --app-root /demo/
 
 after_success:
-  coveralls
+  - coveralls
+  - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then npm install git-update-ghpages && ./node_modules/.bin/git-update-ghpages -e; fi
