@@ -19,7 +19,7 @@ def get_storage():
     if storage_ is None:
         storage_type = current_app.config['STORAGE_TYPE']
         if storage_type == 'file':
-            storage_ = g._storage = storages.FileStorage(current_app.config)
+            storage_ = g._storage = storages.FileStorage()
         else:
             raise ConfigurationError('Storage type "{}" is not supported.'.format(storage_type))
     return storage_

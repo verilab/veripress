@@ -14,13 +14,8 @@ from veripress.helpers import to_list, to_datetime, Pair, traverse_directory
 
 
 class Storage(object):
-    def __init__(self, config):
-        """
-        Save the configurations and initialize attributes.
-
-        :param config: configuration, typically the Flask app's config
-        """
-        self.config = config
+    def __init__(self):
+        """Initialization."""
         self._closed = False
 
     def close(self):

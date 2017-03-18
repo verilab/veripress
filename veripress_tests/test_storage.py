@@ -25,7 +25,6 @@ def test_get_storage():
 
         assert isinstance(s, Storage)
         assert isinstance(s, FileStorage)
-        assert s.config['STORAGE_TYPE'] == 'file'
     assert s.closed  # the storage object should be marked as 'closed' after the app context being torn down
     with raises(AttributeError):
         setattr(s, 'closed', True)
@@ -51,7 +50,7 @@ def test_fix_rel_url():
         # assert Storage.fix_page_relative_url('my-page/index.html') == ('my-page/index.html', False)
         # assert Storage.fix_page_relative_url('//') == (None, False)
 
-        storage_ = Storage({})
+        storage_ = Storage()
         assert storage_.fix_relative_url('post', '2017/1/1/my-post/index') == ('2017/01/01/my-post/index.html', False)
         # assert Storage.fix_relative_url('page', '/my-page/index.htm') == ('my-page/index.html', False)
         with raises(ValueError, message='Publish type "wrong" is not supported'):
@@ -59,7 +58,7 @@ def test_fix_rel_url():
 
 
 def test_base_storage():
-    s = Storage(app.config)
+    s = Storage()
     with raises(NotImplementedError):
         s.fix_page_relative_url('')
     with raises(NotImplementedError):
