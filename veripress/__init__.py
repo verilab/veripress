@@ -87,11 +87,11 @@ from flask_caching import Cache
 cache = Cache(app, config=app.config)  # create the cache object with the app's config
 
 if app.config['MODE'] in ('mixed', 'api-only'):
-    import veripress.api
+    from veripress import api
     app.register_blueprint(api.api_blueprint, url_prefix='/api')
 
 if app.config['MODE'] in ('mixed', 'view-only'):
-    import veripress.view
+    from veripress import view
     app.register_blueprint(view.view_blueprint)
 
-import veripress.model
+from veripress import model
