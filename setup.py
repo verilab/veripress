@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='veripress',
     version='1.0.0',
-    packages=['veripress', 'veripress_cli'],
+    packages=['veripress', 'veripress.api', 'veripress.model', 'veripress.view', 'veripress_cli'],
     url='',
     license='The MIT License',
     author='Richard Chien',
