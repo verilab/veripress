@@ -10,7 +10,7 @@ from veripress.model.models import Base
 from veripress.model.parsers import get_parser
 from veripress.helpers import timezone_from_str, parse_toc
 
-make_abs_url = lambda u: request.url_root + u.lstrip('/')  # 'r' means relative url (rel_url)
+make_abs_url = lambda u: request.script_root + u  # 'u' means unique key
 
 
 @cache.memoize(timeout=2 * 60)
@@ -91,7 +91,7 @@ def page(rel_url):
     del page_d['raw_content']
     page_d['content'] = get_parser(page_.format).parse_whole(page_.raw_content)
     page_d['content'], page_d['toc'], page_d['toc_html'] = parse_toc(page_d['content'])
-    page_d['url'] = request.base_url
+    page_d['url'] = make_abs_url(page_.unique_key)
     page_ = page_d
 
     resp = custom_render_template(page_['layout'] + '.html', entry=page_)
@@ -169,7 +169,7 @@ def search():
 
     def process(p):
         del p['raw_content']
-        p['url'] = request.url_root + p['unique_key'].lstrip('/')
+        p['url'] = make_abs_url(p['unique_key'])
         return p
 
     result = list(map(process, map(Base.to_dict, storage.search_for(query))))

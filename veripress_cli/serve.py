@@ -30,4 +30,5 @@ def preview_command(host, port, debug):
     from veripress import app
     app.debug = debug
     app.config['TEMPLATES_AUTO_RELOAD'] = True
+    app.config['CACHE_TYPE'] = 'null'
     app.run(host=host, port=port, debug=debug)

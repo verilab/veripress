@@ -12,11 +12,8 @@ from veripress_cli import cli
                   'which means to create default configuration file, necessary subdirectories, etc.')
 @click.option('--storage-mode', '-s', default='file', type=click.Choice(['file']),
               help='Storage mode (only "file" mode supported currently).')
-@click.option('--instance-path', '-i', default=os.getcwd(), prompt='Which directory to initialize?',
-              help='Where to place the new VeriPress instance.')
-def init_command(storage_mode, instance_path):
-    if not os.path.isabs(instance_path):
-        instance_path = os.path.abspath(instance_path)
+def init_command(storage_mode):
+    instance_path = os.getcwd()
 
     files = os.listdir(instance_path)
     if files:
