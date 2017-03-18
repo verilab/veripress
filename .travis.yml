@@ -8,7 +8,7 @@ env:
     - GIT_NAME: VeriPress Demo
     - GIT_EMAIL: richardchienthebest@gmail.com
     - GITHUB_REPO: veripress/demo
-    - GIT_SOURCE: _deploy
+    - GIT_SOURCE: veripress_demo_instance/_deploy
 
 before_install:
   - nvm install 4
