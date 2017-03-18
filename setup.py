@@ -8,7 +8,7 @@ setup(
     license='The MIT License',
     author='Richard Chien',
     author_email='richardchienthebest@gmail.com',
-    description='A blog software for hackers.',
+    description='A blog engine for hackers.',
     install_requires=[
         'flask', 'flask-caching', 'pyyaml', 'mistune', 'pygments', 'feedgen'
     ],
