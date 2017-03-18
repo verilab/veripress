@@ -78,7 +78,7 @@ from veripress.view import views
 
 rule = functools.partial(url_rule, view_blueprint, methods=['GET'])
 
-rule(['/feed.xml', '/feed/', '/atom.xml'], view_func=views.feed, strict_slashes=True)
+rule(['/feed.xml', '/atom.xml'], view_func=views.feed, strict_slashes=True)
 
 rule(['/', '/page/<int:page_num>/'], view_func=views.index, strict_slashes=True)
 rule('/post/<int:year>/<int:month>/<int:day>/<string:post_name>', view_func=views.post, strict_slashes=False)

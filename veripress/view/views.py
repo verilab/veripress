@@ -33,7 +33,8 @@ def index(page_num=1):
         posts.append(post_d)
 
     if start > 0:
-        next_url = url_for('.index', page_num=page_num - 1)
+        next_page_num = page_num - 1
+        next_url = url_for('.index', page_num=next_page_num if next_page_num != 1 else None)
     else:
         next_url = None
     if len(posts) > count:

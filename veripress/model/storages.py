@@ -114,11 +114,11 @@ class Storage(object):
         raise NotImplementedError
 
     def get_tags(self):
-        """Get all tags as a dict (key: tag_name, value: Pair(count_all, count_published))."""
+        """Get all tags as a list of dict_item(tag_name, Pair(count_all, count_published))."""
         raise NotImplementedError
 
     def get_categories(self):
-        """Get all categories as a dict. (key: category_name, value: Pair(count_all, count_published))."""
+        """Get all categories as a list of dict_item(category_name, Pair(count_all, count_published))."""
         raise NotImplementedError
 
     def get_pages(self, include_draft=False):
@@ -374,7 +374,7 @@ class FileStorage(Storage):
         for post in posts:
             for tag_name in set(post.tags):
                 result[tag_name] = result.setdefault(tag_name, Pair(0, 0)) + Pair(1, 0 if post.is_draft else 1)
-        return result.items()
+        return list(result.items())
 
     @cache.memoize(timeout=5 * 60)
     def get_categories(self):
@@ -389,7 +389,7 @@ class FileStorage(Storage):
             for category_name in set(post.categories):
                 result[category_name] = result.setdefault(category_name, Pair(0, 0)) \
                                         + Pair(1, 0 if post.is_draft else 1)
-        return result.items()
+        return list(result.items())
 
     @cache.memoize(timeout=2 * 60)
     def get_pages(self, include_draft=False):

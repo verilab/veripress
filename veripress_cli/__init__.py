@@ -11,3 +11,5 @@ def main():
 import veripress_cli.init
 import veripress_cli.serve
 import veripress_cli.theme
+import veripress_cli.generate
+import veripress_cli.deploy

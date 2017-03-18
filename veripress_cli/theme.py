@@ -29,7 +29,7 @@ def list_command():
 
 @theme_cli.command('install', short_help='Install a theme from GitHub.',
                    help='This command will install theme from GitHub for you. '
-                        'If you want to install a theme from the official veripress/veripress-theme repo, '
+                        'If you want to install a theme from the official veripress/themes repo, '
                         'enter things like "default" to specify the theme. '
                         'If you want to install a third-party theme, use "user/repo" format.\n\ne.g.\n\n'
                         '  $ veripress theme install default\n\n'
@@ -44,11 +44,11 @@ def install_command(theme, branch, name):
     if re.fullmatch('[_\-A-Z0-9a-z]+', theme):
         theme_name = name or theme
         theme_path = os.path.join(get_themes_dir(), theme_name)
-        cmd = 'git clone --branch {} https://github.com/veripress/veripress-theme.git {}'.format(theme, theme_path)
+        cmd = 'git clone --branch {} https://github.com/veripress/themes.git {}'.format(theme, theme_path)
     else:
         m = re.fullmatch('([_\-A-Z0-9a-z]+)/([_\-A-Z0-9a-z]+)', theme)
         if not m:
-            raise click.BadArgumentUsage('The theme should be like "default" (branch of veripress/veripress-theme) '
+            raise click.BadArgumentUsage('The theme should be like "default" (branch of veripress/themes) '
                                          'or "someone/the-theme" (third-party theme on GitHub)')
         user = m.group(1)
         repo = m.group(2)
