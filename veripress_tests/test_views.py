@@ -1,8 +1,7 @@
-from pytest import raises
-from werkzeug.exceptions import NotFound
+import os
+import shutil
 
 from veripress import app
-from veripress.view import views
 
 
 def test_404():
@@ -16,6 +15,8 @@ def test_index():
         assert c.get('/page/1').headers['Location'] == 'http://localhost/page/1/'
         assert c.get('/page/1/').headers['Location'] == 'http://localhost/'
 
+        shutil.move(os.path.join(app.instance_path, 'pages', 'index.mdown'),
+                    os.path.join(app.instance_path, 'pages', 'index2.mdown'))
         resp = c.get('/')
         assert resp.status_code == 200
         assert 'My Blog' in resp.data.decode('utf-8')
@@ -26,6 +27,12 @@ def test_index():
         assert 'This is my blog. Welcome!' in resp.data.decode('utf-8')  # parse widget in template
 
         assert '<a id="next-url"' in c.get('/page/2/').data.decode('utf-8')
+
+        shutil.move(os.path.join(app.instance_path, 'pages', 'index2.mdown'),
+                    os.path.join(app.instance_path, 'pages', 'index.mdown'))
+        resp = c.get('/')
+        assert resp.status_code == 200
+        assert 'Index' in resp.data.decode('utf-8')
 
 
 def test_post():

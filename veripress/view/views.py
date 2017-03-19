@@ -19,6 +19,11 @@ def index(page_num=1):
     if page_num <= 1 and request.path != '/':
         return redirect(url_for('.index'))  # redirect '/page/1' to '/'
 
+    index_page = storage.get_page('index.html', include_draft=False)
+    if index_page is not None:
+        # there is an 'index.*' custom page, we use this as index.
+        return page('index.html')
+
     all_posts = storage.get_posts(include_draft=False)
 
     count = current_app.config['ENTRIES_PER_PAGE']
