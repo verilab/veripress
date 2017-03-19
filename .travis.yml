@@ -5,10 +5,8 @@ python:
 
 env:
   global:
-    - GIT_NAME: VeriPress Demo
+    - GIT_NAME: Richard Chien
     - GIT_EMAIL: richardchienthebest@gmail.com
-    - GITHUB_REPO: veripress/demo
-    - GIT_SOURCE: veripress_demo_instance/_deploy
 
 before_install:
   - nvm install 4
@@ -25,4 +23,4 @@ script:
 
 after_success:
   - coveralls
-  - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then npm install git-update-ghpages && ./node_modules/.bin/git-update-ghpages -e; fi
+  - chmod +x generate-gh-pages.sh && ./generate-gh-pages.sh
