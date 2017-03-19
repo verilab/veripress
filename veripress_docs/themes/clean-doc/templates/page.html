@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+  {{ super() }}
+  <title>{{ entry.title + ' - ' + site.title }}</title>
+{% endblock %}
+
+{% block body %}
+
+  <div class="panel panel-primary">
+    <div class="panel-heading"></div>
+    <div class="panel-body entry-content">
+      <article>
+        <h1>{{ entry.title }}</h1>
+        <hr>
+        {% if entry.toc_html %}
+          {{ entry.toc_html|safe }}
+          <hr>
+        {% endif %}
+        {{ entry.content|safe }}
+      </article>
+    </div>
+    <div class="panel-footer">
+      <span><i class="fa fa-fw fa-user"></i>{{ entry.author }}</span>
+      {% if entry.updated %}
+        <span><i class="fa fa-fw fa-refresh"></i>{{ entry.updated.strftime('%Y.%-m.%-d') }}</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% include ['custom/discuss_thread.html', 'discuss_thread.html'] ignore missing %}
+
+{% endblock %}

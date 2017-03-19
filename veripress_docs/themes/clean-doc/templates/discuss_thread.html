@@ -1,0 +1,17 @@
+{% if config.DUOSHUO_ENABLED or config.DISQUS_ENABLED %}
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        Discuss
+        <i class="fa fa-fw fa-angle-right"></i>
+      </h3>
+    </div>
+    <div class="panel-body entry-content">
+      {% if config.DUOSHUO_ENABLED %}
+        {% include 'duoshuo.html' ignore missing %}
+      {% else %}
+        {% include 'disqus.html' ignore missing %}
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

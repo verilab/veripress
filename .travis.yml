@@ -20,7 +20,9 @@ script:
   - coverage run --source veripress -m py.test veripress_tests
   - export VERIPRESS_INSTANCE_PATH=$(pwd)/veripress_demo_instance
   - veripress generate --app-root /demo/
+  - export VERIPRESS_INSTANCE_PATH=$(pwd)/veripress_docs
+  - veripress generate --app-root /docs/
 
 after_success:
   - coveralls
-  - chmod +x generate-gh-pages.sh && ./generate-gh-pages.sh
+  - chmod +x update-gh-pages.sh && ./update-gh-pages.sh
