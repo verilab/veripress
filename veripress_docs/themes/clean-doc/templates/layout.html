@@ -16,9 +16,11 @@
           <div class="col-md-8 site-header">
             {% include ['custom/header.html', 'header.html'] ignore missing %}
           </div>
-          <div class="col-md-4 search-bar-col">
-            {% include ['custom/searchbar.html', 'searchbar.html'] ignore missing %}
-          </div>
+          {% if not config.GENERATING_STATIC_PAGES %}
+            <div class="col-md-4 search-bar-col">
+              {% include ['custom/searchbar.html', 'searchbar.html'] ignore missing %}
+            </div>
+          {% endif %}
         </div>
         <div class="row">
           <div class="col-md-12 nav-container">
