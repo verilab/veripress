@@ -5,7 +5,7 @@ python:
 
 env:
   global:
-    - GIT_NAME: Richard Chien
+    - GIT_NAME: "Richard Chien"
     - GIT_EMAIL: richardchienthebest@gmail.com
 
 before_install:
