@@ -195,11 +195,11 @@ def feed():
     fg = FeedGenerator()
     fg.id(request.url_root)
     if 'title' in site:
-        fg.title(site['title'])
+        fg.title(site.get('title', ''))
     if 'subtitle' in site:
-        fg.subtitle(site['subtitle'])
+        fg.subtitle(site.get('subtitle', ''))
     if 'language' in site:
-        fg.language(site['language'])
+        fg.language(site.get('language', ''))
     fg.author(dict(name=site.get('author', ''), email=site.get('email', '')))
     fg.link(href=request.url_root, rel='alternate')
     fg.link(href=url_for('.feed'), rel='self')
