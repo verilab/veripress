@@ -4,5 +4,6 @@
     "author": "My Name",
     "email": "someone@example.com",
     "language": "zh_CN",
-    "timezone": "UTC+08:00"
+    "timezone": "UTC+08:00",
+    "root_url": "https://example.com"
 }

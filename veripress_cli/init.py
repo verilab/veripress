@@ -14,22 +14,6 @@ from veripress_cli import cli
               help='Storage mode (only "file" mode supported currently).')
 def init_command(storage_mode):
     instance_path = os.getcwd()
-
-    files = os.listdir(instance_path)
-    if files:
-        confirm = click.prompt('There are files in the instance path you entered. '
-                               'Are you sure to remove them and continue? Y/N',
-                               default='N', type=bool)
-        if not confirm:
-            return
-
-    for file in files:
-        path = os.path.join(instance_path, file)
-        if os.path.isdir(path):
-            shutil.rmtree(path)
-        else:
-            os.remove(path)
-
     defaults_dir = os.path.join(os.path.dirname(__file__), 'defaults')
 
     with open(os.path.join(defaults_dir, 'config.py'), 'r', encoding='utf-8') as f_default_conf:
