@@ -50,7 +50,7 @@ def create_app(config_filename, instance_path=None):
                             TOC_DEPTH=3,
                             TOC_LOWEST_LEVEL=3,
                             ALLOW_SEARCH_PAGES=True))
-    app_.config.from_pyfile(config_filename)
+    app_.config.from_pyfile(config_filename, silent=True)
 
     theme_folder = os.path.join(app_.instance_path, 'themes', app_.config['THEME'])
     app_.template_folder = os.path.join(theme_folder, 'templates')  # use templates in the selected theme's folder
@@ -62,9 +62,16 @@ def create_app(config_filename, instance_path=None):
 
 app = create_app('config.py')
 
-with app.open_instance_resource('site.json', mode='r') as site_file:
-    # load site meta info to the site object
-    site = json.load(site_file)
+site = {
+    'title': 'Untitled',
+    'subtitle': 'Yet another VeriPress blog.'
+}
+try:
+    with app.open_instance_resource('site.json', mode='r') as site_file:
+        # load site meta info to the site object
+        site.update(json.load(site_file))
+except FileNotFoundError:
+    pass
 
 
 @app.route('/_webhook', methods=['POST'], strict_slashes=False)

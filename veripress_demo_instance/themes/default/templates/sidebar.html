@@ -1,5 +1,5 @@
 {% if not config.GENERATING_STATIC_PAGES %}
-  {% include 'searchbar.html' %}
+  {% include ['custom/searchbar.html', 'searchbar.html'] ignore missing %}
 {% endif %}
 
 {% for widget in storage.get_widgets(position='sidebar') %}

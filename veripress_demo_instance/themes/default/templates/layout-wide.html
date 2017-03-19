@@ -2,7 +2,7 @@
 <html>
 <head>
   {% block head %}
-    {% include 'head.html' ignore missing %}
+    {% include ['custom/head.html', 'head.html'] ignore missing %}
   {% endblock %}
 </head>
 <body>
@@ -13,12 +13,12 @@
       <div class="col-md-12">
         <div class="row">
           <div class="col-md-12 site-header">
-            {% include 'header.html' ignore missing %}
+            {% include ['custom/header.html', 'header.html'] ignore missing %}
           </div>
         </div>
         <div class="row">
           <div class="col-md-12 nav-container">
-            {% include 'navbar.html' ignore missing %}
+            {% include ['custom/navbar.html', 'navbar.html'] ignore missing %}
           </div>
         </div>
       </div>
@@ -31,10 +31,10 @@
   </div>
 </div>
 
-{% include 'footer.html' ignore missing %}
+{% include ['custom/footer.html', 'footer.html'] ignore missing %}
 
 {% block foot %}
-  {% include 'foot.html' ignore missing %}
+  {% include ['custom/foot.html', 'foot.html'] ignore missing %}
 {% endblock %}
 
 </body>
