@@ -47,13 +47,13 @@ def test_txt_parser():
     p = TxtParser()
     raw_content = 'abc'
     preview, has_more_content = p.parse_preview(raw_content)
-    assert preview == p.parse_whole(raw_content) == '<pre>abc</pre>'
+    assert preview == p.parse_whole(raw_content) == '<pre class="txt">abc</pre>'
     assert has_more_content is False
     raw_content = 'abc\n---more---\n\ndef'
-    assert p.parse_preview(raw_content) == ('<pre>abc</pre>', True)
-    assert p.parse_whole(raw_content) == '<pre>abc\n\ndef</pre>'
+    assert p.parse_preview(raw_content) == ('<pre class="txt">abc</pre>', True)
+    assert p.parse_whole(raw_content) == '<pre class="txt">abc\n\ndef</pre>'
     raw_content = 'abc\n------ MoRe     ---  \n\ndef---more ---'
-    assert p.parse_whole(raw_content) == '<pre>abc\n\ndef---more ---</pre>'
+    assert p.parse_whole(raw_content) == '<pre class="txt">abc\n\ndef---more ---</pre>'
 
 
 def test_md_parser():
