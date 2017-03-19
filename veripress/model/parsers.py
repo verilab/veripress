@@ -111,7 +111,7 @@ class TxtParser(Parser):
 
     def parse_whole(self, raw_content):
         raw_content = self.remove_read_more_sep(raw_content)
-        return '<pre>{}</pre>'.format(raw_content)
+        return '<pre class="txt">{}</pre>'.format(raw_content)
 
 
 @parser('markdown', ext_names=['md', 'mdown', 'markdown'])

@@ -19,6 +19,15 @@ img {
     word-wrap: normal;
 }
 
+pre.txt {
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+    background-color: inherit;
+    border: none;
+}
+
 a {
     -webkit-transition: all 300ms ease;
     -moz-transition: all 300ms ease;
@@ -35,7 +44,7 @@ a:hover, a:focus {
     padding: 15px 15px 20px;
 }
 
-.markdown-body table {
+.entry-content table {
     display: block;
     width: 100%;
     overflow: auto;
@@ -45,22 +54,22 @@ a:hover, a:focus {
     margin-bottom: 16px;
 }
 
-.markdown-body table th {
+.entry-content table th {
     font-weight: bold;
 }
 
-.markdown-body table th,
-.markdown-body table td {
+.entry-content table th,
+.entry-content table td {
     padding: 6px 13px;
     border: 1px solid #ddd;
 }
 
-.markdown-body table tr {
+.entry-content table tr {
     background-color: #fff;
     border-top: 1px solid #ccc;
 }
 
-.markdown-body table tr:nth-child(2n) {
+.entry-content table tr:nth-child(2n) {
     background-color: #f8f8f8;
 }
 
