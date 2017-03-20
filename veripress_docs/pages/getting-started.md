@@ -45,9 +45,9 @@ $ export VERIPRESS_INSTANCE_PATH=/home/user/my-veripress
 
 网站的标题、作者等信息在 `site.json`，用 JSON 格式编写，你可以自行修改。
 
-每一项含义如下：
+每一项的说明如下：
 
-| 项        | 含义                                       |
+| 项        | 说明                                       |
 | -------- | ---------------------------------------- |
 | title    | 网站标题                                     |
 | subtitle | 网站副标题，对于支持副标题的主题有效                       |

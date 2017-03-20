@@ -4,7 +4,7 @@
 
 {% for widget in storage.get_widgets(position='sidebar') %}
   <div class="panel panel-primary">
-    <div class="panel-body">
+    <div class="panel-body markdown-body">
       {{ widget|content|safe }}
     </div>
   </div>

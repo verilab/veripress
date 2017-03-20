@@ -9,11 +9,11 @@
 
   <div class="panel panel-primary">
     <div class="panel-heading"></div>
-    <div class="panel-body entry-content">
+    <div class="panel-body markdown-body">
       <article>
         <h1>{{ entry.title }}</h1>
-        <hr>
         {% if entry.toc_html %}
+          <hr>
           {{ entry.toc_html|safe }}
           <hr>
         {% endif %}
