@@ -90,7 +90,7 @@ API 模式开放的这些 API，只能获取和页面上显示的同样的文章
     "is_draft": false, 
     "layout": "post", 
     "meta": {
-      "categories": ["Donec], 
+      "categories": ["Donec"], 
       "tags": ["VeriPress"], 
       "title": "Some Title"
     }, 
