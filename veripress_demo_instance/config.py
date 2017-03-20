@@ -1,7 +1,7 @@
 STORAGE_TYPE = 'file'
 THEME = 'default'
 CACHE_TYPE = 'simple'
-MODE = 'view-only'  # api-only | view-only | mixed
+MODE = 'mixed'  # api-only | view-only | mixed
 ENTRIES_PER_PAGE = 5
 FEED_COUNT = 10
 SHOW_TOC = True

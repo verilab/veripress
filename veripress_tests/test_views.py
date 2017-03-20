@@ -75,6 +75,9 @@ def test_page():
         resp = c.get('/test-page.html')
         assert 'Test Page' in resp.data.decode('utf-8')
 
+        resp = c.get('/..%2F..%2Fetc%2Fpasswd')
+        assert resp.status_code == 403
+
 
 def test_tags_categories_archive_search():
     with app.test_client() as c:

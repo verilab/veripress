@@ -180,7 +180,7 @@ class Storage(object):
                     end += timedelta(days=1)
 
                 def get_filter_func(attr_, start_dt, end_dt):
-                    return lambda p: start_dt < getattr(p, attr_) < end_dt
+                    return lambda p: start_dt <= getattr(p, attr_) < end_dt
 
                 filter_funcs.append(get_filter_func(attr, start, end))
 

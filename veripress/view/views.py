@@ -8,7 +8,7 @@ from veripress.view import templated, custom_render_template
 from veripress.model import storage
 from veripress.model.models import Base
 from veripress.model.parsers import get_parser
-from veripress.helpers import timezone_from_str, parse_toc
+from veripress.helpers import timezone_from_str, parse_toc, validate_custom_page_path
 
 make_abs_url = lambda u: request.script_root + u  # 'u' means unique key
 
@@ -76,6 +76,9 @@ def post(year, month, day, post_name):
 
 @templated()
 def page(rel_url):
+    if not validate_custom_page_path(rel_url):
+        abort(403)
+
     fixed_rel_url, exists = storage.fix_page_relative_url(rel_url)
     if exists:
         file_path = fixed_rel_url
@@ -195,11 +198,9 @@ def feed():
     fg = FeedGenerator()
     fg.id(request.url_root)
     if 'title' in site:
-        fg.title(site.get('title', ''))
+        fg.title(site['title'])
     if 'subtitle' in site:
-        fg.subtitle(site.get('subtitle', ''))
-    if 'language' in site:
-        fg.language(site.get('language', ''))
+        fg.subtitle(site['subtitle'])
     fg.author(dict(name=site.get('author', ''), email=site.get('email', '')))
     fg.link(href=request.url_root, rel='alternate')
     fg.link(href=url_for('.feed'), rel='self')
