@@ -107,7 +107,7 @@ def parser(format_name, ext_names=None):
 class TxtParser(Parser):
     """Txt content parser."""
 
-    _read_more_exp = re.compile('-{3,}[ \t]*more[ \t]*-{3,}', re.IGNORECASE)
+    _read_more_exp = re.compile(r'\r?\n-{3,}[ \t]*more[ \t]*-{3,}\r?\n', re.IGNORECASE)
 
     def parse_whole(self, raw_content):
         raw_content = self.remove_read_more_sep(raw_content)
@@ -118,7 +118,7 @@ class TxtParser(Parser):
 class MarkdownParser(Parser):
     """Markdown content parser."""
 
-    _read_more_exp = re.compile('<!--\s*more\s*-->', re.IGNORECASE)
+    _read_more_exp = re.compile(r'\r?\n<!--\s*more\s*-->\r?\n', re.IGNORECASE)
 
     class HighlightRenderer(mistune.Renderer):
         """Custom mistune render to parse block code."""
