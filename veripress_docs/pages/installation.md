@@ -2,7 +2,7 @@
 title: 安装
 author: Richard Chien
 created: 2017-03-19
-updated: 2017-03-19
+updated: 2017-03-20
 ---
 
 要使用 VeriPress，你的电脑上需要安装有 Python 3.4 或更新版本和 pip 命令。如果你的系统中同时安装有 Python 2.x 版本，你可能需要将下面的 `python` 和 `pip` 命令换成 `python3` 和 `pip3`，此外对于非 root 或非管理员用户，还需要加 `sudo` 或使用管理员身份启动命令行。
@@ -19,9 +19,9 @@ $ pip install veripress
 
 ## 在 virtualenv 中安装
 
-由于安装 VeriPress 的同时会安装一些依赖包，你可能不希望这些依赖装到系统的全局环境，这种情况下，使用 `virtualenv` 创建一个虚拟环境是一种不错的选择。
+由于安装 VeriPress 的同时会安装一些依赖包，你可能不希望这些依赖装到系统的全局环境，这种情况下，使用 virtualenv 创建一个虚拟环境是一种不错的选择。
 
-如果你还没有安装 `virtualenv`，请使用下面命令安装：
+如果你还没有安装 virtualenv，请使用下面命令安装：
 
 ```sh
 $ pip install virtualenv
@@ -54,10 +54,12 @@ $ pip install veripress
 $ deactivate
 ```
 
-在 `virtualenv` 中使用可以获得一个隔离的环境，但同时也需要多余的命令来进入和离开虚拟环境，因此你需要根据情况选择适合自己的安装方式。
+在 virtualenv 中使用可以获得一个隔离的环境，但同时也需要多余的命令来进入和离开虚拟环境，因此你需要根据情况选择适合自己的安装方式。
 
 ## 在 Windows 上安装
 
-在 Windows 上安装 VeriPress 没有什么特殊要求，只要正确安装了 Python 和 pip，就可以正常使用 `pip install veripress` 来安装，同样你也可以使用 `virtualenv`。
+在 Windows 上安装 VeriPress 没有什么特殊要求，只要正确安装了 Python 和 pip，就可以正常使用 `pip install veripress` 来安装，同样你也可以使用 virtualenv。
 
 但由于 Windows 的特殊性，如果你在安装和之后的使用过程中遇到了问题，请提交 issue 反馈。
+
+此外，后面的文档中给出的示例命令将会统一使用 Unix 命令，一般在 Windows 上都有相对应的命令可以完成同样的操作（比如创建文件夹）。
