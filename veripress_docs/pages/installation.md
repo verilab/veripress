@@ -15,7 +15,7 @@ updated: 2017-03-20
 $ pip install veripress
 ```
 
-安装之后一个 `veripress` 命令会被安装在系统中，通常在 `/usr/local/bin/veripress`。在命令行中运行 `veripress --help` 可以查看命令的使用帮助，当然，如果这是你第一次使用，你可能更需要首先阅读后面的 [开始使用](TODO) 文档。
+安装之后一个 `veripress` 命令会被安装在系统中，通常在 `/usr/local/bin/veripress`。在命令行中运行 `veripress --help` 可以查看命令的使用帮助，当然，如果这是你第一次使用，你可能更需要首先阅读后面的 [开始使用](getting-started.html) 文档。
 
 ## 在 virtualenv 中安装
 
