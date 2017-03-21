@@ -63,3 +63,23 @@ $ deactivate
 但由于 Windows 的特殊性，如果你在安装和之后的使用过程中遇到了问题，请提交 issue 反馈。
 
 此外，后面的文档中给出的示例命令将会统一使用 Unix 命令，一般在 Windows 上都有相对应的命令可以完成同样的操作（比如创建文件夹）。
+
+## 使用 Docker
+
+VeriPress 官方提供了简便易用的 docker 镜像，如果你的系统中安装了 docker，并且希望在比较隔离的环境中使用 VeriPress，可以考虑通过 docker 来安装。直接拉取 DockerHub 的镜像：
+
+```sh
+$ docker pull veripress/veripress
+```
+
+镜像的最新版本（latest）将和 GitHub 上最新的 tag 一致，同时也和 PyPI 上的最新版本一致。
+
+使用方式如下：
+
+```sh
+$ docker run -ti --rm -v $(pwd):/instance veripress/veripress --help
+```
+
+这将会把当前目录挂载到容器中的 `/instance` 目录，作为 VeriPress 的实例目录（在下一篇 [开始使用](getting-started.html) 中你将会了解到什么是「实例目录」。镜像的 `ENTRYPOINT` 是 `veripress` 命令，因此直接在 `docker run` 命令的结尾加上 `veripress` 的子命令即可使用，在后面的文档中将不再对 docker 进行单独阐述，使用方式都是一致的。
+
+建议把 `docker run -ti --rm -v $(pwd):/instance veripress/veripress` alias 成一个简短的命令，这样可以更方便的使用（基本和使用本地命令没差）。另外，在要运行 VeriPress 实例时，需要加 `-p` 来进行端口映射。
