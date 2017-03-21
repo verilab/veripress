@@ -2,7 +2,7 @@
 title: 概览
 author: Richard Chien
 created: 2017-03-19
-updated: 2017-03-20
+updated: 2017-03-21
 ---
 
 ## 简介
@@ -22,4 +22,3 @@ VeriPress 是一个功能强大且易于上手的博客引擎，使用 Python 3.
 - [Webhook](webhook.html)
 - [API 模式](api-mode.html)
 - [制作主题](making-your-own-theme.html)
-- [开发](development.html)

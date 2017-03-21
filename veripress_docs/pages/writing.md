@@ -58,10 +58,10 @@ is_draft: true
 | ------------ | ---------------------------------------- | ---------------------------------------- |
 | `title`      | 文件名的 `post-name` 中 `-` 换成空格并让每个单词首字母大写，如 `Post Name` | 文章标题                                     |
 | `layout`     | `post`                                   | 文章的页面布局，VeriPress 会在主题的模板目录中寻找和这个项同名的模板文件来渲染页面，一般情况下保持默认即可 |
-| `author`     | `site.json` 中的 author 项                  | 文章的作者名                                   |
-| `email`      | `site.json` 中的 email 项                   | 文章的作者 email                              |
+| `author`     | `site.json` 中的 `author` 项                | 文章的作者名                                   |
+| `email`      | `site.json` 中的 `email` 项                 | 文章的作者 email                              |
 | `created`    | 文件名中的日期的 00:00:00                        | 创建时间                                     |
-| `updated`    | 等于 created                               | 更新时间                                     |
+| `updated`    | 等于 `created`                             | 更新时间                                     |
 | `tags`       | 空列表                                      | 文章所属标签，可使用 YAML 字符串或列表，如 `tags: Hello` 或 `tags: [TagA, TagB]` |
 | `categories` | 空列表                                      | 文章所属分类，同样可使用 YAML 字符串或列表                 |
 
@@ -69,8 +69,8 @@ is_draft: true
 
 文章还支持在正文中划分预览部分，从而在文章列表中仅显示预览部分，以节省页面空间。不同的文件格式，使用不同的预览分隔标记（或称阅读更多标记），如下：
 
-| 格式名称     | 预览分隔标记／阅读更多标记     |
-| -------- | ----------------- |
+| 格式名称     | 预览分隔标记／阅读更多标记 |
+| -------- | ------------- |
 | markdown | `<!--more-->` |
 | txt      | `---more---`  |
 
@@ -100,10 +100,10 @@ is_draft: true
 | --------- | ---------------------------------------- | ---------------------------------------- |
 | `title`   | 文件名的中 `-` 换成空格并让每个单词首字母大写，对于 `index.xx` 将对它的上一级目录进行转换，如 `hello-world/index.md` 的默认标题为 `Hello World`，`hello.md` 默认为 `Hello` | 页面的标题                                    |
 | `layout`  | `page`                                   | 自定义页面的页面布局，VeriPress 会在主题的模板目录中寻找和这个项同名的模板文件来渲染页面，一般情况下保持默认即可 |
-| `author`  | `site.json` 中的 author 项                  | 页面的作者名                                   |
-| `email`   | `site.json` 中的 email 项                   | 页面的作者 email                              |
+| `author`  | `site.json` 中的 `author` 项                | 页面的作者名                                   |
+| `email`   | `site.json` 中的 `email` 项                 | 页面的作者 email                              |
 | `created` | 空                                        | 创建时间                                     |
-| `updated` | 等于 created                               | 更新时间                                     |
+| `updated` | 等于 `created`                             | 更新时间                                     |
 
 ## 页面部件（Widget）
 
