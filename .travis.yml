@@ -3,10 +3,18 @@ python:
   - '3.4'
   - "3.5"
 
+sudo: required
+
+services:
+  - docker
+
 env:
   global:
     - GIT_NAME: "Richard Chien"
     - GIT_EMAIL: richardchienthebest@gmail.com
+    - DOCKER_USER: richardchien
+    - DOCKER_EMAIL: richardchienthebest@gmail.com
+    - DOCKER_REPO: veripress/veripress
 
 before_install:
   - nvm install 4
