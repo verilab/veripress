@@ -2,7 +2,7 @@
 title: 安装
 author: Richard Chien
 created: 2017-03-19
-updated: 2017-03-20
+updated: 2017-03-21
 ---
 
 要使用 VeriPress，你的电脑上需要安装有 Python 3.4 或更新版本和 pip 命令。如果你的系统中同时安装有 Python 2.x 版本，你可能需要将下面的 `python` 和 `pip` 命令换成 `python3` 和 `pip3`，此外对于非 root 或非管理员用户，还需要加 `sudo` 或使用管理员身份启动命令行。

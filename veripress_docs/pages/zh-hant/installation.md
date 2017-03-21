@@ -2,7 +2,7 @@
 title: 安裝
 author: Richard Chien
 created: 2017-03-19
-updated: 2017-03-20
+updated: 2017-03-21
 ---
 
 要使用 VeriPress，你的電腦上需要安裝有 Python 3.4 或更新版本和 pip 命令。如果你的系統中同時安裝有 Python 2.x 版本，你可能需要將下面的 `python` 和 `pip` 命令換成 `python3` 和 `pip3`，此外對於非 root 或非管理員使用者，還需要加 `sudo` 或使用管理員身份啟動命令列。
@@ -63,3 +63,23 @@ $ deactivate
 但由於 Windows 的特殊性，如果你在安裝和之後的使用過程中遇到了問題，請提交 issue 回饋。
 
 此外，後面的文檔中給出的示例命令將會統一使用 Unix 命令，一般在 Windows 上都有相對應的命令可以完成同樣的操作（比如創建資料夾）。
+
+## 使用 Docker
+
+VeriPress 官方提供了簡便易用的 docker 鏡像，如果你的系統中安裝了 docker，並且希望在比較隔離的環境中使用 VeriPress，可以考慮通過 docker 來安裝。直接拉取 DockerHub 的鏡像：
+
+```sh
+$ docker pull veripress/veripress
+```
+
+鏡像的最新版本（latest）將和 GitHub 上最新的 tag 一致，同時也和 PyPI 上的最新版本一致。
+
+使用方式如下：
+
+```sh
+$ docker run -ti --rm -v $(pwd):/instance veripress/veripress --help
+```
+
+這將會把目前的目錄掛載到容器中的 `/instance` 目錄，作為 VeriPress 的實例目錄（在下一篇 [開始使用](getting-started.html) 中你將會瞭解到什麼是「實例目錄」。鏡像的 `ENTRYPOINT` 是 `veripress` 命令，因此直接在 `docker run` 命令的結尾加上 `veripress` 的子命令即可使用，在後面的文檔中將不再對 docker 進行單獨闡述，使用方式都是一致的。
+
+建議把 `docker run -ti --rm -v $(pwd):/instance veripress/veripress` alias 成一個簡短的命令，這樣可以更方便的使用（基本和使用本地命令沒差）。另外，在要運行 VeriPress 實例時，需要加 `-p` 來進行埠映射。
