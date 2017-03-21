@@ -14,6 +14,12 @@ class Parser(object):
     # this should be overridden in subclasses, and should be a compiled regular expression
     _read_more_exp = None
 
+    def __init__(self):
+        if self._read_more_exp is not None and isinstance(self._read_more_exp, str):
+            # compile the regular expression
+            # make the regex require new lines above and below the sep flag
+            self._read_more_exp = re.compile(r'\r?\n\s*?' + self._read_more_exp + r'\s*?\r?\n', re.IGNORECASE)
+
     def parse_preview(self, raw_content):
         """
         Parse the preview part of the content,
@@ -107,7 +113,7 @@ def parser(format_name, ext_names=None):
 class TxtParser(Parser):
     """Txt content parser."""
 
-    _read_more_exp = re.compile(r'\r?\n-{3,}[ \t]*more[ \t]*-{3,}\r?\n', re.IGNORECASE)
+    _read_more_exp = r'-{3,}[ \t]*more[ \t]*-{3,}'
 
     def parse_whole(self, raw_content):
         raw_content = self.remove_read_more_sep(raw_content)
@@ -118,7 +124,7 @@ class TxtParser(Parser):
 class MarkdownParser(Parser):
     """Markdown content parser."""
 
-    _read_more_exp = re.compile(r'\r?\n<!--\s*more\s*-->\r?\n', re.IGNORECASE)
+    _read_more_exp = r'<!--\s*more\s*-->'
 
     class HighlightRenderer(mistune.Renderer):
         """Custom mistune render to parse block code."""
