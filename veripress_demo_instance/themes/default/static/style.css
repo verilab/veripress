@@ -14,13 +14,14 @@ img {
     max-width: 100%;
 }
 
-pre.txt {
+.markdown-body pre.txt {
     white-space: pre-wrap;
     white-space: -moz-pre-wrap;
     white-space: -o-pre-wrap;
     word-wrap: break-word;
     background-color: inherit;
     border: none;
+    padding: 0;
 }
 
 a {
