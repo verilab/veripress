@@ -24,18 +24,6 @@ img {
     padding: 0;
 }
 
-a {
-    -webkit-transition: all 300ms ease;
-    -moz-transition: all 300ms ease;
-    -ms-transition: all 300ms ease;
-    -o-transition: all 300ms ease;
-    transition: all 300ms ease;
-}
-
-a:hover, a:focus {
-    text-decoration: none;
-}
-
 .nav-container {
     padding: 15px 15px 20px;
 }
