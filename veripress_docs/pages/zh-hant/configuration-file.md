@@ -30,7 +30,7 @@ VeriPress 在設計時允許了未來加入不同的存儲方式（比如資料�
 | 配置值             | 說明                |
 | --------------- | ----------------- |
 | `null`          | 不使用緩存             |
-| `simple`        | 簡單記憶體緩存            |
+| `simple`        | 簡單記憶體緩存           |
 | `memcached`     | Memcached 緩存      |
 | `gaememcached`  | GAE memcached 緩存  |
 | `saslmemcached` | SASL memcached 緩存 |
@@ -95,15 +95,15 @@ VeriPress 支援三種運行模式：`view-only`、`api-only`、`mixed`。`view-
 
 例如你有一個自訂頁面在 `pages/a/b/c.md`，使用 Markdown 編寫，訪問 `/a/b/c.html` 講可以獲取這個檔解析後的頁面，如果將此配置設置為 `True`（預設為 `False`），則還可以通過 `/a/b/c.md` 來訪問原始檔。
 
-## DUOSHUO_ENABLED、DUOSHUO_SHORT_NAME、DISQUS_ENABLED 和 DISQUS_SHORT_NAME
+## DISQUS_ENABLED 和 DISQUS_SHORT_NAME
 
-指定是否開啟多說或 Disqus 評論框，以及它們的 shortname。
+指定是否開啟 Disqus 評論框，以及它的 shortname。
 
-default 主題和 clean-doc 主題支援多說和 Disqus 評論框，例如設置：
+default 主題和 clean-doc 主題支援 Disqus 評論框，例如設置：
 
 ```py
-DUOSHUO_ENABLED = True
-DUOSHUO_SHORT_NAME = 'your-shorname'
+DISQUS_ENABLED = True
+DISQUS_SHORT_NAME = 'your-shorname'
 ```
 
-將會在文章和自訂頁面底部顯示多說評論框，Disqus 同理。
+將會在文章和自訂頁面底部顯示 Disqus 評論框。
