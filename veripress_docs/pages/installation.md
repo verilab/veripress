@@ -2,7 +2,7 @@
 title: 安装
 author: Richard Chien
 created: 2017-03-19
-updated: 2017-03-21
+updated: 2017-03-22
 ---
 
 要使用 VeriPress，你的电脑上需要安装有 Python 3.4 或更新版本和 pip 命令。如果你的系统中同时安装有 Python 2.x 版本，你可能需要将下面的 `python` 和 `pip` 命令换成 `python3` 和 `pip3`，此外对于非 root 或非管理员用户，还需要加 `sudo` 或使用管理员身份启动命令行。
@@ -82,4 +82,13 @@ $ docker run -ti --rm -v $(pwd):/instance veripress/veripress --help
 
 这将会把当前目录挂载到容器中的 `/instance` 目录，作为 VeriPress 的实例目录（在下一篇 [开始使用](getting-started.html) 中你将会了解到什么是「实例目录」。镜像的 `ENTRYPOINT` 是 `veripress` 命令，因此直接在 `docker run` 命令的结尾加上 `veripress` 的子命令即可使用，在后面的文档中将不再对 docker 进行单独阐述，使用方式都是一致的。
 
-建议把 `docker run -ti --rm -v $(pwd):/instance veripress/veripress` alias 成一个简短的命令，这样可以更方便的使用（基本和使用本地命令没差）。另外，在要运行 VeriPress 实例时，需要加 `-p` 来进行端口映射。
+建议把 `docker run -ti --rm -v $(pwd):/instance veripress/veripress` alias 成一个简短的命令，这样可以更方便的使用（基本和使用本地命令没差）。另外，在要运行 VeriPress 实例时，需要加 `-p` 来进行端口映射。记得使用单引号来避免定义 alias 时 `$(pwd)` 被求值。例如：
+
+```sh
+$ alias veripress='docker run -ti --rm -v $(pwd):/instance -p 8080:8080 veripress/veripress'
+$ mkdir ~/my-instance
+$ cd ~/my-instance
+$ veripress init
+$ veripress theme install default
+$ veripress preview --host 0.0.0.0 --port 8080
+```
