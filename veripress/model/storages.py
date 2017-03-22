@@ -242,17 +242,24 @@ class FileStorage(Storage):
                 return index_html_file_path, True
             return rel_url, False
         elif os.path.isfile(file_path):
-            return file_path, True
+            ext = os.path.splitext(file_path)[1][1:]
+            if get_standard_format_name(ext) is not None:
+                # is source of custom page
+                if current_app.config['PAGE_SOURCE_ACCESSIBLE']:
+                    return file_path, True
+            else:
+                # is other direct files
+                return file_path, True
         elif os.path.isdir(file_path):
             return rel_url + '/', False
+
+        sp = rel_url.rsplit('/', 1)
+        m = re.match('(.+)\.html?', sp[-1])
+        if m:
+            sp[-1] = m.group(1) + '.html'
         else:
-            sp = rel_url.rsplit('/', 1)
-            m = re.match('(.+)\.html?', sp[-1])
-            if m:
-                sp[-1] = m.group(1) + '.html'
-            else:
-                sp[-1] += '.html'
-            return '/'.join(sp), False
+            sp[-1] += '.html'
+        return '/'.join(sp), False
 
     @staticmethod
     @cache.memoize(timeout=1 * 60)

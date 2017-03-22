@@ -2,7 +2,7 @@
 title: 配置文件
 author: Richard Chien
 created: 2017-03-20
-updated: 2017-03-20
+updated: 2017-03-22
 ---
 
 `config.py` 文件即 VeriPress 的配置文件，初始化实例之后会生成一份默认的配置，多数情况下，你可能需要秀改配置文件来符合个性化的需求，同时，配置文件可以被主题模板获取到，因此某些主题可能会对配置文件的某些项的不同配置表现出不同的行为。
@@ -88,6 +88,12 @@ VeriPress 支持三种运行模式：`view-only`、`api-only`、`mixed`。`view-
 指定是否允许搜索自定义页面的内容。
 
 只在动态运行时有效（生成静态文件之后没法搜索）。设置为 `False` 则在搜索时不会搜索自定义页面的内容。另外，只支持搜索 VeriPress 中解析器所支持的格式中的文字，例如使用 Markdown 编写的自定义页面，相反地，直接的 HTML 文件或其它静态文件无法被搜索到。
+
+## PAGE_SOURCE_ACCESSIBLE
+
+指定是否允许访问自定义页面的源文件（这里指需要经过 VeriPress 解析的自定义页面，直接的 HTML 等无论如何都可以访问）。
+
+例如你有一个自定义页面在 `pages/a/b/c.md`，使用 Markdown 编写，访问 `/a/b/c.html` 讲可以获取这个文件解析后的页面，如果将此配置设置为 `True`（默认为 `False`），则还可以通过 `/a/b/c.md` 来访问原始文件。
 
 ## DUOSHUO_ENABLED、DUOSHUO_SHORT_NAME、DISQUS_ENABLED 和 DISQUS_SHORT_NAME
 

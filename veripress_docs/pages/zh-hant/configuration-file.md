@@ -2,7 +2,7 @@
 title: 設定檔
 author: Richard Chien
 created: 2017-03-20
-updated: 2017-03-20
+updated: 2017-03-22
 ---
 
 `config.py` 檔即 VeriPress 的設定檔，初始化實例之後會生成一份預設的配置，多數情況下，你可能需要秀改設定檔來符合個性化的需求，同時，設定檔可以被主題範本獲取到，因此某些主題可能會對設定檔的某些項的不同配置表現出不同的行為。
@@ -89,6 +89,12 @@ VeriPress 支援三種運行模式：`view-only`、`api-only`、`mixed`。`view-
 
 只在動態運行時有效（生成靜態檔之後沒法搜索）。設置為 `False` 則在搜索時不會搜索自訂頁面的內容。另外，只支援搜索 VeriPress 中解析器所支援的格式中的文字，例如使用 Markdown 編寫的自訂頁面，相反地，直接的 HTML 檔或其它靜態檔無法被搜索到。
 
+## PAGE_SOURCE_ACCESSIBLE
+
+指定是否允許訪問自訂頁面的原始檔案（這裡指需要經過 VeriPress 解析的自訂頁面，直接的 HTML 等無論如何都可以訪問）。
+
+例如你有一個自訂頁面在 `pages/a/b/c.md`，使用 Markdown 編寫，訪問 `/a/b/c.html` 講可以獲取這個檔解析後的頁面，如果將此配置設置為 `True`（預設為 `False`），則還可以通過 `/a/b/c.md` 來訪問原始檔。
+
 ## DUOSHUO_ENABLED、DUOSHUO_SHORT_NAME、DISQUS_ENABLED 和 DISQUS_SHORT_NAME
 
 指定是否開啟多說或 Disqus 評論框，以及它們的 shortname。
@@ -96,8 +102,8 @@ VeriPress 支援三種運行模式：`view-only`、`api-only`、`mixed`。`view-
 default 主題和 clean-doc 主題支援多說和 Disqus 評論框，例如設置：
 
 ```py
-DISQUS_ENABLED = True
-DISQUS_SHORT_NAME = 'your-shorname'
+DUOSHUO_ENABLED = True
+DUOSHUO_SHORT_NAME = 'your-shorname'
 ```
 
-將會在文章和自訂頁面底部顯示 Disqus 評論框，多說同理。
+將會在文章和自訂頁面底部顯示多說評論框，Disqus 同理。

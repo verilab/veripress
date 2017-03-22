@@ -2,7 +2,7 @@
 title: 撰寫內容
 author: Richard Chien
 created: 2017-03-20
-updated: 2017-03-20
+updated: 2017-03-22
 ---
 
 VeriPress 支援三種內容形式：文章（post）、自訂頁面（page）、頁面部件（widget）。其中，文章（post）是指可以通過 `/post/<year>/<month>/<day>/<post_name>/` 形式的 URL 訪問的頁面；自訂頁面（page）是指直接在根 URL 後加上頁面路徑來訪問的頁面，如 `/hello/` 或 `/my-custom/page.html`；頁面部件（widget）是指常駐頁面的小部件，需要主題支援，預設主題只支援一種部件，也就是側邊欄部件。
@@ -86,7 +86,7 @@ is_draft: true
 
 之所以稱為自訂頁面，是因為這種內容形式自訂性比較強，你可以在 `pages` 中創建多級目錄來組織自訂頁面，甚至可以直接將 HTML 檔或其它靜態檔放在裡面。
 
-對於使用非 HTML、且 VeriPress 支持的檔案格式，可以通過 `.html` 尾碼的 URL 來訪問，比如有一個自訂頁面的檔路徑是 `/pages/a/b/c/d.md`，你將可以通過 `/a/b/c/d.html` 來訪問這個頁面，與此同時，你還可以直接通過 `/a/b/c/d.md` 來訪問這個原始 Markdown 檔。如果這裡的 Markdown 檔案名是 `index`，例如 `/pages/a/b/c/index.md`，你還可以通過 `/a/b/c/` 來訪問。
+對於使用非 HTML、且 VeriPress 支持的檔案格式，可以通過 `.html` 尾碼的 URL 來訪問，比如有一個自訂頁面的檔路徑是 `/pages/a/b/c/d.md`，你將可以通過 `/a/b/c/d.html` 來訪問這個頁面，與此同時，你還可以直接通過 `/a/b/c/d.md` 來訪問這個原始 Markdown 檔（前提是設定檔中的 `PAGE_SOURCE_ACCESSIBLE` 設置為 `True`，見 [設定檔](configuration-file.html#PAGE-SOURCE-ACCESSIBLE)）。如果這裡的 Markdown 檔案名是 `index`，例如 `/pages/a/b/c/index.md`，你還可以通過 `/a/b/c/` 來訪問。
 
 而如果直接使用 HTML 檔，邏輯則更加簡單：只要這個檔存在，就會直接返回，例如你可以通過 URL `/abc/index.html` 或 `/abc/` 來訪問檔 `/pages/abc/index.html`。
 

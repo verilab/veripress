@@ -49,7 +49,8 @@ def create_app(config_filename, instance_path=None):
                             SHOW_TOC=True,
                             TOC_DEPTH=3,
                             TOC_LOWEST_LEVEL=3,
-                            ALLOW_SEARCH_PAGES=True))
+                            ALLOW_SEARCH_PAGES=True,
+                            PAGE_SOURCE_ACCESSIBLE=False))
     app_.config.from_pyfile(config_filename, silent=True)
 
     theme_folder = os.path.join(app_.instance_path, 'themes', app_.config['THEME'])

@@ -62,10 +62,7 @@ def do_generate():
     os.makedirs(dst_static_folder, mode=0o755, exist_ok=True)
     copy_folder_content(app.theme_static_folder, dst_static_folder)
 
-    # generate custom pages
-    copy_folder_content(os.path.join(app.instance_path, 'pages'), deploy_dir)
-
-    # collect all possible urls
+    # collect all possible urls (except custom pages)
     all_urls = {'/', '/feed.xml', '/atom.xml', '/archive/'}
     with app.app_context():
         posts = list(storage.get_posts(include_draft=False))
@@ -87,9 +84,6 @@ def do_generate():
         for category_item in categories:
             all_urls.add('/category/{}/'.format(category_item[0]))
 
-        pages = storage.get_pages(include_draft=False)
-        [all_urls.add(page.unique_key) for page in pages]
-
     with app.test_client() as client:
         # generate all possible urls
         for url in all_urls:
@@ -107,6 +101,43 @@ def do_generate():
                           '-because-it-is-a-post-with-wrong-url-format/')
         with open(os.path.join(deploy_dir, '404.html'), 'wb') as f:
             f.write(resp.data)
+
+    if app.config['STORAGE_TYPE'] == 'file':
+        generate_pages_by_file()
+
+
+def generate_pages_by_file():
+    """Generates custom pages of 'file' storage type."""
+    from veripress import app
+    from veripress.model import storage
+    from veripress.model.parsers import get_standard_format_name
+    from veripress.helpers import traverse_directory
+
+    deploy_dir = get_deploy_dir()
+
+    def copy_file(src, dst):
+        os.makedirs(os.path.dirname(dst), mode=0o755, exist_ok=True)
+        shutil.copyfile(src, dst)
+
+    with app.app_context(), app.test_client() as client:
+        root_path = os.path.join(app.instance_path, 'pages')
+        for path in traverse_directory(root_path):
+            rel_path = os.path.relpath(path, root_path)  # e.g. 'a/b/c/index.md'
+            filename, ext = os.path.splitext(rel_path)  # e.g. ('a/b/c/index', '.md')
+            if get_standard_format_name(ext[1:]) is not None:
+                # is source of custom page
+                rel_url = filename.replace(os.path.sep, '/') + '.html'  # e.g. 'a/b/c/index.html'
+                page = storage.get_page(rel_url, include_draft=False)
+                if page is not None:
+                    # it's not a draft, so generate the html page
+                    os.makedirs(os.path.join(deploy_dir, os.path.dirname(rel_path)), mode=0o755, exist_ok=True)
+                    with open(os.path.join(deploy_dir, filename + '.html'), 'wb') as f:
+                        f.write(client.get('/' + rel_url).data)
+                if app.config['PAGE_SOURCE_ACCESSIBLE']:
+                    copy_file(path, os.path.join(deploy_dir, rel_path))
+            else:
+                # is other direct files
+                copy_file(path, os.path.join(deploy_dir, rel_path))
 
 
 def copy_folder_content(src, dst):

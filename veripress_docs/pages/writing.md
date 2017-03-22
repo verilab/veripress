@@ -2,7 +2,7 @@
 title: 撰写内容
 author: Richard Chien
 created: 2017-03-20
-updated: 2017-03-20
+updated: 2017-03-22
 ---
 
 VeriPress 支持三种内容形式：文章（post）、自定义页面（page）、页面部件（widget）。其中，文章（post）是指可以通过 `/post/<year>/<month>/<day>/<post_name>/` 形式的 URL 访问的页面；自定义页面（page）是指直接在根 URL 后加上页面路径来访问的页面，如 `/hello/` 或 `/my-custom/page.html`；页面部件（widget）是指常驻页面的小部件，需要主题支持，默认主题只支持一种部件，也就是侧边栏部件。
@@ -86,7 +86,7 @@ is_draft: true
 
 之所以称为自定义页面，是因为这种内容形式自定义性比较强，你可以在 `pages` 中创建多级目录来组织自定义页面，甚至可以直接将 HTML 文件或其它静态文件放在里面。
 
-对于使用非 HTML、且 VeriPress 支持的文件格式，可以通过 `.html` 后缀的 URL 来访问，比如有一个自定义页面的文件路径是 `/pages/a/b/c/d.md`，你将可以通过 `/a/b/c/d.html` 来访问这个页面，与此同时，你还可以直接通过 `/a/b/c/d.md` 来访问这个原始 Markdown 文件。如果这里的 Markdown 文件名是 `index`，例如 `/pages/a/b/c/index.md`，你还可以通过 `/a/b/c/` 来访问。
+对于使用非 HTML、且 VeriPress 支持的文件格式，可以通过 `.html` 后缀的 URL 来访问，比如有一个自定义页面的文件路径是 `/pages/a/b/c/d.md`，你将可以通过 `/a/b/c/d.html` 来访问这个页面，与此同时，你还可以直接通过 `/a/b/c/d.md` 来访问这个原始 Markdown 文件（前提是配置文件中的 `PAGE_SOURCE_ACCESSIBLE` 设置为 `True`，见 [配置文件](configuration-file.html#PAGE-SOURCE-ACCESSIBLE)）。如果这里的 Markdown 文件名是 `index`，例如 `/pages/a/b/c/index.md`，你还可以通过 `/a/b/c/` 来访问。
 
 而如果直接使用 HTML 文件，逻辑则更加简单：只要这个文件存在，就会直接返回，例如你可以通过 URL `/abc/index.html` 或 `/abc/` 来访问文件 `/pages/abc/index.html`。
 
