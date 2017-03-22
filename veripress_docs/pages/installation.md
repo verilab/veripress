@@ -74,7 +74,15 @@ $ docker pull veripress/veripress
 
 镜像的最新版本（latest）将和 GitHub 上最新的 tag 一致，同时也和 PyPI 上的最新版本一致。
 
-使用方式如下：
+由于众所周知的原因，如果你无法直接从 DockerHub 拉取镜像，也可以从 DaoCloud 的镜像仓库拉取：
+
+```sh
+$ docker pull daocloud.io/richardchien/veripress
+```
+
+你也可以选择使用其它 DockerHub 镜像，但可能无法和这两者完全同步更新。
+
+镜像使用方式如下：
 
 ```sh
 $ docker run -ti --rm -v $(pwd):/instance veripress/veripress --help

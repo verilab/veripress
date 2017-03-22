@@ -74,7 +74,7 @@ $ docker pull veripress/veripress
 
 鏡像的最新版本（latest）將和 GitHub 上最新的 tag 一致，同時也和 PyPI 上的最新版本一致。
 
-使用方式如下：
+鏡像使用方式如下：
 
 ```sh
 $ docker run -ti --rm -v $(pwd):/instance veripress/veripress --help

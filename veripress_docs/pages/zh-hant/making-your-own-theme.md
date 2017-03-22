@@ -2,7 +2,7 @@
 title: 製作主題
 author: Richard Chien
 created: 2017-03-21
-updated: 2017-03-21
+updated: 2017-03-22
 ---
 
 VeriPress 原生支援主題，如果你對官方主題或其它協力廠商主題感到不滿意，同時也有一定的程式設計基本知識，你就可以自行製作自己的主題，也歡迎你把自己製作的主題發佈到網上和其他人一起分享。
@@ -45,7 +45,7 @@ VeriPress 使用 Jinja2 範本引擎，下面簡單介紹它的語法。
 | --------------- | --------------------------------------- | ---------------------------------------- |
 | `index.html`    | `entries`、`next_url`、`prev_url`         | 分別是當前分頁上的文章列表、下一頁的 URL、上一頁的 URL          |
 | `post.html`     | `entry`                                 | 當前訪問的文章                                  |
-| `page.html`     | `entry`                                 | 當前訪問的自訂頁面                               |
+| `page.html`     | `entry`                                 | 當前訪問的自訂頁面                                |
 | `archive.html`  | `entries`、`archive_type`、`archive_name` | 分別是當前歸檔的文章列表、歸檔類型、歸檔名稱，其中 `/archive/` 頁面的歸檔類型為 `Archive`，名稱為 `All` 或類似 `2017`、`2017.3`（分別對應 `/archive/2017/` 和 `/archive/2017/03/` 頁面） |
 | `tag.html`      | 同上                                      | 歸檔類型為 `Tag`，歸檔名稱為標籤名                     |
 | `category.html` | 同上                                      | 歸檔類型為 `Category`，歸檔名稱為分類名                |
@@ -66,6 +66,18 @@ VeriPress 使用 Jinja2 範本引擎，下面簡單介紹它的語法。
 對於全域或主題中的 `static` 目錄的檔，使用 `url_for('static', filename='the-filename')` 來獲取。
 
 對於 view 模式的其它頁面，例如你在巡覽列需要提供一個歸檔頁面的連結，使用類似 `url_for('.archive', year=2017)` 的調用。注意 `.archive` 以點號開頭，或者也可以使用 `view.archive`。`url_for()` 的其它參數是用來指定 view 函數的參數的，要熟練使用的話，你可能需要對 Flask 的 URL route 規則有一定瞭解，然後參考 [view/\_\_init\_\_.py](https://github.com/veripress/veripress/blob/master/veripress/view/__init__.py) 檔最底部的 URL 規則。
+
+## 適配不同的運行模式
+
+如果你打算讓主題同時支援動態運行和生成靜態頁面，可以通過 `config` 的 `GENERATING_STATIC_PAGES` 欄位，該欄位在執行 `veripress generate` 命令時被設置為 `True`，而動態運行時則不存在，因此你可以通過如下代碼來對靜態和動態模式：
+
+```html
+{% if not config.GENERATING_STATIC_PAGES %}
+  <div class="col-md-4 search-bar-col">
+    {% include ['custom/searchbar.html', 'searchbar.html'] ignore missing %}
+  </div>
+{% endif %}
+```
 
 ## 調試主題
 

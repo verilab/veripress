@@ -2,7 +2,7 @@
 title: 制作主题
 author: Richard Chien
 created: 2017-03-21
-updated: 2017-03-21
+updated: 2017-03-22
 ---
 
 VeriPress 原生支持主题，如果你对官方主题或其它第三方主题感到不满意，同时也有一定的编程基本知识，你就可以自行制作自己的主题，也欢迎你把自己制作的主题发布到网上和其他人一起分享。
@@ -66,6 +66,18 @@ VeriPress 使用 Jinja2 模板引擎，下面简单介绍它的语法。
 对于全局或主题中的 `static` 目录的文件，使用 `url_for('static', filename='the-filename')` 来获取。
 
 对于 view 模式的其它页面，例如你在导航栏需要提供一个归档页面的链接，使用类似 `url_for('.archive', year=2017)` 的调用。注意 `.archive` 以点号开头，或者也可以使用 `view.archive`。`url_for()` 的其它参数是用来指定 view 函数的参数的，要熟练使用的话，你可能需要对 Flask 的 URL route 规则有一定了解，然后参考 [view/\_\_init\_\_.py](https://github.com/veripress/veripress/blob/master/veripress/view/__init__.py) 文件最底部的 URL 规则。
+
+## 适配不同的运行模式
+
+如果你打算让主题同时支持动态运行和生成静态页面，可以通过 `config` 的 `GENERATING_STATIC_PAGES` 字段，该字段在执行 `veripress generate` 命令时被设置为 `True`，而动态运行时则不存在，因此你可以通过如下代码来对静态和动态模式：
+
+```html
+{% if not config.GENERATING_STATIC_PAGES %}
+  <div class="col-md-4 search-bar-col">
+    {% include ['custom/searchbar.html', 'searchbar.html'] ignore missing %}
+  </div>
+{% endif %}
+```
 
 ## 调试主题
 
