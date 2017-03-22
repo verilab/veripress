@@ -37,7 +37,7 @@ $ veripress preview  # Preview the instance
 
 Run the above commands and then you can visit the very initial VeriPress instance at `http://127.0.0.1:8080/`.
 
-See documentation for more information on how to use VeriPress.
+See [documentation](https://veripress.github.io/docs/) for more information on how to use VeriPress.
 
 ## Documentation
 
