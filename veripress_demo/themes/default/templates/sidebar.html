@@ -1,0 +1,11 @@
+{% if not config.GENERATING_STATIC_PAGES %}
+  {% include ['custom/searchbar.html', 'searchbar.html'] ignore missing %}
+{% endif %}
+
+{% for widget in storage.get_widgets(position='sidebar') %}
+  <div class="panel panel-primary">
+    <div class="panel-body markdown-body">
+      {{ widget|content|safe }}
+    </div>
+  </div>
+{% endfor %}

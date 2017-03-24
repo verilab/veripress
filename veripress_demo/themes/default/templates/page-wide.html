@@ -1,0 +1,35 @@
+{% extends 'layout-wide.html' %}
+
+{% block head %}
+  {{ super() }}
+  <title>{{ entry.title + ' - ' + site.title }}</title>
+{% endblock %}
+
+{% block body %}
+
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        Page
+        <i class="fa fa-fw fa-angle-right"></i>
+      </h3>
+    </div>
+    <div class="panel-body markdown-body">
+      <article>
+        <h1>{{ entry.title }}</h1>
+        {% if entry.toc_html %}
+          <hr>
+          {{ entry.toc_html|safe }}
+          <hr>
+        {% endif %}
+        {{ entry.content|safe }}
+      </article>
+    </div>
+    <div class="panel-footer">
+      <span><i class="fa fa-fw fa-user"></i>{{ entry.author }}</span>
+    </div>
+  </div>
+
+  {% include ['custom/discuss_thread.html', 'discuss_thread.html'] ignore missing %}
+
+{% endblock %}

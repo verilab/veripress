@@ -1,0 +1,28 @@
+<script type="text/javascript">
+    var elems = document.getElementsByTagName("a");
+    for (var i = 0; i < elems.length; i++) {
+        if (elems[i].href.indexOf(document.domain) < 0) {
+            elems[i].target = "_blank";
+        }
+    }
+    var navLinks = document.querySelectorAll(".nav-tabs li a");
+    for (i = 0; i < navLinks.length; i++) {
+        if (document.location.href === navLinks[i].href) {
+            navLinks[i].parentElement.classList.add("active");
+        }
+    }
+    if (!document.getElementById("fix-style-color")) {
+        var a = document.getElementsByTagName("a")[0];
+        var color = window.getComputedStyle(a).color;
+        var css = ".site-header h1 a:hover, .site-header h1 a:focus, h1" +
+            "{ color: " + color + "; }";
+        style = document.createElement("style");
+        style.id = "fix-style-color";
+        if (style.styleSheet) {
+            style.styleSheet.cssText = css;
+        } else {
+            style.appendChild(document.createTextNode(css));
+        }
+        document.getElementsByTagName("head")[0].appendChild(style);
+    }
+</script>
