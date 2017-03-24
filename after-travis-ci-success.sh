@@ -6,5 +6,6 @@ fi
 
 if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
     if [[ $TRAVIS_BRANCH =~ ^v[0-9.]+$ ]]; then docker tag $DOCKER_REPO:$TAG $DOCKER_REPO:latest; fi
+    docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
     docker push $DOCKER_REPO
 fi

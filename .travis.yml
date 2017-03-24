@@ -30,7 +30,6 @@ script:
   - veripress generate --app-root /demo/
   - export VERIPRESS_INSTANCE_PATH=$(pwd)/veripress_docs
   - veripress generate --app-root /docs/
-  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
   - export TAG=`if [[ $TRAVIS_BRANCH =~ ^v[0-9.]+$ ]]; then echo ${TRAVIS_BRANCH#v}; else echo $TRAVIS_BRANCH; fi`
   - docker build -f Dockerfile -t $DOCKER_REPO:$TAG .
 
