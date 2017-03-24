@@ -51,7 +51,7 @@ VeriPress 使用 Jinja2 範本引擎，下面簡單介紹它的語法。
 | `category.html` | 同上                                      | 歸檔類型為 `Category`，歸檔名稱為分類名                |
 | `search.html`   | 同上                                      | 歸檔類型為 `Search`，歸檔名稱為搜索關鍵字加引號             |
 
-以上的「文章」「自訂頁面」的資料，基本上和 [API 模式](api-mode.html#api-posts-獲取文章列表) 獲取到的相似，不同之處在於此處每個物件都多了一個 `url` 欄位，可以用來直接構造連結。
+以上的「文章」「自訂頁面」的資料，基本上和 [API 模式](api-mode.html#api-posts-獲取文章列表) 獲取到的相似，不同之處在於此處每個物件都多了一個 `url` 欄位，可以用來直接構造連結，以及，`created` 和 `updated` 欄位是 Python `datetime` 物件而不是格式化後的字串。
 
 除了上述的每個範本不同的 context 物件，每個範本內都可以訪問 `site` 和 `storage` 兩個物件，前者即 `site.json` 中的內容，後者是當前使用的存儲類型的資料訪問封裝物件，一般很少會直接用這個，只有在獲取頁面部件時有必要使用（因為不是所有頁面都需要顯示部件，何時顯示由主題決定）。由於 `storage` 獲取到的資料是最原始的文章、頁面、部件的物件，這裡不再花費篇幅列出它的方法和獲取的物件中的屬性了，請直接參考 [model/storages.py](https://github.com/veripress/veripress/blob/master/veripress/model/storages.py) 中的 `Storage` 類和 [model/models.py](https://github.com/veripress/veripress/blob/master/veripress/model/models.py) 中的類定義。
 
