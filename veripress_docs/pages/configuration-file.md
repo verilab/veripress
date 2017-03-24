@@ -95,17 +95,16 @@ VeriPress 支持三种运行模式：`view-only`、`api-only`、`mixed`。`view-
 
 例如你有一个自定义页面在 `pages/a/b/c.md`，使用 Markdown 编写，访问 `/a/b/c.html` 讲可以获取这个文件解析后的页面，如果将此配置设置为 `True`（默认为 `False`），则还可以通过 `/a/b/c.md` 来访问原始文件。
 
-## DUOSHUO_ENABLED、DUOSHUO_SHORT_NAME、DISQUS_ENABLED 和 DISQUS_SHORT_NAME
-
+## DISQUS_ENABLED 、DISQUS_SHORT_NAME、DUOSHUO_ENABLED 和 DUOSHUO_SHORT_NAME
 指定是否开启多说或 Disqus 评论框，以及它们的 shortname。
 
 default 主题和 clean-doc 主题支持多说和 Disqus 评论框，例如设置：
 
 ```py
-DUOSHUO_ENABLED = True
-DUOSHUO_SHORT_NAME = 'your-shorname'
+DISQUS_ENABLED = True
+DISQUS_SHORT_NAME = 'your-shorname'
 ```
 
-将会在文章和自定义页面底部显示多说评论框，Disqus 同理。
+将会在文章和自定义页面底部显示 Disqus 评论框，多说同理。
 
 17 年 3 月 22 日注：很遗憾，多说宣布即将关闭服务，将在 6 月 1 日正式关停。
