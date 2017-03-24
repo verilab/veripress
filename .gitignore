@@ -2,8 +2,9 @@
 *.iml
 .DS_Store
 
-veripress_demo_instance/themes/*
-!veripress_demo_instance/themes/default
+veripress_demo/themes/*
+!veripress_demo/themes/default
 dist
 *.egg-info
 .coverage
+__pycache__

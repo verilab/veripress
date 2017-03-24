@@ -32,9 +32,9 @@
     </div>
     <div class="panel-footer">
       <span><i class="fa fa-fw fa-user"></i>{{ entry.author }}</span>
-      <span><i class="fa fa-fw fa-calendar"></i>{{ entry.created.strftime('%Y.%-m.%-d') }}</span>
+      <span><i class="fa fa-fw fa-calendar"></i>{{ entry.created.strftime('%Y.%m.%d') }}</span>
       {% if entry.updated != entry.created %}
-        <span><i class="fa fa-fw fa-refresh"></i>{{ entry.updated.strftime('%Y.%-m.%-d') }}</span>
+        <span><i class="fa fa-fw fa-refresh"></i>{{ entry.updated.strftime('%Y.%m.%d') }}</span>
       {% endif %}
       <span>
       <i class="fa fa-fw fa-tags"></i>
