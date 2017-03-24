@@ -2,6 +2,8 @@
 *.iml
 .DS_Store
 
-dist
 veripress_demo_instance/themes/*
 !veripress_demo_instance/themes/default
+dist
+*.egg-info
+.coverage

@@ -414,7 +414,7 @@ class FileStorage(Storage):
                 if not ext or ext == '.' or get_standard_format_name(ext[1:]) is None:
                     continue  # pragma: no cover, it seems that coverage cannot recognize this line
 
-                if rel_path.endswith('/index'):
+                if rel_path.endswith(os.path.sep + 'index'):
                     rel_path = rel_path[:-len('index')]
                 else:
                     rel_path += '.html'

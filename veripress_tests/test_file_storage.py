@@ -18,8 +18,9 @@ def test_fix_page_relative_url():
 
         assert FileStorage.fix_page_relative_url('style.css') \
                == (os.path.join(current_app.instance_path, 'pages', 'style.css'), True)
+        print(FileStorage.fix_page_relative_url('my-page/index.md'))
         assert FileStorage.fix_page_relative_url('my-page/index.md') \
-               == (os.path.join(current_app.instance_path, 'pages', 'my-page/index.md'), True)
+               == (os.path.join(current_app.instance_path, 'pages', 'my-page', 'index.md'), True)
         app.config['PAGE_SOURCE_ACCESSIBLE'] = False
         assert FileStorage.fix_page_relative_url('my-page/index.md') == ('my-page/index.md.html', False)
         app.config['PAGE_SOURCE_ACCESSIBLE'] = True
