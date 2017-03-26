@@ -3,7 +3,11 @@
 .DS_Store
 
 veripress_demo/themes/*
+veripress_docs/themes/*
 !veripress_demo/themes/default
+!veripress_docs/themes/clean-doc
+veripress_demo/themes/default/.gitignore
+veripress_docs/themes/clean-doc/.gitignore
 dist
 *.egg-info
 .coverage
