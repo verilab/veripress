@@ -1,7 +1,7 @@
 from itertools import islice
 
-from feedgen.feed import FeedGenerator
 from flask import url_for, request, redirect, current_app, send_file, abort, make_response
+from werkzeug.contrib.atom import AtomFeed
 
 from veripress import site, cache
 from veripress.view import templated, custom_render_template
@@ -10,7 +10,9 @@ from veripress.model.models import Base
 from veripress.model.parsers import get_parser
 from veripress.helpers import timezone_from_str, parse_toc, validate_custom_page_path
 
-make_abs_url = lambda u: request.script_root + u  # 'u' means unique key
+
+def make_abs_url(unique_key):
+    return request.script_root + unique_key
 
 
 @cache.memoize(timeout=2 * 60)
@@ -191,30 +193,25 @@ def feed():
         post_d = p.to_dict()
         del post_d['raw_content']
         post_d['content'] = get_parser(p.format).parse_whole(p.raw_content)
-        post_d['url'] = make_abs_url(p.unique_key)
+        post_d['url'] = site['root_url'] + make_abs_url(p.unique_key)
         return post_d
 
     posts = map(convert_to_dict, islice(storage.get_posts(include_draft=False), 0, current_app.config['FEED_COUNT']))
-    fg = FeedGenerator()
-    fg.id(request.url_root)
-    if 'title' in site:
-        fg.title(site['title'])
-    if 'subtitle' in site:
-        fg.subtitle(site['subtitle'])
-    fg.author(dict(name=site.get('author', ''), email=site.get('email', '')))
-    fg.link(href=request.url_root, rel='alternate')
-    fg.link(href=url_for('.feed'), rel='self')
-    for post_ in posts:
-        fe = fg.add_entry()
-        fe.id(post_['url'])
-        fe.title(post_['title'])
-        fe.published(post_['created'].replace(tzinfo=timezone_from_str(site.get('timezone', 'UTC+08:00'))))
-        fe.updated(post_['updated'].replace(tzinfo=timezone_from_str(site.get('timezone', 'UTC+08:00'))))
-        fe.link(href=make_abs_url(post_['unique_key']), rel='alternate')
-        fe.author(dict(name=post_['author'], email=post_['email']))
-        fe.content(post_['content'])
 
-    atom_feed = fg.atom_str(pretty=True)
-    response = make_response(atom_feed)
+    atom = AtomFeed(title=site['title'],
+                    subtitle=site['subtitle'],
+                    url=site['root_url'] + request.script_root,
+                    feed_url=site['root_url'] + url_for('.feed'),
+                    author=site.get('author'))
+    for post_ in posts:
+        atom.add(title=post_['title'],
+                 content=post_['content'],
+                 url=post_['url'],
+                 id=post_['unique_key'],
+                 published=post_['created'].replace(tzinfo=timezone_from_str(site['timezone'])),
+                 updated=post_['updated'].replace(tzinfo=timezone_from_str(site['timezone'])),
+                 author=post_['author'])
+
+    response = make_response(atom.to_string())
     response.content_type = 'application/atom+xml; charset=utf-8'
     return response

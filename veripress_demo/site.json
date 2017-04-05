@@ -1,8 +1,8 @@
 {
-    "title": "VeriPress Demo",
-    "subtitle": "Yet another VeriPress blog.",
-    "author": "My Name",
-    "email": "someone@example.com",
-    "timezone": "UTC+08:00",
-    "root_url": "https://veripress.github.io"
+  "title": "VeriPress Demo",
+  "subtitle": "Yet another VeriPress blog.",
+  "author": "My Name",
+  "email": "someone@example.com",
+  "root_url": "https://veripress.github.io",
+  "timezone": "UTC+08:00"
 }

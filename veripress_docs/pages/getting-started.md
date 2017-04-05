@@ -53,8 +53,8 @@ $ export VERIPRESS_INSTANCE_PATH=/home/user/my-veripress
 | `subtitle` | 网站副标题，对于支持副标题的主题有效                       |
 | `author`   | 网站作者，若文章和页面没有标注作者，则默认使用此项                |
 | `email`    | 网站作者 email，若文章和页面没有标注作者 email，则默认使用此项    |
-| `timezone` | 可选，用于在生成 Atom 订阅时指定时区，格式类似 `UTC+08:00`   |
-| `root_url` | 可选，指定网站的根 URL，不要加结尾的 `/`，如果网站在子目录中，请不要加子目录，如网站在 `http://example.com/blog/` 则填写 `http://example.com`，此项用于生成某些评论框所需的页面完整链接，如不需要评论框，可以不填 |
+| `root_url` | 指定网站的根 URL，不要加结尾的 `/`，如果网站在子目录中，请不要加子目录，如网站在 `http://example.com/blog/` 则填写 `http://example.com`，此项用于生成评论框和 Atom 订阅所需的页面完整链接，但不会影响除了评论框和 Atom 订阅之外的其它功能 |
+| `timezone` | 可选，用于在生成 Atom 订阅时指定时区，格式类似 `UTC+08:00`，默认为 `UTC+00:00` |
 
 ## 安装默认主题
 

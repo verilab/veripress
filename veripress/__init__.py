@@ -65,7 +65,9 @@ app = create_app('config.py')
 
 site = {
     'title': 'Untitled',
-    'subtitle': 'Yet another VeriPress blog.'
+    'subtitle': 'Yet another VeriPress blog.',
+    'root_url': 'http://example.com',
+    'timezone': 'UTC+00:00'
 }
 try:
     with app.open_instance_resource('site.json', mode='r') as site_file:

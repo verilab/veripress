@@ -1,8 +1,8 @@
 {
-    "title": "Untitled",
-    "subtitle": "Yet another VeriPress blog.",
-    "author": "My Name",
-    "email": "someone@example.com",
-    "timezone": "UTC+08:00",
-    "root_url": "https://example.com"
+  "title": "Untitled",
+  "subtitle": "Yet another VeriPress blog.",
+  "author": "My Name",
+  "email": "someone@example.com",
+  "root_url": "https://example.com",
+  "timezone": "UTC+08:00"
 }

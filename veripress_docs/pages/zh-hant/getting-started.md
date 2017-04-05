@@ -31,15 +31,15 @@ $ export VERIPRESS_INSTANCE_PATH=/home/user/my-veripress
 
 上面的初始化命令將會在實例目錄創建若干子目錄和檔：
 
-| 檔／子目錄      | 作用                     |
-| ----------- | ---------------------- |
+| 檔／子目錄       | 作用                    |
+| ----------- | --------------------- |
 | `config.py` | 實例的設定檔                |
-| `site.json` | 網站信息                   |
+| `site.json` | 網站信息                  |
 | `static`    | 全域的靜態檔（預設有一個 favicon） |
-| `themes`    | 存放主題                   |
-| `posts`     | 存放文章（post）             |
+| `themes`    | 存放主題                  |
+| `posts`     | 存放文章（post）            |
 | `pages`     | 存放自訂頁面（page）          |
-| `widgets`   | 存放頁面部件（widget）         |
+| `widgets`   | 存放頁面部件（widget）        |
 
 ## 修改網站資訊
 
@@ -53,8 +53,8 @@ $ export VERIPRESS_INSTANCE_PATH=/home/user/my-veripress
 | `subtitle` | 網站副標題，對於支援副標題的主題有效                       |
 | `author`   | 網站作者，若文章和頁面沒有標注作者，則默認使用此項                |
 | `email`    | 網站作者 email，若文章和頁面沒有標注作者 email，則默認使用此項    |
-| `timezone` | 可選，用於在生成 Atom 訂閱時指定時區，格式類似 `UTC+08:00`   |
-| `root_url` | 可選，指定網站的根 URL，不要加結尾的 `/`，如果網站在子目錄中，請不要加子目錄，如網站在 `http://example.com/blog/` 則填寫 `http://example.com`，此項用於生成某些評論框所需的頁面完整連結，如不需要評論框，可以不填 |
+| `root_url` | 指定網站的根 URL，不要加結尾的 `/`，如果網站在子目錄中，請不要加子目錄，如網站在 `http://example.com/blog/` 則填寫 `http://example.com`，此項用於生成評論框和 Atom 訂閱所需的頁面完整連結，但不會影響除了評論框和 Atom 訂閱之外的其它功能 |
+| `timezone` | 可選，用於在生成 Atom 訂閱時指定時區，格式類似 `UTC+08:00`，默認為 `UTC+00:00` |
 
 ## 安裝預設主題
 
