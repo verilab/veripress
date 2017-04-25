@@ -2,7 +2,7 @@ import os
 import functools
 from itertools import chain
 
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, g
 
 from veripress import site, cache
 from veripress.model import storage
@@ -36,10 +36,15 @@ def custom_render_template(template_name_or_list, **context):
     """
     Try to render templates in the custom folder first, if no custom templates, try the theme's default ones.
     """
-    return render_template(
+    response_str = render_template(
         functools.reduce(lambda x, y: x + [os.path.join('custom', y), y], to_list(template_name_or_list), []),
         **context
     )
+    if hasattr(g, 'status_code'):
+        status_code = g.status_code
+    else:
+        status_code = 200
+    return response_str, status_code
 
 
 def templated(template=None, *templates):
@@ -71,6 +76,7 @@ def templated(template=None, *templates):
 @view_blueprint.errorhandler(404)
 @templated('404.html')
 def page_not_found(e):
+    g.status_code = 404
     pass
 
 
