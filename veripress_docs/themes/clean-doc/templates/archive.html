@@ -35,21 +35,6 @@
             </tbody>
           </table>
 
-          {% if next_url or prev_url %}
-            <ul class="pager">
-              {% if prev_url %}
-                <li class="previous">
-                  <a href="{{ prev_url }}">← Prev</a>
-                </li>
-              {% endif %}
-              {% if next_url %}
-                <li class="next">
-                  <a href="{{ next_url }}">Next →</a>
-                </li>
-              {% endif %}
-            </ul>
-          {% endif %}
-
         {% endif %}
       </article>
     </div>
