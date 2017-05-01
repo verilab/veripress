@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='veripress',
-    version='1.0.4',
+    version='1.0.5',
     packages=find_packages(),
     url='https://github.com/veripress/veripress',
     license='MIT License',
