@@ -59,7 +59,7 @@ def test_txt_parser():
 def test_md_parser():
     renderer = MarkdownParser.HighlightRenderer()
     md = mistune.Markdown(renderer=renderer)
-    assert md('```\nabc\n```').strip() == '<pre><code>abc</code></pre>'
+    assert md('```\nabc\n```').strip() == '<pre>abc</pre>'
     assert re.sub('\s*', '', md('```python\nprint()\n```')) \
            == re.sub('\s*', '', '<div class="highlight"><pre>'
                                 '<span></span><span class="k">print</span><span class="p">()</span>'
