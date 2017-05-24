@@ -75,6 +75,8 @@ def test_pair():
     with raises(IndexError):
         a = pair[2]
 
+    assert len(pair) == 2
+
 
 def test_traverse_dir():
     paths = list(traverse_directory(os.getcwd()))
