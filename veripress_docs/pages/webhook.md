@@ -2,7 +2,7 @@
 title: Webhook
 author: Richard Chien
 created: 2017-03-20
-updated: 2017-03-20
+updated: 2017-05-24
 ---
 
 VeriPress 支持通过接收 webhook 回调来在某些特定外部事件发生时执行自定义 Python 脚本，从而实现例如 GitHub 仓库发生 push 事件就自动拉取最新内容这样的用法。
@@ -15,14 +15,14 @@ VeriPress 支持通过接收 webhook 回调来在某些特定外部事件发生�
 
 ```py
 import os
+import subprocess
 from flask import request
-from veripress import cache
 
 def check_token():
     # 对请求进行鉴权，防止恶意请求
     return True
 
 if check_token():
-    os.system('git pull')
-    cache.clear()
+    log_file = open('webhook.log', 'a')
+    subprocess.Popen(['/bin/sh', 'update.sh'], stdout=log_file)
 ```

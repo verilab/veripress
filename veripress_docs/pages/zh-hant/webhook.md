@@ -16,14 +16,14 @@ VeriPress 支持通過接收 webhook 回呼來在某些特定外部事件發生�
 
 ```py
 import os
+import subprocess
 from flask import request
-from veripress import cache
 
 def check_token():
     # 對請求進行鑒權，防止惡意請求
     return True
 
 if check_token():
-    os.system('git pull')
-    cache.clear()
+    log_file = open('webhook.log', 'a')
+    subprocess.Popen(['/bin/sh', 'update.sh'], stdout=log_file)
 ```
