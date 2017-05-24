@@ -3,6 +3,7 @@ title: 部署網站
 author: Richard Chien
 created: 2017-03-20
 updated: 2017-03-22
+language: zh-hant
 ---
 
 有多種方式可以用來部署 VeriPress 網站，具體使用哪種，取決於你的使用環境和使用習慣。

@@ -2,7 +2,8 @@
 title: 撰寫內容
 author: Richard Chien
 created: 2017-03-20
-updated: 2017-03-22
+updated: 2017-05-24
+language: zh-hant
 ---
 
 VeriPress 支援三種內容形式：文章（post）、自訂頁面（page）、頁面部件（widget）。其中，文章（post）是指可以通過 `/post/<year>/<month>/<day>/<post_name>/` 形式的 URL 訪問的頁面；自訂頁面（page）是指直接在根 URL 後加上頁面路徑來訪問的頁面，如 `/hello/` 或 `/my-custom/page.html`；頁面部件（widget）是指常駐頁面的小部件，需要主題支援，預設主題只支援一種部件，也就是側邊欄部件。
@@ -44,7 +45,9 @@ is_draft: true
 正文內容
 ```
 
-則它將不會顯示在文章清單中，也無法通過具體路徑訪問（API 也無法訪問）。`is_draft` 的預設值是 `false`，因此如果不填，默認認為不是草稿，會將其發佈。
+則它將不會顯示在文章清單中，也無法通過具體路徑訪問（API 也無法訪問）。`is_draft` 的預設值是 `false`，因此如果不填，默認認為不是草稿，會將其發佈。這個元資訊的效果是由 VeriPress 核心程式所保證的，因此不會受主題的影響。
+
+另外，所有官方主題（即 [veripress/themes](https://github.com/veripress/themes) 倉庫中的主題），均支援 `language` 元資訊（三種內容形式都支援），此元資訊項的值，會覆蓋 `site.json` 中的同名項，見 [修改網站資訊](getting-started.html#修改網站資訊)。
 
 ## 文章（Post）
 

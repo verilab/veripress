@@ -3,6 +3,7 @@ title: 製作主題
 author: Richard Chien
 created: 2017-03-21
 updated: 2017-03-22
+language: zh-hant
 ---
 
 VeriPress 原生支援主題，如果你對官方主題或其它協力廠商主題感到不滿意，同時也有一定的程式設計基本知識，你就可以自行製作自己的主題，也歡迎你把自己製作的主題發佈到網上和其他人一起分享。

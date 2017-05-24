@@ -2,7 +2,7 @@
 title: 开始使用
 author: Richard Chien
 created: 2017-03-20
-updated: 2017-03-20
+updated: 2017-05-24
 ---
 
 VeriPress 的使用以一个实例（instance）为单位，比如你使用它搭建一个博客，这个博客就是一个实例。一个实例的所有相关文件都保存在一个目录中，可以很方便地管理。
@@ -55,6 +55,7 @@ $ export VERIPRESS_INSTANCE_PATH=/home/user/my-veripress
 | `email`    | 网站作者 email，若文章和页面没有标注作者 email，则默认使用此项    |
 | `root_url` | 指定网站的根 URL，不要加结尾的 `/`，如果网站在子目录中，请不要加子目录，如网站在 `http://example.com/blog/` 则填写 `http://example.com`，此项用于生成评论框和 Atom 订阅所需的页面完整链接，但不会影响除了评论框和 Atom 订阅之外的其它功能 |
 | `timezone` | 可选，用于在生成 Atom 订阅时指定时区，格式类似 `UTC+08:00`，默认为 `UTC+00:00` |
+| `language` | 可选，指定网站主要使用的语言，如 `en`、`zh-cn`、`ja` 等，用于在生成的 HTML 中告知浏览器，在某些语言环境下，会影响内容的显示字体 |
 
 ## 安装默认主题
 

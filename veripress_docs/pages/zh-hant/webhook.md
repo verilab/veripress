@@ -3,6 +3,7 @@ title: Webhook
 author: Richard Chien
 created: 2017-03-20
 updated: 2017-03-20
+language: zh-hant
 ---
 
 VeriPress 支持通過接收 webhook 回呼來在某些特定外部事件發生時執行自訂 Python 腳本，從而實現例如 GitHub 倉庫發生 push 事件就自動拉取最新內容這樣的用法。

@@ -2,7 +2,7 @@
 title: 撰写内容
 author: Richard Chien
 created: 2017-03-20
-updated: 2017-03-22
+updated: 2017-05-24
 ---
 
 VeriPress 支持三种内容形式：文章（post）、自定义页面（page）、页面部件（widget）。其中，文章（post）是指可以通过 `/post/<year>/<month>/<day>/<post_name>/` 形式的 URL 访问的页面；自定义页面（page）是指直接在根 URL 后加上页面路径来访问的页面，如 `/hello/` 或 `/my-custom/page.html`；页面部件（widget）是指常驻页面的小部件，需要主题支持，默认主题只支持一种部件，也就是侧边栏部件。
@@ -44,7 +44,9 @@ is_draft: true
 正文内容
 ```
 
-则它将不会显示在文章列表中，也无法通过具体路径访问（API 也无法访问）。`is_draft` 的默认值是 `false`，因此如果不填，默认认为不是草稿，会将其发布。
+则它将不会显示在文章列表中，也无法通过具体路径访问（API 也无法访问）。`is_draft` 的默认值是 `false`，因此如果不填，默认认为不是草稿，会将其发布。这个元信息的效果是由 VeriPress 核心程序所保证的，因此不会受主题的影响。
+
+另外，所有官方主题（即 [veripress/themes](https://github.com/veripress/themes) 仓库中的主题），均支持 `language` 元信息（三种内容形式都支持），此元信息项的值，会覆盖 `site.json` 中的同名项，见 [修改网站信息](getting-started.html#修改网站信息)。
 
 ## 文章（Post）
 

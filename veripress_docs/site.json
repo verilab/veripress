@@ -3,5 +3,6 @@
   "subtitle": "Documentation of VeriPress.",
   "author": "VeriPress",
   "root_url": "https://veripress.github.io",
-  "timezone": "UTC+08:00"
+  "timezone": "UTC+08:00",
+  "language": "zh-hans"
 }

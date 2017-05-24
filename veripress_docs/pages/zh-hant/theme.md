@@ -3,6 +3,7 @@ title: 主題
 author: Richard Chien
 created: 2017-03-20
 updated: 2017-03-20
+language: zh-hant
 ---
 
 VeriPress 原生支援主題切換，通過設定檔的 `THEME` 配置項來指定要使用的主題，內部通過這個配置項，來渲染相應主題目錄中的範本檔。與此同時，`veripress` 命令還提供了方便的主題管理系列子命令。

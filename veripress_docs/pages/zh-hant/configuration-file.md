@@ -3,6 +3,7 @@ title: 設定檔
 author: Richard Chien
 created: 2017-03-20
 updated: 2017-03-22
+language: zh-hant
 ---
 
 `config.py` 檔即 VeriPress 的設定檔，初始化實例之後會生成一份預設的配置，多數情況下，你可能需要秀改設定檔來符合個性化的需求，同時，設定檔可以被主題範本獲取到，因此某些主題可能會對設定檔的某些項的不同配置表現出不同的行為。

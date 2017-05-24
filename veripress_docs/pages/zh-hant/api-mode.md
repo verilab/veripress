@@ -3,6 +3,7 @@ title: API 模式
 author: Richard Chien
 created: 2017-03-20
 updated: 2017-03-21
+language: zh-hant
 ---
 
 當運行模式 `MODE` 設置為 `api-only` 或 `mixed` 時，即開啟了 API 模式，這種情況下，可以通過 `/api` 首碼來訪問 API，由此將可以不受 VeriPress 頁面劃分邏輯的限制（只有首頁的文章列表可以分頁，標籤、分類、歸檔、搜尋網頁面默認不分頁，這些限制是為了保持動態和靜態運行的體驗一致性），而直接在前端去獲取資料並按想要的方式顯示。

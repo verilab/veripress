@@ -4,5 +4,6 @@
   "author": "My Name",
   "email": "someone@example.com",
   "root_url": "https://veripress.github.io",
-  "timezone": "UTC+08:00"
+  "timezone": "UTC+08:00",
+  "language": "en"
 }
