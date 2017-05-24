@@ -77,7 +77,6 @@ def templated(template=None, *templates):
 @templated('404.html')
 def page_not_found(e):
     g.status_code = 404
-    pass
 
 
 from veripress.view import views
