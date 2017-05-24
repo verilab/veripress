@@ -7,7 +7,7 @@
 
 {% block body %}
 
-  <div class="panel panel-primary">
+  <div class="panel panel-primary" {%- if entry.meta.language %} lang="{{ entry.meta.language }}" {%- endif %}>
     <div class="panel-heading">
       <h3 class="panel-title">
         {% for category in entry.categories %}

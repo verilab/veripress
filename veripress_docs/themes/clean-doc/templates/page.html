@@ -7,8 +7,9 @@
 
 {% block body %}
 
-  <div class="panel panel-primary">
+  <div class="panel panel-primary" {%- if entry.meta.language %} lang="{{ entry.meta.language }}" {%- endif %}>
     <div class="panel-heading"></div>
+
     <div class="panel-body markdown-body">
       <article>
         <h1>{{ entry.title }}</h1>

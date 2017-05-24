@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html {%- if site.language %} lang="{{ site.language }}" {%- endif %}>
 <head>
   {% block head %}
     {% include ['custom/head.html', 'head.html'] ignore missing %}

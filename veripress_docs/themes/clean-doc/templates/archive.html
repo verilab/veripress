@@ -26,7 +26,7 @@
           <table class="table table-hover">
             <tbody>
             {% for entry in entries %}
-              <tr>
+              <tr {%- if entry.meta.language %} lang="{{ entry.meta.language }}" {%- endif %}>
                 <td class="text-right"
                     style="border-top: none; width: 15%;">{{ entry.created.strftime('%Y.%m.%d') if entry.created else '' }}</td>
                 <td style="border-top: none"><a href="{{ entry.url }}">{{ entry.title }}</a></td>

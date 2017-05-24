@@ -3,7 +3,7 @@
 {% endif %}
 
 {% for widget in storage.get_widgets(position='sidebar') %}
-  <div class="panel panel-primary">
+  <div class="panel panel-primary" {%- if widget.meta.language %} lang="{{ widget.meta.language }}" {%- endif %}>
     <div class="panel-body markdown-body">
       {{ widget|content|safe }}
     </div>
