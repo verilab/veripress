@@ -13,13 +13,14 @@ VeriPress is a blog engine for hackers, which is very similar to Octopress and H
 
 ## Features
 
-- Supports three publishment types: post, page, widget
+- Supports three publish types: post, page, widget
 - Theme management
 - Custom post/page layout
-- Supports Markdown syntax and plain TXT content
+- Supports Markdown、HTML and plain TXT
 - Run as dynamic web app
 - Generating static HTML pages
 - API mode
+- Atom feed
 - and more...
 
 ## Quick Start
