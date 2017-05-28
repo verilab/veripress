@@ -1,5 +1,12 @@
 import re
-from html.parser import HTMLParser
+import sys
+
+try:
+    from html.parser import HTMLParser
+except ImportError:
+    # Python 2.x
+    # noinspection PyUnresolvedReferences,PyCompatibility
+    from HTMLParser import HTMLParser
 
 
 class _HtmlHeaderNode(object):
@@ -27,15 +34,35 @@ class HtmlTocParser(HTMLParser):
     """Parse table of content from a given HTML string."""
 
     # regular expression for replacing all punctuations in the header with '-'
-    _punctuations_exp = re.compile(
-        '[\s\u0020-\u002f\u003a-\u0040\u005b-\u0060\u007b-\u007e\u00a0-\u00bf'
-        '\u2000-\u206f\u2e00-\u2e7f\u3000-\u303f\uff01-\uff0f\uff1a-\uff20'
-        '\uff3b-\uff40\uff5b-\uff65\uffe0-\uffe6\uffe8-\uffec\ufe10-\ufe1f]+'
-    )
+
+    if sys.version.startswith('3.'):
+        # Python 3.x, safe
+        _punctuations_exp = re.compile(
+            r'[\s\u0020-\u002f\u003a-\u0040\u005b-\u0060\u007b-\u007e\u00a0-\u00bf'
+            r'\u2000-\u206f\u2e00-\u2e7f\u3000-\u303f\uff01-\uff0f\uff1a-\uff20'
+            r'\uff3b-\uff40\uff5b-\uff65\uffe0-\uffe6\uffe8-\uffec\ufe10-\ufe1f]+'
+        )
+    else:
+        # Python 2.x, DANGEROUS!!
+        # don't know why but it does work WHEN and ONLY WHEN 'ur' leading is used...
+        # and because 'ur' leading is not allowed in Python 3.x, so we use 'exec()' here
+        # otherwise SyntaxError will be raised
+        exec("""_punctuations_exp = re.compile(
+            ur'[\s\u0020-\u002f\u003a-\u0040\u005b-\u0060\u007b-\u007e\u00a0-\u00bf'
+            ur'\u2000-\u206f\u2e00-\u2e7f\u3000-\u303f\uff01-\uff0f\uff1a-\uff20'
+            ur'\uff3b-\uff40\uff5b-\uff65\uffe0-\uffe6\uffe8-\uffec\ufe10-\ufe1f]+'
+        )""")
 
     def __init__(self):
         """Initialize attributes."""
-        super().__init__(convert_charrefs=False)
+        if sys.version.startswith('3.'):
+            # Python 3.x
+            super().__init__(convert_charrefs=False)
+        else:
+            # use HTMLParser.__init__ because HTMLParser is an 'old' style class, which cannot be passed to super()
+            # see http://codependentcodr.blogspot.com/2012/02/python-htmlparser-and-super.html
+            HTMLParser.__init__(self)
+
         self._root = _HtmlHeaderNode(level=0)  # root node with no data of itself, only 'children' matters
         self._curr_node = self._root  # most recently handled header node
         self._in_header = False
@@ -56,10 +83,11 @@ class HtmlTocParser(HTMLParser):
         lowest_level = min(max(lowest_level, 1), 6)  # make lowest_level >= 1 and <= 6
         toc = self._root.to_dict()['children']
 
-        def traverse(curr_toc: list, dep, lowest_lvl, curr_depth=1):
+        def traverse(curr_toc, dep, lowest_lvl, curr_depth=1):
             if curr_depth > dep:
                 # clear all items of this depth and exit the recursion
-                curr_toc.clear()
+                # curr_toc.clear()
+                curr_toc[:] = []  # it's the same as the above line, for compatibility with Python 2.x
                 return
 
             items_to_remove = []
@@ -90,9 +118,9 @@ class HtmlTocParser(HTMLParser):
             result = ''
             if toc_list:
                 result += '<ul>\n'
-                result += ''.join(map(lambda x: '<li>'
-                                                '<a href="#{}">{}</a>{}'
-                                                '</li>\n'.format(x['id'], x['data'], map_toc_list(x['children'])),
+                result += ''.join(map(lambda x: u'<li>'
+                                                u'<a href="#{}">{}</a>{}'
+                                                u'</li>\n'.format(x['id'], x['data'], map_toc_list(x['children'])),
                                       toc_list))
                 result += '</ul>'
             return result
@@ -116,14 +144,14 @@ class HtmlTocParser(HTMLParser):
     @staticmethod
     def _get_level(tag):
         """Match the header level in the given tag name, or None if it's not a header tag."""
-        m = re.fullmatch('h([123456])', tag, flags=re.IGNORECASE)
+        m = re.match(r'^h([123456])$', tag, flags=re.IGNORECASE)
         if not m:
             return None
         return int(m.group(1))
 
     def handle_starttag(self, tag, attrs):
-        curr_tag = '<{}{}{}>'.format(tag, ' ' if attrs else '',
-                                     ' '.join(['{}="{}"'.format(*attr) for attr in attrs]))
+        curr_tag = u'<{}{}{}>'.format(tag, ' ' if attrs else '',
+                                      ' '.join([u'{}="{}"'.format(*attr) for attr in attrs]))
 
         level = self._get_level(tag)
         if level is not None:
@@ -142,11 +170,11 @@ class HtmlTocParser(HTMLParser):
         self._html += curr_tag
 
     def handle_startendtag(self, tag, attrs):
-        self._html += '<{}{}{} />'.format(tag, ' ' if attrs else '',
-                                          ' '.join(['{}="{}"'.format(*attr) for attr in attrs]))
+        self._html += u'<{}{}{} />'.format(tag, ' ' if attrs else '',
+                                           ' '.join([u'{}="{}"'.format(*attr) for attr in attrs]))
 
     def handle_endtag(self, tag):
-        curr_tag = '</{}>'.format(tag)
+        curr_tag = u'</{}>'.format(tag)
 
         if self._get_level(tag) is not None:
             header_id = self._punctuations_exp.sub('-', self._curr_node.data).strip('-')
@@ -157,7 +185,7 @@ class HtmlTocParser(HTMLParser):
 
             self._curr_node.id = header_id
             self._html += self._temp_html  # start tag of the current header node
-            self._html += '<a id="{0}" href="#{0}" class="anchor"></a>'.format(header_id)  # anchor
+            self._html += u'<a id="{0}" href="#{0}" class="anchor"></a>'.format(header_id)  # anchor
             self._html += self._curr_node.data + curr_tag  # header content and end tag
             self._temp_html = ''
             self._in_header = False
@@ -173,13 +201,16 @@ class HtmlTocParser(HTMLParser):
         self._html += data
 
     def handle_comment(self, data):
-        self._html += '<!--{}-->'.format(data)
+        # self._html += u'<!--{}-->'.format(data)
+        self.handle_data(u'<!--{}-->'.format(data))
 
     def handle_entityref(self, name):
-        self._html += '&{};'.format(name)
+        # self._html += u'&{};'.format(name)
+        self.handle_data(u'&{};'.format(name))
 
     def handle_charref(self, name):
-        self._html += '&#{};'.format(name)
+        # self._html += u'&#{};'.format(name)
+        self.handle_data(u'&#{};'.format(name))
 
     def error(self, message):
         pass  # pragma: no cover

@@ -1,8 +1,9 @@
 import os
 import re
-import collections.abc as abc
 from collections import Iterable
 from datetime import date, datetime, timedelta, timezone
+
+import pytz
 
 
 def url_rule(blueprint_or_app, rules, endpoint=None, view_func=None, **options):
@@ -53,13 +54,21 @@ def timezone_from_str(tz_str):
     """
     Convert a timezone string to a timezone object.
 
-    :param tz_str: string with format 'UTC±[hh]:[mm]'
-    :return: a timezone object
+    :param tz_str: string with format 'Asia/Shanghai' or 'UTC±[hh]:[mm]'
+    :return: a timezone object (tzinfo)
     """
-    m = re.match('UTC([+|-]\d{1,2}):(\d{2})', tz_str)
-    delta_h = int(m.group(1))
-    delta_m = int(m.group(2)) if delta_h >= 0 else -int(m.group(2))
-    return timezone(timedelta(hours=delta_h, minutes=delta_m))
+    m = re.match(r'UTC([+|-]\d{1,2}):(\d{2})', tz_str)
+    if m:
+        # in format 'UTC±[hh]:[mm]'
+        delta_h = int(m.group(1))
+        delta_m = int(m.group(2)) if delta_h >= 0 else -int(m.group(2))
+        return timezone(timedelta(hours=delta_h, minutes=delta_m))
+
+    # in format 'Asia/Shanghai'
+    try:
+        return pytz.timezone(tz_str)
+    except pytz.exceptions.UnknownTimeZoneError:
+        return None
 
 
 class ConfigurationError(Exception):
@@ -67,7 +76,7 @@ class ConfigurationError(Exception):
     pass
 
 
-class Pair(abc.Sequence):
+class Pair(object):
     """A class that just represent two value."""
 
     __dict__ = ['first', 'second']
@@ -86,6 +95,8 @@ class Pair(abc.Sequence):
 
     def __bool__(self):
         return bool(self.first) or bool(self.second)
+
+    __nonzero__ = __bool__  # for Python 2.x
 
     def __add__(self, other):
         a, b = other
@@ -125,7 +136,7 @@ def traverse_directory(dir_path, yield_dir=False):
     Traverse through a directory recursively.
 
     :param dir_path: directory path
-    :param yield_dir: yield subdirectory or not
+    :param yield_dir: yield subdirectory or not (only files will be yielded if left False)
     :return: a generator
     """
     if not os.path.isdir(dir_path):

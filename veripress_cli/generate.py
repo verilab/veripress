@@ -5,6 +5,7 @@ import shutil
 import click
 
 from veripress_cli import cli
+from veripress_cli.helpers import copy_folder_content, remove_folder_content, makedirs
 
 
 def get_deploy_dir():
@@ -59,7 +60,7 @@ def do_generate():
         shutil.copytree(app.static_folder, dst_static_folder)
 
     # copy theme static files
-    os.makedirs(dst_static_folder, mode=0o755, exist_ok=True)
+    makedirs(dst_static_folder, mode=0o755, exist_ok=True)
     copy_folder_content(app.theme_static_folder, dst_static_folder)
 
     # collect all possible urls (except custom pages)
@@ -67,7 +68,7 @@ def do_generate():
     with app.app_context():
         posts = list(storage.get_posts(include_draft=False))
 
-        index_page_count = math.ceil(len(posts) / app.config['ENTRIES_PER_PAGE'])
+        index_page_count = int(math.ceil(len(posts) / app.config['ENTRIES_PER_PAGE']))
         for i in range(2, index_page_count + 1):  # ignore '/page/1/', this will be generated separately later
             all_urls.add('/page/{}/'.format(i))
 
@@ -92,7 +93,7 @@ def do_generate():
             if url.endswith('/'):
                 file_path += 'index.html'
 
-            os.makedirs(os.path.dirname(file_path), mode=0o755, exist_ok=True)
+            makedirs(os.path.dirname(file_path), mode=0o755, exist_ok=True)
             with open(file_path, 'wb') as f:
                 f.write(resp.data)
 
@@ -116,7 +117,7 @@ def generate_pages_by_file():
     deploy_dir = get_deploy_dir()
 
     def copy_file(src, dst):
-        os.makedirs(os.path.dirname(dst), mode=0o755, exist_ok=True)
+        makedirs(os.path.dirname(dst), mode=0o755, exist_ok=True)
         shutil.copyfile(src, dst)
 
     with app.app_context(), app.test_client() as client:
@@ -130,7 +131,7 @@ def generate_pages_by_file():
                 page = storage.get_page(rel_url, include_draft=False)
                 if page is not None:
                     # it's not a draft, so generate the html page
-                    os.makedirs(os.path.join(deploy_dir, os.path.dirname(rel_path)), mode=0o755, exist_ok=True)
+                    makedirs(os.path.join(deploy_dir, os.path.dirname(rel_path)), mode=0o755, exist_ok=True)
                     with open(os.path.join(deploy_dir, filename + '.html'), 'wb') as f:
                         f.write(client.get('/' + rel_url).data)
                 if app.config['PAGE_SOURCE_ACCESSIBLE']:
@@ -138,27 +139,3 @@ def generate_pages_by_file():
             else:
                 # is other direct files
                 copy_file(path, os.path.join(deploy_dir, rel_path))
-
-
-def copy_folder_content(src, dst):
-    """Copy all content in src directory to dst directory. The src and dst must be existing."""
-    for file in os.listdir(src):
-        file_path = os.path.join(src, file)
-        dst_file_path = os.path.join(dst, file)
-        if os.path.isdir(file_path):
-            shutil.copytree(file_path, dst_file_path)
-        else:
-            shutil.copyfile(file_path, dst_file_path)
-
-
-def remove_folder_content(path, ignore_hidden_file=False):
-    """Remove all content in the given folder."""
-    for file in os.listdir(path):
-        if ignore_hidden_file and file.startswith('.'):
-            continue
-
-        file_path = os.path.join(path, file)
-        if os.path.isdir(file_path):
-            shutil.rmtree(file_path)
-        else:
-            os.remove(file_path)

@@ -68,8 +68,8 @@ class Storage(object):
         :return: fixed relative url, or None if cannot recognize
         """
         m = re.match(
-            '^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<post_name>[^/]+?)'
-            '(?:(?:\.html)|(?:/(?P<index>index(?:\.html?)?)?))?$',
+            r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<post_name>[^/]+?)'
+            r'(?:(?:\.html)|(?:/(?P<index>index(?:\.html?)?)?))?$',
             rel_url
         )
         if not m:
@@ -254,7 +254,7 @@ class FileStorage(Storage):
             return rel_url + '/', False
 
         sp = rel_url.rsplit('/', 1)
-        m = re.match('(.+)\.html?', sp[-1])
+        m = re.match(r'(.+)\.html?', sp[-1])
         if m:
             sp[-1] = m.group(1) + '.html'
         else:
@@ -301,7 +301,7 @@ class FileStorage(Storage):
 
         if whole.startswith('---'):
             # may has yaml meta info, so we try to split it out
-            sp = re.split('-{3,}', whole.lstrip('-'), maxsplit=1)
+            sp = re.split(r'-{3,}', whole.lstrip('-'), maxsplit=1)
             if len(sp) == 2:
                 # do have yaml meta info, so we read it
                 return yaml.load(sp[0]), sp[1].lstrip()
@@ -323,7 +323,7 @@ class FileStorage(Storage):
                 for file in os.listdir(path):
                     filename, ext = os.path.splitext(file)
                     format_name = get_standard_format_name(ext[1:])
-                    if format_name is not None and re.match('\d{4}-\d{2}-\d{2}-.+', filename):
+                    if format_name is not None and re.match(r'\d{4}-\d{2}-\d{2}-.+', filename):
                         # the format is supported and the filename is valid, so load this post
                         post = Post()
                         post.format = format_name
