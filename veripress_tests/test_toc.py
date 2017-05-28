@@ -23,6 +23,11 @@ html_example = """
 
 def test_toc_parser():
     parser = HtmlTocParser()
+    parser.feed('')
+    assert parser.toc() == []
+    assert parser.toc_html() == ''
+
+    parser = HtmlTocParser()
     parser.feed('<a href="#">no-effect</a>')
     assert html_same(parser.html, '<a href="#">no-effect</a>')
 
@@ -36,7 +41,7 @@ def test_toc_parser():
                     {'level': 1, 'id': 'Title', 'data': 'Title', 'children': [
                         {'level': 2, 'id': 'Title_1', 'data': 'Title', 'children': [
                             {'level': 4, 'id': 'Another-title-yes', 'data': 'Another title, yes!', 'children': []},
-                            {'level': 3, 'id': '中文-标题-Title', 'data': '中文，标题 Title', 'children': []}
+                            {'level': 3, 'id': '中文-标题-Title-amp', 'data': '中文，标题 Title&amp;', 'children': []}
                         ]}
                     ]},
                     {'level': 1, 'id': 'Another-h1-1', 'data': 'Another-h1-1', 'children': [
@@ -59,8 +64,3 @@ def test_toc_parser():
     </ul>
     """
     assert html_same(parser.toc_html(depth=2, lowest_level=5), expected_toc_html)
-
-    parser = HtmlTocParser()
-    parser.feed('')
-    assert parser.toc() == []
-    assert parser.toc_html() == ''

@@ -16,7 +16,7 @@ def get_json(client, url):
 def test_api_basic():
     with app.test_client() as c:
         data = get_json(c, '/non-exists')
-        assert data['code'] == Error.NO_SUCH_API.value[0]
+        assert data['code'] == Error.NO_SUCH_API.code
 
 
 def test_json_api_decorator():
@@ -79,7 +79,7 @@ def test_posts():
         data = get_json(c, '/posts?start=1&count=1')
         assert len(data) == 1
         data = get_json(c, '/posts?created=2016-03-02,2016-03-03&updated=')
-        assert data['code'] == Error.INVALID_ARGUMENTS.value[0]
+        assert data['code'] == Error.INVALID_ARGUMENTS.code
         data = get_json(c, '/posts?created=2016-03-02,2017-03-09&updated=2016-03-02,2017-03-09')
         assert len(data) == 2
 
@@ -91,7 +91,7 @@ def test_posts():
         assert 'categories' not in data
 
         data = get_json(c, '/posts/2017/03/09/non-exists')
-        assert data['code'] == Error.RESOURCE_NOT_EXISTS.value[0]
+        assert data['code'] == Error.RESOURCE_NOT_EXISTS.code
 
 
 def test_tags_categories():
@@ -106,10 +106,10 @@ def test_tags_categories():
 def test_pages():
     with app.test_client() as c:
         data = get_json(c, '/pages/non-exists')
-        assert data['code'] == Error.RESOURCE_NOT_EXISTS.value[0]
+        assert data['code'] == Error.RESOURCE_NOT_EXISTS.code
 
         data = get_json(c, '/pages/../../../../etc/passwd')
-        assert data['code'] == Error.NOT_ALLOWED.value[0]
+        assert data['code'] == Error.NOT_ALLOWED.code
 
         resp = c.get('/api/pages/test-page.txt')
         assert resp.status_code == 200
@@ -119,7 +119,7 @@ def test_pages():
         assert 'Lorem ipsum dolor sit amet.' in data['content']
 
         data = get_json(c, '/pages/test-page-draft')
-        assert data['code'] == Error.RESOURCE_NOT_EXISTS.value[0]
+        assert data['code'] == Error.RESOURCE_NOT_EXISTS.code
 
 
 def test_widgets():
@@ -128,16 +128,16 @@ def test_widgets():
         assert len(data) == 2
 
         data = get_json(c, '/widgets?position=header')
-        assert data['code'] == Error.RESOURCE_NOT_EXISTS.value[0]
+        assert data['code'] == Error.RESOURCE_NOT_EXISTS.code
 
 
 def test_search():
     with app.test_client() as c:
         data = get_json(c, '/search?q=')
-        assert data['code'] == Error.INVALID_ARGUMENTS.value[0]
+        assert data['code'] == Error.INVALID_ARGUMENTS.code
 
         data = get_json(c, '/search?q=non-exist-non-exist-non-exist')
-        assert data['code'] == Error.RESOURCE_NOT_EXISTS.value[0]
+        assert data['code'] == Error.RESOURCE_NOT_EXISTS.code
 
         data = get_json(c, '/search?q=hello')
         assert len(data) == 1

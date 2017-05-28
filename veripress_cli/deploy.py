@@ -5,6 +5,7 @@ from datetime import datetime
 import click
 
 from veripress_cli import cli
+from veripress_cli.helpers import makedirs
 
 
 def validate_repo_name(ctx, param, value):
@@ -27,7 +28,7 @@ def setup_command(repo, name, email):
 
     from veripress_cli.generate import get_deploy_dir
     deploy_dir = get_deploy_dir()
-    os.makedirs(deploy_dir, mode=0o755, exist_ok=True)
+    makedirs(deploy_dir, mode=0o755, exist_ok=True)
 
     os.system('git -C {} init'.format(deploy_dir))
     os.system('git -C {} config user.email "{}"'.format(deploy_dir, email))
@@ -40,7 +41,7 @@ def setup_command(repo, name, email):
 def deploy_command():
     from veripress_cli.generate import get_deploy_dir
     deploy_dir = get_deploy_dir()
-    os.makedirs(deploy_dir, mode=0o755, exist_ok=True)
+    makedirs(deploy_dir, mode=0o755, exist_ok=True)
 
     os.system('git -C {} add .'.format(deploy_dir))
     if os.system('git -C {} diff --quiet --exit-code'.format(deploy_dir)) == 0 \

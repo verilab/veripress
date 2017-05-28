@@ -24,6 +24,8 @@ def test_to_datetime():
 def test_timezone_from_str():
     tz = timezone_from_str('UTC+08:00')
     assert tz == timezone(timedelta(hours=8, minutes=0))
+    assert timezone_from_str('Asia/Shanghai').zone == 'Asia/Shanghai'
+    assert timezone_from_str('Asia/NoWhere') is None
 
 
 def test_configuration_error():

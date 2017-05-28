@@ -1,6 +1,5 @@
 import functools
-from enum import Enum, unique
-from collections import Iterable
+from collections import Iterable, namedtuple
 
 from flask import Blueprint, jsonify, Response, abort
 
@@ -9,20 +8,19 @@ from veripress.helpers import url_rule
 api_blueprint = Blueprint('api', __name__)
 
 
-@unique
-class Error(Enum):
+class Error(object):
     """
     Defines API error codes and error messages.
-
-    Tuple structure: (error code, default error message, default status code)
     """
 
-    UNDEFINED = (100, 'Undefined error.', 400)
-    NO_SUCH_API = (101, 'No such API.', 404)
-    RESOURCE_NOT_EXISTS = (102, 'The resource does not exist.', 404)
-    INVALID_ARGUMENTS = (103, 'Invalid argument(s).', 400)
-    NOT_ALLOWED = (104, 'The resource path is not allowed.', 403)
-    BAD_PATH = (105, 'The resource path cannot be recognized.', 400)
+    _Error = namedtuple('Error', ('code', 'msg', 'status_code'))
+
+    UNDEFINED = _Error(100, 'Undefined error.', 400)
+    NO_SUCH_API = _Error(101, 'No such API.', 404)
+    RESOURCE_NOT_EXISTS = _Error(102, 'The resource does not exist.', 404)
+    INVALID_ARGUMENTS = _Error(103, 'Invalid argument(s).', 400)
+    NOT_ALLOWED = _Error(104, 'The resource path is not allowed.', 403)
+    BAD_PATH = _Error(105, 'The resource path cannot be recognized.', 400)
 
 
 class ApiException(Exception):
@@ -37,15 +35,15 @@ class ApiException(Exception):
 
     def to_dict(self):
         result = dict(self.payload or {})
-        result['code'] = self.error.value[0]
-        result['message'] = self.message or self.error.value[1]
+        result['code'] = self.error.code
+        result['message'] = self.message or self.error.msg
         return result
 
 
 @api_blueprint.errorhandler(ApiException)
 def handle_api_exception(e):
     response = jsonify(e.to_dict())
-    response.status_code = e.status_code or e.error.value[2]
+    response.status_code = e.status_code or e.error.status_code
     return response
 
 
