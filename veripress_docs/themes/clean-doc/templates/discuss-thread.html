@@ -1,0 +1,19 @@
+{% if config.NETEASE_GENTIE_ENABLED or config.DISQUS_ENABLED or config.DUOSHUO_ENABLED %}
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        Discuss
+        <i class="fa fa-fw fa-angle-right"></i>
+      </h3>
+    </div>
+    <div class="panel-body markdown-body">
+      {% if config.NETEASE_GENTIE_ENABLED %}
+        {% include 'discuss/163gentie.html' ignore missing %}
+      {% elif config.DISQUS_ENABLED %}
+        {% include 'discuss/disqus.html' ignore missing %}
+      {% elif config.DUOSHUO_ENABLED %}
+        {% include 'discuss/duoshuo.html' ignore missing %}
+      {% endif %}
+    </div>
+  </div>
+{% endif %}
