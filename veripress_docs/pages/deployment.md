@@ -38,7 +38,7 @@ $ veripress deploy
 
 ## 动态部署
 
-### serve 命令
+### `serve` 命令
 
 动态部署也就是直接运行 Python web app。默认提供了 `serve` 命令来进行动态部署，使用方式如下：
 
