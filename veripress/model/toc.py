@@ -16,7 +16,8 @@ class _HtmlHeaderNode(object):
         """Initialize attributes."""
         self.level = level  # header level of the element, e.g. 1 for <h1>, 2 for <h2>, etc
         self.id = ''  # anchor id (in-page link), used in 'id' and 'href' attribute of 'a' tag
-        self.data = ''  # content of header tag, e.g. 'Title' for '<h1>Title</h1>'
+        self.text = ''  # pure text content of header tag, e.g. 'Title' for '<h1>Title</h1>'
+        self.inner_html = ''  # inner HTML
         self.father = None  # point to the direct father node
         self.children = []  # elements with lower levels that directly follows the current elem
 
@@ -25,7 +26,8 @@ class _HtmlHeaderNode(object):
         return {
             'level': self.level,
             'id': self.id,
-            'data': self.data,
+            'text': self.text,
+            'inner_html': self.inner_html,
             'children': [child.to_dict() for child in self.children]
         }
 
@@ -68,7 +70,7 @@ class HtmlTocParser(HTMLParser):
         self._in_header = False
         self._header_id_count = {}  # record header ids to avoid collisions
         self._html = ''  # full HTML string parsed
-        self._temp_html = ''  # temporary HTML string of this current header node
+        self._temp_start_tag = ''  # temporary HTML start tag of this current header node
 
     def toc(self, depth=6, lowest_level=6):
         """
@@ -120,7 +122,8 @@ class HtmlTocParser(HTMLParser):
                 result += '<ul>\n'
                 result += ''.join(map(lambda x: u'<li>'
                                                 u'<a href="#{}">{}</a>{}'
-                                                u'</li>\n'.format(x['id'], x['data'], map_toc_list(x['children'])),
+                                                u'</li>\n'.format(x['id'], x['inner_html'],
+                                                                  map_toc_list(x['children'])),
                                       toc_list))
                 result += '</ul>'
             return result
@@ -153,6 +156,10 @@ class HtmlTocParser(HTMLParser):
         curr_tag = u'<{}{}{}>'.format(tag, ' ' if attrs else '',
                                       ' '.join([u'{}="{}"'.format(*attr) for attr in attrs]))
 
+        if self._in_header:
+            self._curr_node.inner_html += curr_tag
+            return
+
         level = self._get_level(tag)
         if level is not None:
             self._in_header = True
@@ -164,38 +171,46 @@ class HtmlTocParser(HTMLParser):
             new_node.father = self._curr_node  # assign the new node as a child of the current node
             self._curr_node.children.append(new_node)
             self._curr_node = new_node
-            self._temp_html = curr_tag
+            self._temp_start_tag = curr_tag
             return
 
         self._html += curr_tag
 
     def handle_startendtag(self, tag, attrs):
-        self._html += u'<{}{}{} />'.format(tag, ' ' if attrs else '',
-                                           ' '.join([u'{}="{}"'.format(*attr) for attr in attrs]))
+        curr_tag = u'<{}{}{} />'.format(tag, ' ' if attrs else '',
+                                        ' '.join([u'{}="{}"'.format(*attr) for attr in attrs]))
+
+        if self._in_header:
+            self._curr_node.inner_html += curr_tag
+            return
 
     def handle_endtag(self, tag):
         curr_tag = u'</{}>'.format(tag)
 
         if self._get_level(tag) is not None:
-            header_id = self._punctuations_exp.sub('-', self._curr_node.data).strip('-')
+            header_id = self._punctuations_exp.sub('-', self._curr_node.text).strip('-')
             count = self._header_id_count.setdefault(header_id, 0)
             self._header_id_count[header_id] += 1
             if count > 0:
                 header_id += '_%d' % count
 
             self._curr_node.id = header_id
-            self._html += self._temp_html  # start tag of the current header node
+            self._html += self._temp_start_tag  # start tag of the current header node
             self._html += u'<a id="{0}" href="#{0}" class="anchor"></a>'.format(header_id)  # anchor
-            self._html += self._curr_node.data + curr_tag  # header content and end tag
-            self._temp_html = ''
+            self._html += self._curr_node.inner_html + curr_tag  # header content and end tag
+            self._temp_start_tag = ''
             self._in_header = False
+            return
+        elif self._in_header:
+            self._curr_node.inner_html += curr_tag
             return
 
         self._html += curr_tag
 
     def handle_data(self, data):
         if self._in_header:
-            self._curr_node.data += data
+            self._curr_node.text += data
+            self._curr_node.inner_html += data
             return
 
         self._html += data
