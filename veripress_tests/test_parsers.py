@@ -1,6 +1,5 @@
 import re
 
-import mistune
 from pytest import raises
 
 from veripress.model.parsers import get_standard_format_name, get_parser, Parser, TxtParser, MarkdownParser, parser
@@ -57,14 +56,6 @@ def test_txt_parser():
 
 
 def test_md_parser():
-    renderer = MarkdownParser.HighlightRenderer()
-    md = mistune.Markdown(renderer=renderer)
-    assert md('```\nabc\n```').strip() == '<pre>abc</pre>'
-    assert re.sub('\s*', '', md('```python\nprint()\n```')) \
-           == re.sub('\s*', '', '<div class="highlight"><pre>'
-                                '<span></span><span class="k">print</span><span class="p">()</span>'
-                                '</pre></div>')
-
     p = MarkdownParser()
     assert p.parse_whole('## hello\n\n[link](https://google.com)').strip() \
            == '<h2>hello</h2>\n<p><a href="https://google.com">link</a></p>'
