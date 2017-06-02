@@ -1,9 +1,7 @@
 import re
+from functools import partial
 
-import mistune
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import html
+import markdown
 
 from veripress.helpers import to_list
 
@@ -126,18 +124,18 @@ class MarkdownParser(Parser):
 
     _read_more_exp = r'<!--\s*more\s*-->'
 
-    class HighlightRenderer(mistune.Renderer):
-        """Custom mistune render to parse block code."""
-
-        def block_code(self, code, lang=None):
-            if not lang:
-                return '\n<pre>{}</pre>\n'.format(mistune.escape(code))
-            lexer = get_lexer_by_name(lang, stripall=True)
-            formatter = html.HtmlFormatter()
-            return highlight(code, lexer, formatter)
-
-    _renderer = HighlightRenderer()
-    _markdown = mistune.Markdown(renderer=_renderer)
+    _markdown = partial(
+        markdown.markdown,
+        output_format='html5',
+        extensions=['markdown.extensions.extra', 'markdown.extensions.codehilite'],
+        extension_configs={
+            'markdown.extensions.codehilite': {
+                'guess_lang': False,
+                'css_class': 'highlight',
+                'use_pygments': True
+            }
+        },
+    )
 
     def parse_whole(self, raw_content):
         raw_content = self.remove_read_more_sep(raw_content)

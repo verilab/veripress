@@ -10,7 +10,7 @@ setup(
     author_email='richardchienthebest@gmail.com',
     description='A blog engine for hackers.',
     install_requires=[
-        'Flask', 'Flask-Caching', 'PyYAML', 'mistune',
+        'Flask', 'Flask-Caching', 'PyYAML', 'markdown',
         'Pygments', 'pytz'
     ],
     include_package_data=True,
