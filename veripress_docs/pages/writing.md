@@ -2,7 +2,7 @@
 title: 撰写内容
 author: Richard Chien
 created: 2017-03-20
-updated: 2017-05-24
+updated: 2017-06-02
 ---
 
 VeriPress 支持三种内容形式：文章（post）、自定义页面（page）、页面部件（widget）。其中，文章（post）是指可以通过 `/post/<year>/<month>/<day>/<post_name>/` 形式的 URL 访问的页面；自定义页面（page）是指直接在根 URL 后加上页面路径来访问的页面，如 `/hello/` 或 `/my-custom/page.html`；页面部件（widget）是指常驻页面的小部件，需要主题支持，默认主题只支持一种部件，也就是侧边栏部件。
@@ -17,6 +17,8 @@ VeriPress 支持三种内容形式：文章（post）、自定义页面（page�
 | -------- | -------------------------- |
 | markdown | `.md`、`.mdown`、`.markdown` |
 | txt      | `.txt`                     |
+
+其中，Markdown 格式采用「Markdown Extra」扩展，该扩展在 [标准 Markdown 语法](https://daringfireball.net/projects/markdown/syntax) 的基础上，加入了一些其它实用语法，具体见 [PHP Markdown Extra](https://michelf.ca/projects/php-markdown/extra/)。
 
 无论使用什么格式书写内容，文件的开头都使用 YAML 来标记元信息，并在其上下分别用 `---` 来分隔，例如：
 

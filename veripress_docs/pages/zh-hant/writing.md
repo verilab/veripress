@@ -2,7 +2,7 @@
 title: 撰寫內容
 author: Richard Chien
 created: 2017-03-20
-updated: 2017-05-24
+updated: 2017-06-02
 language: zh-hant
 ---
 
@@ -18,6 +18,8 @@ VeriPress 支援三種內容形式：文章（post）、自訂頁面（page）�
 | -------- | -------------------------- |
 | markdown | `.md`、`.mdown`、`.markdown` |
 | txt      | `.txt`                     |
+
+其中，Markdown 格式採用「Markdown Extra」擴展，該擴展在 [標準 Markdown 語法](https://daringfireball.net/projects/markdown/syntax) 的基礎上，加入了一些其它實用語法，具體見 [PHP Markdown Extra](https://michelf.ca/projects/php-markdown/extra/)。
 
 無論使用什麼格式書寫內容，檔的開頭都使用 YAML 來標記元資訊，並在其上下分別用 `---` 來分隔，例如：
 
