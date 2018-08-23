@@ -70,9 +70,9 @@ site = {
     'timezone': 'UTC+00:00'
 }
 try:
-    with app.open_instance_resource('site.json', mode='r') as site_file:
+    with app.open_instance_resource('site.json', mode='rb') as site_file:
         # load site meta info to the site object
-        site.update(json.load(site_file))
+        site.update(json.load(site_file, encoding='utf-8'))
 except FileNotFoundError:
     pass
 
