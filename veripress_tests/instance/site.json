@@ -1,6 +1,6 @@
 {
     "title": "My Blog",
-    "subtitle": "Yet another VeriPress blog.",
+    "subtitle": "Yet another VeriPress blog. 一段中文的测试。",
     "author": "My Name",
     "email": "my-email@example.com",
     "timezone": "UTC+08:00"

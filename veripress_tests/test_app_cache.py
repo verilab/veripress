@@ -41,7 +41,7 @@ def test_app():
 def test_site():
     # site meta info should be loaded from instance/site.json
     assert site['title'] == 'My Blog'
-    assert site['subtitle'] == 'Yet another VeriPress blog.'
+    assert site['subtitle'] == 'Yet another VeriPress blog. 一段中文的测试。'
 
 
 def test_cache():
