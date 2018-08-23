@@ -72,7 +72,7 @@ site = {
 try:
     with app.open_instance_resource('site.json', mode='rb') as site_file:
         # load site meta info to the site object
-        site.update(json.load(site_file, encoding='utf-8'))
+        site.update(json.loads(site_file.read().decode('utf-8')))
 except FileNotFoundError:
     pass
 
@@ -86,8 +86,8 @@ def webhook():
     :return: always 204 NO CONTENT
     """
     try:
-        with current_app.open_instance_resource('webhook.py', 'r') as script_file:
-            exec(script_file.read())  # if there is the 'webhook.py' script, we execute it's content
+        with current_app.open_instance_resource('webhook.py', 'rb') as script_file:
+            exec(script_file.read().decode('utf-8'))  # if there is the 'webhook.py' script, we execute it's content
     except FileNotFoundError:
         pass
     return '', 204
