@@ -3,7 +3,10 @@ import shutil
 
 
 def copy_folder_content(src, dst):
-    """Copy all content in src directory to dst directory. The src and dst must be existing."""
+    """
+    Copy all content in src directory to dst directory.
+    The src and dst must exist.
+    """
     for file in os.listdir(src):
         file_path = os.path.join(src, file)
         dst_file_path = os.path.join(dst, file)
@@ -14,7 +17,9 @@ def copy_folder_content(src, dst):
 
 
 def remove_folder_content(path, ignore_hidden_file=False):
-    """Remove all content in the given folder."""
+    """
+    Remove all content in the given folder.
+    """
     for file in os.listdir(path):
         if ignore_hidden_file and file.startswith('.'):
             continue

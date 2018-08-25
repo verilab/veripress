@@ -1,6 +1,8 @@
 from itertools import islice
 
-from flask import url_for, request, redirect, current_app, send_file, abort, make_response
+from flask import (
+    url_for, request, redirect, current_app, send_file, abort, make_response
+)
 from werkzeug.contrib.atom import AtomFeed
 
 from veripress import site, cache
@@ -8,7 +10,9 @@ from veripress.view import templated, custom_render_template
 from veripress.model import storage
 from veripress.model.models import Base
 from veripress.model.parsers import get_parser
-from veripress.helpers import timezone_from_str, parse_toc, validate_custom_page_path
+from veripress.helpers import (
+    timezone_from_str, parse_toc, validate_custom_page_path
+)
 
 
 def make_abs_url(unique_key):
@@ -32,16 +36,19 @@ def index(page_num=1):
     start = (page_num - 1) * count
 
     posts = []
-    for post_ in islice(all_posts, start, start + count + 1):  # slice an additional one to check if there is more
+    # slice an additional one to check if there is more
+    for post_ in islice(all_posts, start, start + count + 1):
         post_d = post_.to_dict()
         del post_d['raw_content']
-        post_d['preview'], post_d['has_more_content'] = get_parser(post_.format).parse_preview(post_.raw_content)
+        post_d['preview'], post_d['has_more_content'] = \
+            get_parser(post_.format).parse_preview(post_.raw_content)
         post_d['url'] = make_abs_url(post_.unique_key)
         posts.append(post_d)
 
     if start > 0:
         next_page_num = page_num - 1
-        next_url = url_for('.index', page_num=next_page_num if next_page_num != 1 else None)
+        next_url = url_for(
+            '.index', page_num=next_page_num if next_page_num != 1 else None)
     else:
         next_url = None
     if len(posts) > count:
@@ -60,7 +67,8 @@ def post(year, month, day, post_name):
     rel_url = request.path[len('/post/'):]
     fixed_rel_url = storage.fix_post_relative_url(rel_url)
     if rel_url != fixed_rel_url:
-        return redirect(request.url_root + 'post/' + fixed_rel_url)  # it's not the correct relative url, so redirect
+        # it's not the correct relative url, so redirect
+        return redirect(request.url_root + 'post/' + fixed_rel_url)
 
     post_ = storage.get_post(rel_url, include_draft=False)
     if post_ is None:
@@ -69,7 +77,8 @@ def post(year, month, day, post_name):
     post_d = post_.to_dict()
     del post_d['raw_content']
     post_d['content'] = get_parser(post_.format).parse_whole(post_.raw_content)
-    post_d['content'], post_d['toc'], post_d['toc_html'] = parse_toc(post_d['content'])
+    post_d['content'], post_d['toc'], post_d['toc_html'] = \
+        parse_toc(post_d['content'])
     post_d['url'] = make_abs_url(post_.unique_key)
     post_ = post_d
 
@@ -84,11 +93,14 @@ def page(rel_url):
     fixed_rel_url, exists = storage.fix_page_relative_url(rel_url)
     if exists:
         file_path = fixed_rel_url
-        return send_file(file_path)  # send direct file
-    elif fixed_rel_url is None:  # relative url is invalid
-        abort(404)  # pragma: no cover, this is never possible when visiting this site in web browser
+        return send_file(file_path)
+    elif fixed_rel_url is None:
+        # relative url is invalid
+        # this is never possible when visiting this site in web browser
+        abort(404)  # pragma: no cover
     elif rel_url != fixed_rel_url:
-        return redirect(url_for('.page', rel_url=fixed_rel_url))  # it's not the correct relative url, so redirect
+        # it's not the correct relative url, so redirect
+        return redirect(url_for('.page', rel_url=fixed_rel_url))
 
     resp = cache.get('view-handler.' + rel_url)
     if resp is not None:
@@ -101,7 +113,8 @@ def page(rel_url):
     page_d = page_.to_dict()
     del page_d['raw_content']
     page_d['content'] = get_parser(page_.format).parse_whole(page_.raw_content)
-    page_d['content'], page_d['toc'], page_d['toc_html'] = parse_toc(page_d['content'])
+    page_d['content'], page_d['toc'], page_d['toc_html'] = \
+        parse_toc(page_d['content'])
     page_d['url'] = make_abs_url(page_.unique_key)
     page_ = page_d
 
@@ -113,32 +126,38 @@ def page(rel_url):
 @cache.memoize(timeout=2 * 60)
 @templated('category.html', 'archive.html')
 def category(category_name):
-    posts = storage.get_posts_with_limits(include_draft=False, **{'categories': [category_name]})
+    posts = storage.get_posts_with_limits(
+        include_draft=False, **{'categories': [category_name]})
     if not posts:
         abort(404)
 
     def convert_to_dict(post_):
         post_d = post_.to_dict()
         del post_d['raw_content']
-        post_d['preview'], post_d['has_more_content'] = get_parser(post_.format).parse_preview(post_.raw_content)
+        post_d['preview'], post_d['has_more_content'] = \
+            get_parser(post_.format).parse_preview(post_.raw_content)
         post_d['url'] = make_abs_url(post_.unique_key)
         return post_d
 
     posts = list(map(convert_to_dict, posts))
-    return dict(entries=posts, archive_type='Category', archive_name=category_name)
+    return dict(entries=posts,
+                archive_type='Category',
+                archive_name=category_name)
 
 
 @cache.memoize(timeout=2 * 60)
 @templated('tag.html', 'archive.html')
 def tag(tag_name):
-    posts = storage.get_posts_with_limits(include_draft=False, **{'tags': [tag_name]})
+    posts = storage.get_posts_with_limits(
+        include_draft=False, **{'tags': [tag_name]})
     if not posts:
         abort(404)
 
     def convert_to_dict(post_):
         post_d = post_.to_dict()
         del post_d['raw_content']
-        post_d['preview'], post_d['has_more_content'] = get_parser(post_.format).parse_preview(post_.raw_content)
+        post_d['preview'], post_d['has_more_content'] = \
+            get_parser(post_.format).parse_preview(post_.raw_content)
         post_d['url'] = make_abs_url(post_.unique_key)
         return post_d
 
@@ -163,12 +182,17 @@ def archive(year=None, month=None):
     def convert_to_dict(post_):
         post_d = post_.to_dict()
         del post_d['raw_content']
-        post_d['preview'], post_d['has_more_content'] = get_parser(post_.format).parse_preview(post_.raw_content)
+        post_d['preview'], post_d['has_more_content'] = \
+            get_parser(post_.format).parse_preview(post_.raw_content)
         post_d['url'] = make_abs_url(post_.unique_key)
         return post_d
 
-    posts = list(map(convert_to_dict, filter(lambda p: p.rel_url.startswith(rel_url_prefix), posts)))
-    return dict(entries=posts, archive_type='Archive', archive_name=archive_name if archive_name else 'All')
+    posts = list(map(convert_to_dict,
+                     filter(lambda p: p.rel_url.startswith(rel_url_prefix),
+                            posts)))
+    return dict(entries=posts,
+                archive_type='Archive',
+                archive_name=archive_name if archive_name else 'All')
 
 
 @templated('search.html', 'archive.html')
@@ -184,7 +208,9 @@ def search():
         return p
 
     result = list(map(process, map(Base.to_dict, storage.search_for(query))))
-    return dict(entries=result, archive_type='Search', archive_name='"{}"'.format(raw_query))
+    return dict(entries=result,
+                archive_type='Search',
+                archive_name='"{}"'.format(raw_query))
 
 
 @cache.memoize(timeout=2 * 60)
@@ -196,7 +222,9 @@ def feed():
         post_d['url'] = site['root_url'] + make_abs_url(p.unique_key)
         return post_d
 
-    posts = map(convert_to_dict, islice(storage.get_posts(include_draft=False), 0, current_app.config['FEED_COUNT']))
+    posts = map(convert_to_dict,
+                islice(storage.get_posts(include_draft=False),
+                       0, current_app.config['FEED_COUNT']))
 
     atom = AtomFeed(title=site['title'],
                     subtitle=site['subtitle'],
@@ -208,8 +236,10 @@ def feed():
                  content=post_['content'],
                  url=post_['url'],
                  id=post_['unique_key'],
-                 published=post_['created'].replace(tzinfo=timezone_from_str(site['timezone'])),
-                 updated=post_['updated'].replace(tzinfo=timezone_from_str(site['timezone'])),
+                 published=post_['created'].replace(
+                     tzinfo=timezone_from_str(site['timezone'])),
+                 updated=post_['updated'].replace(
+                     tzinfo=timezone_from_str(site['timezone'])),
                  author=post_['author'])
 
     response = make_response(atom.to_string())

@@ -16,9 +16,11 @@ def validate_repo_name(ctx, param, value):
 
 
 @cli.command('setup-github-pages', short_help='Setup GitHub Pages.',
-             help='This command will setup the deploy folder as a GitHub Pages repo.')
+             help='This command will setup the deploy folder '
+                  'as a GitHub Pages repo.')
 @click.option('--repo', '-r',
-              prompt='Please enter your GitHub repo name, e.g. "someone/the-repo"',
+              prompt='Please enter your GitHub repo name, '
+                     'e.g. "someone/the-repo"',
               help='The GitHub repo name you want to deploy to.',
               callback=validate_repo_name)
 @click.option('--name', '-n', prompt='Please enter your name (for git config)',

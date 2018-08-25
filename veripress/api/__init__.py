@@ -26,7 +26,8 @@ class Error(object):
 class ApiException(Exception):
     """Raised by API functions when something goes wrong."""
 
-    def __init__(self, message=None, error=Error.UNDEFINED, status_code=None, payload=None):
+    def __init__(self, message=None, error=Error.UNDEFINED,
+                 status_code=None, payload=None):
         super(ApiException, self).__init__()
         self.message = message
         self.status_code = status_code
@@ -82,13 +83,15 @@ def rule(rules, strict_slashes=False, api_func=None, *args, **kwargs):
 
     :param rules: rule string or string list
     :param strict_slashes: same to Blueprint.route, but default value is False
-    :param api_func: a function that returns a JSON serializable object or a Flask Response, or raises ApiException
+    :param api_func: a function that returns a JSON serializable object
+                     or a Flask Response, or raises ApiException
     :param args: other args that should be passed to Blueprint.route
     :param kwargs: other kwargs that should be passed to Blueprint.route
     :return:
     """
     return url_rule(api_blueprint, rules, strict_slashes=strict_slashes,
-                    view_func=json_api(api_func) if api_func else None, *args, **kwargs)
+                    view_func=json_api(api_func) if api_func else None,
+                    *args, **kwargs)
 
 
 rule('/site', endpoint='site', api_func=handlers.site_info, methods=['GET'])
@@ -96,11 +99,14 @@ rule(['/posts',
       '/posts/<int:year>',
       '/posts/<int:year>/<int:month>',
       '/posts/<int:year>/<int:month>/<int:day>',
-      '/posts/<int:year>/<int:month>/<int:day>/<string:post_name>'], api_func=handlers.posts, methods=['GET'])
+      '/posts/<int:year>/<int:month>/<int:day>/<string:post_name>'],
+     api_func=handlers.posts, methods=['GET'])
 rule('/tags', api_func=handlers.tags, methods=['GET'])
 rule('/categories', api_func=handlers.categories, methods=['GET'])
 rule('/widgets', api_func=handlers.widgets, methods=['GET'])
-rule('/pages/<path:page_path>', api_func=handlers.pages, methods=['GET'], strict_slashes=True)
+rule('/pages/<path:page_path>', api_func=handlers.pages, methods=['GET'],
+     strict_slashes=True)
 rule('/search', api_func=handlers.search, methods=['GET'])
 
-rule('/<path:_>', api_func=lambda _: abort(404), methods=['GET'])  # direct all unknown paths to 404
+# direct all unknown paths to 404
+rule('/<path:_>', api_func=lambda _: abort(404), methods=['GET'])

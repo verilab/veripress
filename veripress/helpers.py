@@ -6,7 +6,8 @@ from datetime import date, datetime, timedelta, timezone
 import pytz
 
 
-def url_rule(blueprint_or_app, rules, endpoint=None, view_func=None, **options):
+def url_rule(blueprint_or_app, rules,
+             endpoint=None, view_func=None, **options):
     """
     Add one or more url rules to the given Flask blueprint or app.
 
@@ -17,7 +18,10 @@ def url_rule(blueprint_or_app, rules, endpoint=None, view_func=None, **options):
     :param options: other options
     """
     for rule in to_list(rules):
-        blueprint_or_app.add_url_rule(rule, endpoint=endpoint, view_func=view_func, **options)
+        blueprint_or_app.add_url_rule(rule,
+                                      endpoint=endpoint,
+                                      view_func=view_func,
+                                      **options)
 
 
 def to_list(item_or_list):
@@ -39,14 +43,17 @@ def to_list(item_or_list):
 
 def to_datetime(date_or_datetime):
     """
-    Convert a date object to a datetime object, or return as it is if it's not a date object.
+    Convert a date object to a datetime object,
+    or return as it is if it's not a date object.
 
     :param date_or_datetime: date or datetime object
     :return: a datetime object
     """
-    if isinstance(date_or_datetime, date) and not isinstance(date_or_datetime, datetime):
+    if isinstance(date_or_datetime, date) and \
+            not isinstance(date_or_datetime, datetime):
         d = date_or_datetime
-        return datetime.strptime('%04d-%02d-%02d' % (d.year, d.month, d.day), '%Y-%m-%d')
+        return datetime.strptime(
+            '%04d-%02d-%02d' % (d.year, d.month, d.day), '%Y-%m-%d')
     return date_or_datetime
 
 
@@ -86,7 +93,8 @@ class Pair(object):
         self.second = second
 
     def __repr__(self):
-        return '<{} ({}, {})>'.format(self.__class__.__name__, repr(self.first), repr(self.second))
+        return '<{} ({}, {})>'.format(
+            self.__class__.__name__, repr(self.first), repr(self.second))
 
     def __eq__(self, other):
         if isinstance(other, Pair):
@@ -120,7 +128,8 @@ class Pair(object):
 
 def validate_custom_page_path(path):
     """
-    Check if a custom page path is valid or not, to prevent malicious requests.
+    Check if a custom page path is valid or not,
+    to prevent malicious requests.
 
     :param path: custom page path (url path)
     :return: valid or not
@@ -136,7 +145,7 @@ def traverse_directory(dir_path, yield_dir=False):
     Traverse through a directory recursively.
 
     :param dir_path: directory path
-    :param yield_dir: yield subdirectory or not (only files will be yielded if left False)
+    :param yield_dir: yield subdirectory or not
     :return: a generator
     """
     if not os.path.isdir(dir_path):
@@ -165,10 +174,12 @@ def parse_toc(html_content):
     if current_app.config['SHOW_TOC']:
         toc_parser = HtmlTocParser()
         toc_parser.feed(html_content)
-        toc_html = toc_parser.toc_html(depth=current_app.config['TOC_DEPTH'],
-                                       lowest_level=current_app.config['TOC_LOWEST_LEVEL'])
-        toc = toc_parser.toc(depth=current_app.config['TOC_DEPTH'],
-                             lowest_level=current_app.config['TOC_LOWEST_LEVEL'])
+        toc_html = toc_parser.toc_html(
+            depth=current_app.config['TOC_DEPTH'],
+            lowest_level=current_app.config['TOC_LOWEST_LEVEL'])
+        toc = toc_parser.toc(
+            depth=current_app.config['TOC_DEPTH'],
+            lowest_level=current_app.config['TOC_LOWEST_LEVEL'])
         return toc_parser.html, toc, toc_html
     else:
         return html_content, None, None

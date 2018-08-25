@@ -10,10 +10,11 @@ from veripress.helpers import ConfigurationError
 
 def get_storage():
     """
-    Get storage object of current app context, will create a new one if not exists.
+    Get storage object of current app context,
+    will create a new one if not exists.
 
     :return: a storage object
-    :raise: ConfigurationError: storage type in current_app.config is not supported
+    :raise: ConfigurationError: storage type in config is not supported
     """
     storage_ = getattr(g, '_storage', None)
     if storage_ is None:
@@ -21,7 +22,8 @@ def get_storage():
         if storage_type == 'file':
             storage_ = g._storage = storages.FileStorage()
         else:
-            raise ConfigurationError('Storage type "{}" is not supported.'.format(storage_type))
+            raise ConfigurationError(
+                'Storage type "{}" is not supported.'.format(storage_type))
     return storage_
 
 
@@ -55,4 +57,5 @@ class CustomJSONEncoder(app.json_encoder):
         return super(CustomJSONEncoder, self).default(obj)
 
 
-app.json_encoder = CustomJSONEncoder  # use the customized JSON encoder when jsonify is called
+# use the customized JSON encoder when jsonify is called
+app.json_encoder = CustomJSONEncoder
