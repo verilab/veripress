@@ -23,7 +23,6 @@ def test_index():
         assert '<a id="prev-url"' in resp.data.decode('utf-8')
         assert '<a id="next-url"' not in resp.data.decode('utf-8')
         assert 'My Post No Yaml' in resp.data.decode('utf-8')
-        assert 'My Post No Yaml2' in resp.data.decode('utf-8')
         assert 'This is my blog. Welcome!' in resp.data.decode('utf-8')  # parse widget in template
 
         assert '<a id="next-url"' in c.get('/page/2/').data.decode('utf-8')
