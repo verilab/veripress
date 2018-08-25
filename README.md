@@ -42,7 +42,7 @@ See [documentation](https://veripress.github.io/docs/) for more information on h
 
 ## Documentation
 
-Documentation is now available in [Simplified Chinese (简体中文)](https://veripress.github.io/docs/) and [Traditional Chinese (繁體中文)](https://veripress.github.io/docs/zh-hant/), and the English version is coming soon.
+Documentation is now available in [Simplified Chinese (简体中文)](https://veripress.github.io/docs/), and the English version is coming soon.
 
 ## Contributing
 
