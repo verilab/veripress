@@ -6,6 +6,7 @@ WORKDIR /veripress
 COPY veripress veripress
 COPY veripress_cli veripress_cli
 COPY setup.py setup.py
+COPY README.md README.md
 COPY MANIFEST.in MANIFEST.in
 RUN pip install . gevent
 
