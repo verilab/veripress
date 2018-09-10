@@ -167,6 +167,7 @@ venv.bak/
 
 # ----- Project -----
 
+.idea
 veripress_demo/themes/*
 veripress_docs/themes/*
 !veripress_demo/themes/default
