@@ -9,14 +9,19 @@ from veripress.helpers import to_list
 class Parser(object):
     """Base parser class."""
 
-    # this should be overridden in subclasses, and should be a compiled regular expression
+    # this should be overridden in subclasses,
+    # and should be a compiled regular expression
     _read_more_exp = None
 
     def __init__(self):
-        if self._read_more_exp is not None and isinstance(self._read_more_exp, str):
+        if self._read_more_exp is not None and \
+                isinstance(self._read_more_exp, str):
             # compile the regular expression
             # make the regex require new lines above and below the sep flag
-            self._read_more_exp = re.compile(r'\r?\n\s*?' + self._read_more_exp + r'\s*?\r?\n', re.IGNORECASE)
+            self._read_more_exp = re.compile(
+                r'\r?\n\s*?' + self._read_more_exp + r'\s*?\r?\n',
+                re.IGNORECASE
+            )
 
     def parse_preview(self, raw_content):
         """
@@ -39,11 +44,15 @@ class Parser(object):
         else:
             has_more_content = False
             result = raw_content
-        # since the preview part contains no read_more_sep, we can safely use the parse_whole method
+        # since the preview part contains no read_more_sep,
+        # we can safely use the parse_whole method
         return self.parse_whole(result), has_more_content
 
     def parse_whole(self, raw_content):
-        """Parse the whole part of the content. Should be overridden in subclasses."""
+        """
+        Parse the whole part of the content.
+        Should be overridden in subclasses.
+        """
         raise NotImplementedError
 
     def remove_read_more_sep(self, raw_content):
@@ -62,8 +71,10 @@ class Parser(object):
         return result
 
 
-_ext_format_mapping = {}  # key: extension name, value: standard format name
-_format_parser_mapping = {}  # key: standard format name, value: parser instance
+# key: extension name, value: standard format name
+_ext_format_mapping = {}
+# key: standard format name, value: parser instance
+_format_parser_mapping = {}
 
 
 def get_standard_format_name(ext_name):
@@ -127,7 +138,10 @@ class MarkdownParser(Parser):
     _markdown = partial(
         markdown.markdown,
         output_format='html5',
-        extensions=['markdown.extensions.extra', 'markdown.extensions.codehilite'],
+        extensions=[
+            'markdown.extensions.extra',
+            'markdown.extensions.codehilite'
+        ],
         extension_configs={
             'markdown.extensions.codehilite': {
                 'guess_lang': False,

@@ -23,7 +23,8 @@ def inject_context():
 @view_blueprint.app_template_filter('content')
 def parse_content_of_models(obj):
     """
-    Parse the whole 'raw_content' attribute of a Post or Page or Widget object (in template files).
+    Parse the whole 'raw_content' attribute of
+    a Post or Page or Widget object (in template files).
 
     :param obj: a Post or Page or Widget object
     :return: parsed whole content
@@ -34,10 +35,12 @@ def parse_content_of_models(obj):
 @cache.memoize(timeout=2 * 60)
 def custom_render_template(template_name_or_list, **context):
     """
-    Try to render templates in the custom folder first, if no custom templates, try the theme's default ones.
+    Try to render templates in the custom folder first,
+    if no custom templates, try the theme's default ones.
     """
     response_str = render_template(
-        functools.reduce(lambda x, y: x + [os.path.join('custom', y), y], to_list(template_name_or_list), []),
+        functools.reduce(lambda x, y: x + [os.path.join('custom', y), y],
+                         to_list(template_name_or_list), []),
         **context
     )
     if hasattr(g, 'status_code'):
@@ -50,7 +53,8 @@ def custom_render_template(template_name_or_list, **context):
 def templated(template=None, *templates):
     """
     Decorate a view function with one or more default template name.
-    This will try templates in the custom folder first, the theme's original ones second.
+    This will try templates in the custom folder first,
+    the theme's original ones second.
 
     :param template: template name or template name list
     """
@@ -60,13 +64,15 @@ def templated(template=None, *templates):
         def wrapper(*args, **kwargs):
             template_ = template
             if template_ is None:
-                template_ = request.endpoint.split('.', 1)[1].replace('.', '/') + '.html'
+                template_ = request.endpoint.split('.', 1)[1].replace(
+                    '.', '/') + '.html'
             context = func(*args, **kwargs)
             if context is None:
                 context = {}
             elif not isinstance(context, dict):
                 return context
-            return custom_render_template(list(chain(to_list(template_), templates)), **context)
+            return custom_render_template(
+                list(chain(to_list(template_), templates)), **context)
 
         return wrapper
 
@@ -85,12 +91,16 @@ rule = functools.partial(url_rule, view_blueprint, methods=['GET'])
 
 rule(['/feed.xml', '/atom.xml'], view_func=views.feed, strict_slashes=True)
 
-rule(['/', '/page/<int:page_num>/'], view_func=views.index, strict_slashes=True)
-rule('/post/<int:year>/<int:month>/<int:day>/<string:post_name>', view_func=views.post, strict_slashes=False)
-rule('/category/<string:category_name>/', view_func=views.category, strict_slashes=True)
+rule(['/', '/page/<int:page_num>/'], view_func=views.index,
+     strict_slashes=True)
+rule('/post/<int:year>/<int:month>/<int:day>/<string:post_name>',
+     view_func=views.post, strict_slashes=False)
+rule('/category/<string:category_name>/', view_func=views.category,
+     strict_slashes=True)
 rule('/tag/<string:tag_name>/', view_func=views.tag, strict_slashes=True)
 rule(['/archive/',
       '/archive/<int:year>/',
-      '/archive/<int:year>/<int:month>/'], view_func=views.archive, strict_slashes=True)
+      '/archive/<int:year>/<int:month>/'], view_func=views.archive,
+     strict_slashes=True)
 rule('/search', view_func=views.search, strict_slashes=False)
 rule('/<path:rel_url>', view_func=views.page, strict_slashes=True)

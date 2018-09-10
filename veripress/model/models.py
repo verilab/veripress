@@ -5,7 +5,9 @@ from veripress.helpers import to_list, to_datetime
 
 
 class Base(object):
-    """Base model class, contains basic/general information of a post/page/widget."""
+    """
+    Base model class, contains basic/general information of a post/page/widget.
+    """
 
     def __init__(self):
         self.meta = {}
@@ -26,8 +28,12 @@ class Base(object):
         return self.meta.get('is_draft', False)
 
     def to_dict(self):
-        """Convert attributes and properties to a dict (so that it can be serialized)."""
-        return {k: getattr(self, k) for k in filter(lambda k: not k.startswith('_') and k != 'to_dict', dir(self))}
+        """
+        Convert attributes and properties to a dict,
+        so that it can be serialized.
+        """
+        return {k: getattr(self, k) for k in filter(
+            lambda k: not k.startswith('_') and k != 'to_dict', dir(self))}
 
     def __eq__(self, other):
         if isinstance(other, Base):
@@ -56,7 +62,8 @@ class DateMixIn(object):
 
     @property
     def updated(self):
-        return to_datetime(getattr(self, 'meta', {}).get('updated', self.created))
+        return to_datetime(getattr(self, 'meta', {}).get('updated',
+                                                         self.created))
 
 
 class TagCategoryMixIn(object):
@@ -72,7 +79,10 @@ class TagCategoryMixIn(object):
 
 
 class Page(Base, AuthorMixIn, DateMixIn):
-    """Model class of publish type 'custom page' or 'page', with default layout 'page'."""
+    """
+    Model class of publish type 'custom page' or 'page',
+    with default layout 'page'.
+    """
     _default_layout = 'page'
 
     def __init__(self):
@@ -93,13 +103,17 @@ class Page(Base, AuthorMixIn, DateMixIn):
             while pos > 0 and (sp[pos] == 'index.html' or not sp[pos]):
                 pos -= 1
 
-            path_seg = sp[pos][:-len('.html')] if sp[pos].endswith('.html') else sp[pos]
-            result = ' '.join(word[0].upper() + word[1:] for word in filter(lambda x: x, path_seg.split('-')))
+            path_seg = sp[pos][:-len('.html')] \
+                if sp[pos].endswith('.html') else sp[pos]
+            result = ' '.join(word[0].upper() + word[1:] for word in filter(
+                lambda x: x, path_seg.split('-')))
         return result
 
 
 class Post(Page, TagCategoryMixIn):
-    """Model class of publish type 'post', with default layout 'post'."""
+    """
+    Model class of publish type 'post', with default layout 'post'.
+    """
     _default_layout = 'post'
 
     @property
@@ -115,12 +129,15 @@ class Post(Page, TagCategoryMixIn):
         result = self.meta.get('title')
         if result is None:
             _, post_name, _ = self.rel_url.rsplit('/', 2)
-            result = ' '.join(word[0].upper() + word[1:] for word in filter(lambda x: x, post_name.split('-')))
+            result = ' '.join(word[0].upper() + word[1:] for word in filter(
+                lambda x: x, post_name.split('-')))
         return result
 
 
 class Widget(Base):
-    """Model class of publish type 'widget'."""
+    """
+    Model class of publish type 'widget'.
+    """
 
     @property
     def position(self):
