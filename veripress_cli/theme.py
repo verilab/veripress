@@ -58,8 +58,8 @@ def install_command(theme, branch, name):
         theme_name = name or theme
         theme_path = os.path.join(get_themes_dir(), theme_name)
         cmd = 'git clone --branch {} ' \
-              'https://github.com/veripress/themes.git {}'.format(theme,
-                                                                  theme_path)
+              'https://github.com/veripress/themes.git "{}"'.format(theme,
+                                                                    theme_path)
     else:
         m = re.fullmatch('([_\-A-Z0-9a-z]+)/([_\-A-Z0-9a-z]+)', theme)
         if not m:
@@ -73,8 +73,9 @@ def install_command(theme, branch, name):
         theme_name = name or repo
         theme_path = os.path.join(get_themes_dir(), theme_name)
         cmd = 'git clone --branch {} ' \
-              'https://github.com/{}/{}.git {}'.format(branch, user,
-                                                       repo, theme_path)
+              'https://github.com/{}/{}.git "{}"'.format(branch, user,
+                                                         repo, theme_path)
+    print(cmd)
     exit_code = os.system(cmd)
     if exit_code == 0:
         click.echo('\n"{}" theme has been '
