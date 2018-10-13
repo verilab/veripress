@@ -1,6 +1,6 @@
 # VeriPress
 
-[![License](https://img.shields.io/pypi/l/veripress.svg)](LICENSE)
+[![License](https://img.shields.io/github/license/veripress/veripress.svg)](LICENSE)
 [![Build Status](https://travis-ci.org/veripress/veripress.svg?branch=master)](https://travis-ci.org/veripress/veripress)
 [![Coverage Status](https://coveralls.io/repos/github/veripress/veripress/badge.svg?branch=master)](https://coveralls.io/github/veripress/veripress?branch=master)
 [![PyPI](https://img.shields.io/pypi/v/veripress.svg)](https://pypi.python.org/pypi/veripress)
@@ -43,6 +43,10 @@ See [documentation](https://veripress.github.io/docs/) for more information on h
 ## Documentation
 
 Documentation is now available in [Simplified Chinese (简体中文)](https://veripress.github.io/docs/), and the English version is coming soon.
+
+## Themes
+
+There are some official themes [here](https://github.com/veripress/themes), and also a theme collection [here](https://stdrc.cc/post/2018/10/13/collection-of-veripress-themes/) (in Simplified Chinese).
 
 ## Contributing
 
