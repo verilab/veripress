@@ -60,7 +60,7 @@ $ veripress theme uninstall theme-name
 
 由于主题是一个通用化的东西，可能你在使用的时候需要进行个性化的简单定制，例如修改导航栏、使用自定义布局等。
 
-通常，主题的作者在制作主题时，会允许用户将自己的模板文件放在主题目录的 `custom` 子目录中，来覆盖主题本身的同名模板文件，而不影响该主题原先的代码，从而不影响后期的主题更新。此外，VeriPress 在渲染模板文件时，也会优先使用 `custom` 子目录中的同名模板文件。
+通常，主题的作者在制作主题时，会允许用户将自己的模板文件放在主题 `templates` 目录的 `custom` 子目录中，来覆盖主题本身的同名模板文件，而不影响该主题原先的代码，从而不影响后期的主题更新。此外，VeriPress 在渲染模板文件时，也会优先使用 `custom` 子目录中的同名模板文件。
 
 下面先给出两种使用场景，关于模板文件具体如何编写，请参考 [制作主题](making-your-own-theme.html) 和 Jinja2 模板引擎的 [设计文档](http://jinja.pocoo.org/docs/2.9/templates/)。
 
@@ -72,13 +72,13 @@ $ veripress theme uninstall theme-name
 {% include ['custom/navbar.html', 'navbar.html'] ignore missing %}
 ```
 
-这行会优先引入 `custom` 中的 `navbar.html`，如果不存在，则使用主题自带的。因此你可以在 `custom` 中创建自定义的 `navbar.html`，来添加你需要的导航栏项。
+这行会优先引入 `templates/custom` 中的 `navbar.html`，如果不存在，则使用主题自带的。因此你可以在 `templates/custom` 中创建自定义的 `navbar.html`，来添加你需要的导航栏项。
 
 ### 在文章或页面中使用自定义布局
 
-还记得文章和页面的 YAML 头部的 `layout` 项吗，默认分别为 `post` 和 `page`，对应主题的 `post.html` 和 `page.html` 模板文件。如果你需要自定义，则可以在主题的 `custom` 目录中创建新的布局的模板文件。
+还记得文章和页面的 YAML 头部的 `layout` 项吗，默认分别为 `post` 和 `page`，对应主题的 `post.html` 和 `page.html` 模板文件。如果你需要自定义，则可以在主题的 `templates/custom` 目录中创建新的布局的模板文件。
 
-例如你需要一个新的名叫 `simple-page` 的布局，就新建模板文件 `custom/simple-page.html`，假设内容如下：
+例如你需要一个新的名叫 `simple-page` 的布局，就新建模板文件 `templates/custom/simple-page.html`，假设内容如下：
 
 ```html
 <!DOCTYPE html>
