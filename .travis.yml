@@ -25,11 +25,11 @@ install:
   - pip install -r test-requirements.txt
 
 script:
-  - export VERIPRESS_INSTANCE_PATH=$(pwd)/veripress_tests/instance
-  - coverage run --source veripress -m py.test veripress_tests
-  - export VERIPRESS_INSTANCE_PATH=$(pwd)/veripress_demo
+  - export VERIPRESS_INSTANCE_PATH=$(pwd)/tests/instance
+  - coverage run --source veripress -m py.test tests
+  - export VERIPRESS_INSTANCE_PATH=$(pwd)/demo
   - veripress generate --app-root /demo/
-  - export VERIPRESS_INSTANCE_PATH=$(pwd)/veripress_docs
+  - export VERIPRESS_INSTANCE_PATH=$(pwd)/docs
   - veripress generate --app-root /docs/
   - export TAG=`if [[ $TRAVIS_BRANCH =~ ^v[0-9.]+$ ]]; then echo ${TRAVIS_BRANCH#v}; else echo $TRAVIS_BRANCH; fi`
   - docker build -f Dockerfile -t $DOCKER_REPO:$TAG .

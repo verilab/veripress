@@ -80,14 +80,16 @@ def test_posts():
         assert len(data) == 1
         data = get_json(c, '/posts?created=2016-03-02,2016-03-03&updated=')
         assert data['code'] == Error.INVALID_ARGUMENTS.code
-        data = get_json(c, '/posts?created=2016-03-02,2017-03-09&updated=2016-03-02,2017-03-09')
+        data = get_json(c,
+                        '/posts?created=2016-03-02,2017-03-09&updated=2016-03-02,2017-03-09')
         assert len(data) == 2
 
         data = get_json(c, '/posts/2017/03/09/my-post')
         assert isinstance(data, dict)
         assert data['categories'] == ['Default']
 
-        data = get_json(c, '/posts/2017/03/09/my-post/?fields=title,content,created,updated')
+        data = get_json(c,
+                        '/posts/2017/03/09/my-post/?fields=title,content,created,updated')
         assert 'categories' not in data
 
         data = get_json(c, '/posts/2017/03/09/non-exists')
