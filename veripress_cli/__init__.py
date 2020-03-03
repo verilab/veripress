@@ -1,14 +1,12 @@
 import click
 
-from .version import VERSION
-
 
 @click.group(name='veripress',
              short_help='A blog engine for hackers.',
              help='This is a blog engine for hackers. '
                   'You can use this to serve a blog, '
                   'a wiki or anything else you like.')
-@click.version_option(version=VERSION)
+@click.version_option(version='1.0.11')
 def cli():
     pass
 

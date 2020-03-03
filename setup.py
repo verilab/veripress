@@ -1,13 +1,11 @@
 from setuptools import setup, find_packages
 
-from veripress_cli.version import VERSION
-
 with open('README.md', 'r', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
     name='veripress',
-    version=VERSION,
+    version='1.0.11',
     packages=find_packages(),
     url='https://github.com/veripress/veripress',
     license='MIT License',
