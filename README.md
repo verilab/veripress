@@ -1,5 +1,7 @@
 # VeriPress
 
+**This project is deprecated, please use [PurePress](https://github.com/richardchien/purepress) instead.**
+
 [![License](https://img.shields.io/github/license/veripress/veripress.svg)](LICENSE)
 [![Build Status](https://travis-ci.org/veripress/veripress.svg?branch=master)](https://travis-ci.org/veripress/veripress)
 [![Coverage Status](https://coveralls.io/repos/github/veripress/veripress/badge.svg?branch=master)](https://coveralls.io/github/veripress/veripress?branch=master)
